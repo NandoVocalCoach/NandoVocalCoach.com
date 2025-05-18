@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nando Vocal Coach</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global anchor offset */
+    html { scroll-padding-top: 80px; }
+    :root {
+      --bg-color: #fff;
+      --text-color: #333;
+      --header-bg: rgba(224,224,224,0.5);
+      --header-text: #333;
+      --nav-text: #000;
+      --section-heading: #FF5500;
+      --services-bg: #f9f9f9;
+      --pricing-bg: #f5f5f5;
+      --footer-bg: #FF5500;
+      --footer-text: #000;
+      --footer-link: #000;
+      --header-border-color: #FF5500;
+    }
+    .dark-mode {
+      --bg-color: #000;
+      --text-color: #fff;
+      --header-bg: rgba(26,26,26,0.5);
+      --header-text: #fff;
+      --nav-text: #fff;
+      --section-heading: #FF5500;
+      --services-bg: #222;
+      --pricing-bg: #222;
+      --footer-bg: #FF5500;
+      --footer-text: #000;
+      --footer-link: #000;
+      --header-border-color: #FF5500;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Montserrat", sans-serif;
+      font-size: 130%;
+      line-height: 1.6;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+      padding-top: 80px;
+      text-align: center;
+    }
+    a { text-decoration: none; color: inherit; }
+    
+    /* Header – fixed with logo and toggles */
+    header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.5rem 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      border-bottom: 2px solid var(--header-border-color);
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .logo { position: absolute; left: 20px; top: 10px; }
+    .logo img { max-width: 280px; transition: max-width 0.3s; }
+    #header-tagline { font-style: italic; font-size: 30px; font-weight: bold; margin-top: 10px; }
+    .toggle-container { position: absolute; right: 40px; top: 15px; display: flex; gap: 10px; }
+    #mode-toggle, #language-toggle {
+      padding: 5px 10px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 18px;
+      border: 2px solid black;
+      border-radius: 4px;
+      cursor: pointer;
+      background: var(--section-heading);
+      color: var(--header-text);
+      transition: transform 0.2s ease;
+    }
+    #mode-toggle:hover, #language-toggle:hover { transform: scale(1.1); }
+    body.dark-mode #mode-toggle, body.dark-mode #language-toggle { border-color: white; }
+    #language-toggle img {
+      width: 20px;
+      vertical-align: middle;
+      margin-right: 5px;
+      border-radius: 50%;
+      border: 2px solid black;
+    }
+    body.dark-mode #language-toggle img { border-color: white; }
+    nav { margin-top: 20px; }
+    nav a {
+      font-family: "Bebas Neue", sans-serif;
+      color: var(--nav-text);
+      margin: 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 28px;
+    }
+    nav a:hover { text-decoration: underline; text-decoration-color: var(--section-heading); }
+    
+    /* Hero Section with YouTube Video, Progress Bar, and Custom Controls */
+    #hero {
+      position: relative;
+      height: 70vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--header-text);
+      margin-top: 150px;
+    }
+    body:not(.dark-mode) #hero {
+      border-top: 2px solid #ccc;
+      border-bottom: 2px solid #ccc;
+    }
+    .video-wrapper {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+    /* YouTube IFrame API will inject the video here */
+    #hero-video { width: 100%; height: 100%; }
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    /* Transparent overlay to open the official YouTube video when clicked */
+    #hero-video-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 2;
+      cursor: pointer;
+    }
+    /* Video Control Area: contains horizontal progress bar and custom controls */
+    #video-control-area {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+    /* Full-width progress bar */
+    #progress-container { width: 90%; }
+    #progress-bar { width: 100%; }
+    /* Custom Controls: left group (play, mute, volume) and right group (open in YouTube) */
+    #video-controls {
+      width: 90%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #left-controls, #right-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    #left-controls button,
+    #right-controls button {
+      background: #fff;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 20px;
+    }
+    #left-controls input[type=range] { width: 100px; }
+    #left-controls input[type=range].boosted { background: red; }
+    
+    /* CTA & Floating Button */
+    #cta-button, #sticky-cta {
+      padding: 16px 32px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 32px;
+      background: var(--section-heading);
+      border: 2px solid black;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #cta-button { color: black; }
+    body.dark-mode #cta-button, body.dark-mode #sticky-cta {
+      border-color: white;
+      color: white;
+    }
+    #cta-button:hover, #sticky-cta:hover { background: #e64500; }
+    #sticky-cta {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 1100;
+      transition: transform 0.2s ease;
+    }
+    #sticky-cta:hover { transform: scale(1.1); }
+    
+    /* Sections: 300px margin between sections */
+    section {
+      padding: 32px;
+      max-width: 1100px;
+      margin: 300px auto;
+      text-align: left;
+      scroll-margin-top: 80px;
+    }
+    section h2 {
+      font-family: "Bebas Neue", sans-serif;
+      color: var(--section-heading);
+      font-size: 35px;
+      border-bottom: 2px solid var(--section-heading);
+      padding-bottom: 5px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    /* About Section */
+    #about .about-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+      justify-content: center;
+    }
+    #about .profile-image { flex-shrink: 0; }
+    #about .profile-image img { width: 240px; border-radius: 50%; }
+    #about .about-details { flex: 1; text-align: left; }
+    #about .about-details .about-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 35px;
+      color: var(--section-heading);
+      border-bottom: 2px solid var(--section-heading);
+      padding-bottom: 5px;
+      margin-bottom: 16px;
+    }
+    
+    /* Services & Pricing */
+    #services { background: var(--services-bg); padding: 32px; border-radius: 5px; }
+    #pricing { background: var(--pricing-bg); padding: 32px; text-align: center; border-radius: 5px; }
+    #pricing p { font-size: 30px; margin: 8px 0; }
+    
+    /* Testimonials */
+    #testimonials {
+      position: relative;
+      overflow: hidden;
+      padding: 32px;
+      max-width: 1100px;
+      margin: 300px auto;
+      text-align: center;
+    }
+    #testimonials-anchor { display: block; height: 100px; margin-top: -100px; visibility: hidden; }
+    #testimonials h2 {
+      color: var(--section-heading);
+      font-size: 35px;
+      border-bottom: 2px solid var(--section-heading);
+      padding-bottom: 5px;
+      margin-bottom: 16px;
+    }
+    .testimonial-carousel { display: flex; transition: transform 0.5s ease-in-out; }
+    .testimonial-item { flex: 0 0 50%; padding: 0 16px; }
+    .review-stars { color: var(--section-heading); font-size: 34px; line-height: 1; }
+    .testimonial-item blockquote {
+      font-style: italic;
+      border-left: 4px solid var(--section-heading);
+      padding-left: 16px;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+    }
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--section-heading);
+      color: #fff;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      z-index: 2;
+    }
+    #carousel-left { left: 10px; }
+    #carousel-right { right: 10px; }
+    .fiverr-link { text-align: center; margin-top: 16px; }
+    .fiverr-link a { color: var(--section-heading); font-weight: bold; }
+    
+    /* Booking & Footer */
+    #booking { text-align: center; }
+    .calendly-inline-widget { margin: 0 auto; }
+    footer {
+      background: var(--footer-bg);
+      color: var(--footer-text);
+      text-align: center;
+      padding: 16px 0;
+    }
+    footer .social a { margin: 0 10px; color: var(--footer-link); font-size: 24px; }
+    footer .social a:hover { color: var(--text-color); }
+    
+    @media (max-width:600px) {
+      .logo img { max-width: 140px; }
+      #hero h1 { font-size: 40px; }
+      #hero p { font-size: 24px; }
+      #about .about-container { flex-direction: column; text-align: center; align-items: center; }
+      #about .about-details { text-align: center; }
+      nav { margin-top: 20px; }
+      .testimonial-item { flex: 0 0 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Audio element for hover sound on the floating button -->
+  <audio id="hover-sound" src="hover-sound.mp3" preload="auto"></audio>
+  
+  <header>
+    <div class="logo">
+      <img id="logo" src="logolight.png" alt="Nando Vocal Coach Logo">
+    </div>
+    <p id="header-tagline" data-phrase-key="headerTagline">
+      Get your voice in its best shape ever!
+    </p>
+    <div class="toggle-container">
+      <button id="mode-toggle">White</button>
+      <button id="language-toggle"></button>
+    </div>
+    <nav>
+      <a href="#hero" data-phrase-key="home">Home</a>
+      <a href="#about" data-phrase-key="aboutNav">About Me</a>
+      <a href="#services" data-phrase-key="servicesNav">Services</a>
+      <a href="#pricing" data-phrase-key="pricingNav">Pricing</a>
+      <a href="#testimonials-anchor" data-phrase-key="testimonialsNav">Reviews</a>
+      <a href="#booking" data-phrase-key="bookingNav">Book Now</a>
+      <a href="#contact" data-phrase-key="contactNav">Contact</a>
+    </nav>
+  </header>
+  
+  <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
+  <section id="hero">
+    <div class="video-wrapper">
+      <div id="hero-video"></div>
+    </div>
+    <!-- Transparent overlay to open the official YouTube video -->
+    <div id="hero-video-overlay" onclick="window.open('https://www.youtube.com/watch?v=_OCuHsXcyEI&list=PPSV','_blank')" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:2; cursor:pointer;"></div>
+    <!-- Video Control Area with progress bar and controls -->
+    <div id="video-control-area">
+      <div id="progress-container">
+        <input id="progress-bar" type="range" min="0" value="0">
+      </div>
+      <div id="video-controls">
+        <div id="left-controls">
+          <button id="play-toggle">⏸</button>
+          <button id="mute-toggle">🔇</button>
+          <input id="volume-slider" type="range" min="0" max="150" value="100">
+        </div>
+        <div id="right-controls">
+          <button id="open-youtube">↗</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <button id="sticky-cta" data-phrase-key="ctaButton">Book a Session</button>
+  
+  <section id="about">
+    <div class="about-container">
+      <div class="profile-image">
+        <img src="profile.jpg" alt="Nando Portrait">
+      </div>
+      <div class="about-details">
+        <h2 class="about-title" data-phrase-key="aboutTitle">About Me</h2>
+        <div class="about-text">
+          <p id="about-intro" data-phrase-key="aboutIntro">
+            Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach.
+          </p>
+          <p id="about-additional" data-phrase-key="aboutAdditional">
+            My approach combines classical and modern techniques to help you discover and harness your unique voice, ensuring a healthy, sustainable, and joyful singing experience.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="services">
+    <h2 data-phrase-key="servicesTitle">Services</h2>
+    <p data-phrase-key="servicesDescription">
+      Whether you're an experienced singer or an absolute beginner, I'll craft a personalized training plan just for you!
+    </p>
+    <ul>
+      <li data-phrase-key="service1">Improve your pitch and agility</li>
+      <li data-phrase-key="service2">Build stamina and power</li>
+      <li data-phrase-key="service3">Hit those high notes comfortably!</li>
+      <li data-phrase-key="service4">Develop your unique style</li>
+    </ul>
+  </section>
+  
+  <section id="pricing">
+    <h2 data-phrase-key="pricingTitle">Pricing</h2>
+    <p><strong data-phrase-key="pricingItem1Title">First Session:</strong> $50 (40 minutes)</p>
+    <p><strong data-phrase-key="pricingItem2Title">Voice Assessment + Training Plan:</strong> $90</p>
+    <p><strong data-phrase-key="pricingItem3Title">4 Sessions + Coaching Support:</strong> $320</p>
+  </section>
+  
+  <section id="testimonials">
+    <span id="testimonials-anchor"></span>
+    <h2 data-phrase-key="testimonialsTitle">Reviews</h2>
+    <div class="testimonial-carousel">
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial0">
+          Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial1">
+          Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial2">
+          I couldn't ask for a better vocal coach. I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing techniques. – Patrick
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial3">
+          The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial4">
+          I've worked with Nando and my voice improved notably. – Joseph
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial5">
+          Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity. – Miguel
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial6">
+          Nando is very patient and a great communicator. – Ben
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial7">
+          I take solo singing classes with Nando and even gifted a duet class to relatives—they loved it! – Colby
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial8">
+          Nando changed my life. – Jonathan
+        </blockquote>
+      </div>
+      <div class="testimonial-item">
+        <blockquote data-phrase-key="testimonial9">
+          Beyond happy—thank you so much for your patience! – Crystal
+        </blockquote>
+      </div>
+    </div>
+    <button class="carousel-nav" id="carousel-left">&#9664;</button>
+    <button class="carousel-nav" id="carousel-right">&#9654;</button>
+    <div class="fiverr-link">
+      <a href="https://www.fiverr.com/s/ljNDLq7" target="_blank">See more reviews on Fiverr</a>
+    </div>
+  </section>
+  
+  <section id="booking">
+    <h2 data-phrase-key="bookingTitle">Book a Session</h2>
+    <p>
+      Check my availability, book your session, and pay securely—all in one place.
+    </p>
+    <div class="calendly-inline-widget" data-url="https://calendly.com/your-calendly-username/your-event-type"></div>
+  </section>
+  
+  <footer id="contact">
+    <p><strong>contact@nandovocalcoach.com</strong></p>
+  </footer>
+  
+  <!-- Load YouTube IFrame API & Calendly widget -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <script>
+    // YouTube IFrame API integration for hero video with progress tracking
+    let player;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('hero-video', {
+        videoId: '_OCuHsXcyEI',
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          controls: 0,
+          loop: 1,
+          playlist: '_OCuHsXcyEI',
+          modestbranding: 1,
+          showinfo: 0,
+          rel: 0
+        },
+        events: { 'onReady': onPlayerReady }
+      });
+    }
+    
+    function onPlayerReady(event) {
+      // Update progress bar every second
+      setInterval(updateProgressBar, 1000);
+    }
+    
+    function updateProgressBar() {
+      const progressBar = document.getElementById('progress-bar');
+      if (player && typeof player.getDuration === 'function') {
+        const duration = player.getDuration();
+        const currentTime = player.getCurrentTime();
+        progressBar.max = duration;
+        progressBar.value = currentTime;
+      }
+    }
+    
+    // Video Controls: Play/Pause, Mute/Unmute, Volume, Open in YouTube, and seek via progress
+    window.addEventListener('load', () => {
+      const playBtn = document.getElementById('play-toggle');
+      const muteBtn = document.getElementById('mute-toggle');
+      const volumeSlider = document.getElementById('volume-slider');
+      const openYT = document.getElementById('open-youtube');
+      const progressBar = document.getElementById('progress-bar');
+      
+      playBtn.innerText = "⏸";
+      muteBtn.innerText = "🔇";
+      
+      playBtn.addEventListener('click', () => {
+        const state = player.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+          playBtn.innerText = "▶";
+        } else {
+          player.playVideo();
+          playBtn.innerText = "⏸";
+        }
+      });
+      
+      muteBtn.addEventListener('click', () => {
+        if (player.isMuted()) {
+          player.unMute();
+          muteBtn.innerText = "🔊";
+        } else {
+          player.mute();
+          muteBtn.innerText = "🔇";
+        }
+      });
+      
+      volumeSlider.addEventListener('input', () => {
+        let volValue = parseInt(volumeSlider.value, 10);
+        let newVol = Math.min(volValue, 100);
+        player.setVolume(newVol);
+        if (volValue > 100) {
+          volumeSlider.classList.add('boosted');
+        } else {
+          volumeSlider.classList.remove('boosted');
+        }
+      });
+      
+      openYT.addEventListener('click', () => {
+        window.open("https://www.youtube.com/watch?v=_OCuHsXcyEI&list=PPSV", "_blank");
+      });
+      
+      progressBar.addEventListener('input', () => {
+        const newTime = parseFloat(progressBar.value);
+        player.seekTo(newTime, true);
+      });
+      
+      // Hover effect for the floating "Book a Session" button plays a subtle sound
+      const stickyBtn = document.getElementById('sticky-cta');
+      stickyBtn.addEventListener('mouseenter', () => {
+        const sound = document.getElementById('hover-sound');
+        sound.currentTime = 0;
+        sound.play();
+      });
+    });
+    
+    // Translation and toggle functionality with updated language toggle text:
+    // When in English mode, the language toggle shows the Spanish option with "ESP".
+    // When in Spanish mode, it shows the English option with "ENG".
+    const translations = {
+      en: {
+        headerTagline: "Get your voice in its best shape ever!",
+        home: "Home",
+        aboutNav: "About Me",
+        aboutTitle: "About Me",
+        servicesNav: "Services",
+        pricingNav: "Pricing",
+        testimonialsNav: "Reviews",
+        bookingNav: "Book Now",
+        contactNav: "Contact",
+        heroHeading: "Unlock Your True Voice",
+        heroSubheading: "Transform your singing with innovative techniques and expert guidance.",
+        ctaButton: "Book a Session",
+        aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach.",
+        aboutAdditional: "My approach combines classical and modern techniques to help you discover and harness your unique voice, ensuring a healthy, sustainable, and joyful singing experience.",
+        servicesTitle: "Services",
+        servicesDescription: "Whether you're an experienced singer or an absolute beginner, I'll craft a personalized training plan just for you!",
+        service1: "Improve your pitch and agility",
+        service2: "Build stamina and power",
+        service3: "Hit those high notes comfortably!",
+        service4: "Develop your unique style",
+        pricingTitle: "Pricing",
+        pricingItem1Title: "First Session:",
+        pricingItem2Title: "Voice Assessment + Training Plan:",
+        pricingItem3Title: "4 Sessions + Coaching Support:",
+        testimonialsTitle: "Reviews",
+        testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
+        testimonial1: "Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby",
+        testimonial2: "I couldn't ask for a better vocal coach. I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing techniques. – Patrick",
+        testimonial3: "The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia",
+        testimonial4: "I've worked with Nando and my voice improved notably. – Joseph",
+        testimonial5: "Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity. – Miguel",
+        testimonial6: "Nando is very patient and a great communicator. – Ben",
+        testimonial7: "I take solo singing classes with Nando and even gifted a duet class to relatives—they loved it! – Colby",
+        testimonial8: "Nando changed my life. – Jonathan",
+        testimonial9: "Beyond happy—thank you so much for your patience! – Crystal",
+        bookingTitle: "Book a Session"
+      },
+      es: {
+        headerTagline: "¡Pon tu voz en la mejor versión de ti!",
+        home: "Inicio",
+        aboutNav: "Sobre mí",
+        aboutTitle: "Sobre mí",
+        servicesNav: "Servicios",
+        pricingNav: "Precios",
+        testimonialsNav: "Testimonios",
+        bookingNav: "Reservar",
+        contactNav: "Contacto",
+        heroHeading: "Descubre tu verdadera voz",
+        heroSubheading: "Transforma tu canto con técnicas innovadoras y asesoría experta.",
+        ctaButton: "Reserva una sesión",
+        aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima, con más de diez años de experiencia como profesor de canto y coach vocal.",
+        aboutAdditional: "Mi método combina técnicas clásicas y modernas para ayudarte a descubrir y potenciar tu voz única, garantizando una experiencia de canto saludable, sostenible y llena de alegría.",
+        servicesTitle: "Servicios",
+        servicesDescription: "Ya seas un cantante experimentado o un principiante, diseñaré un plan de entrenamiento a medida para ti.",
+        service1: "Mejora tu afinación y agilidad",
+        service2: "Fortalece tu resistencia y potencia",
+        service3: "¡Alcanza esas notas altas sin esfuerzo!",
+        service4: "Desarrolla tu estilo único",
+        pricingTitle: "Precios",
+        pricingItem1Title: "Primera sesión:",
+        pricingItem2Title: "Evaluación vocal + plan de entrenamiento:",
+        pricingItem3Title: "4 sesiones + acompañamiento:",
+        testimonialsTitle: "Testimonios",
+        testimonial0: "Nando está en otra liga. He trabajado con entrenadores vocales excelentes, pero Nando aporta algo único: verdadera maestría combinada con un compromiso genuino. No solo me ayudó a volver a cantar, sino a entender el origen de mi tensión vocal con precisión, empatía y un plan personalizado. Su experiencia en el manejo de la hiperfunción vocal y las técnicas SOVT es realmente avanzada, y creó una rutina completa que abarcó desde la movilidad física hasta la conexión emocional. – Paul",
+        testimonial1: "Nando es un excelente coach vocal. Se concentra en lo que realmente necesitas, se preocupa por tu progreso, y te brinda retroalimentación rápida y detallada entre sesiones. – Colby",
+        testimonial2: "No podría pedir un mejor coach vocal. Llegué sin saber nada de técnica vocal y, gracias a él, he notado mejoras considerables en mi voz y en mi forma de cantar. – Patrick",
+        testimonial3: "El progreso que he logrado en cuatro sesiones con Nando es increíble. Yo era bastante relajado como estudiante, pero su apoyo me motivó a concentrarme y a incorporar ejercicios de forma natural. – Vannia",
+        testimonial4: "Trabajé con Nando y mi voz mejoró notablemente. – Joseph",
+        testimonial5: "¡Trabajar con Nando fue excepcional! Superó mis expectativas con su detalle y creatividad. – Miguel",
+        testimonial6: "Nando es muy paciente y un gran comunicador. – Ben",
+        testimonial7: "Tomo clases de canto en solitario con Nando e incluso obsequié una clase de dúo a mis familiares; ¡les encantó! – Colby",
+        testimonial8: "Nando cambió mi vida. – Jonathan",
+        testimonial9: "Estoy más que feliz: ¡muchas gracias por tu paciencia! – Crystal",
+        bookingTitle: "Reserva una sesión"
+      }
+    };
+    
+    let currentLanguage = localStorage.getItem('language') || 'en';
+    const modeToggle = document.getElementById('mode-toggle'),
+          languageToggle = document.getElementById('language-toggle'),
+          logo = document.getElementById('logo');
+    
+    // When in English mode, show Spanish option with "ESP"; when in Spanish, show English option with "ENG"
+    function updateLanguageToggle() {
+      languageToggle.innerHTML = currentLanguage === 'en'
+        ? '<img src="spain-flag.png" alt="Spain Flag"> ESP'
+        : '<img src="uk-flag.png" alt="UK Flag"> ENG';
+    }
+    
+    function updateTranslations(lang) {
+      document.querySelectorAll('[data-phrase-key]').forEach(el => {
+        const key = el.getAttribute('data-phrase-key');
+        if (translations[lang][key]) el.innerHTML = translations[lang][key];
+      });
+      document.querySelectorAll('.testimonial-item blockquote').forEach(bq => {
+        bq.innerHTML = bq.innerHTML.replace(/(–)/, '<br><span class="review-stars">★★★★★</span><br><br>$1');
+      });
+    }
+    
+    updateLanguageToggle();
+    updateTranslations(currentLanguage);
+    
+    languageToggle.addEventListener('click', () => {
+      currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+      localStorage.setItem('language', currentLanguage);
+      updateLanguageToggle();
+      updateTranslations(currentLanguage);
+    });
+    
+    if (localStorage.getItem('mode') === 'dark') {
+      document.body.classList.add('dark-mode');
+      modeToggle.innerText = 'White';
+      logo.src = 'logodark.png';
+    } else {
+      modeToggle.innerText = 'Black';
+    }
+    
+    modeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        modeToggle.innerText = 'White';
+        logo.src = 'logodark.png';
+        localStorage.setItem('mode', 'dark');
+      } else {
+        modeToggle.innerText = 'Black';
+        logo.src = 'logolight.png';
+        localStorage.setItem('mode', 'light');
+      }
+    });
+    
+    const carousel = document.querySelector('.testimonial-carousel');
+    const items = document.querySelectorAll('.testimonial-item');
+    let currentPage = 0;
+    const totalPages = Math.ceil(items.length / 2);
+    
+    document.getElementById('carousel-left').addEventListener('click', () => {
+      currentPage = (currentPage - 1 + totalPages) % totalPages;
+      updateCarousel();
+    });
+    document.getElementById('carousel-right').addEventListener('click', () => {
+      currentPage = (currentPage + 1) % totalPages;
+      updateCarousel();
+    });
+    
+    function updateCarousel() {
+      carousel.style.transform = `translateX(-${currentPage * 100}%)`;
+    }
+    
+    document.getElementById('cta-button') && document.getElementById('cta-button').addEventListener('click', () => {
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    document.getElementById('sticky-cta').addEventListener('click', () => {
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Audio effect for the floating "Book a Session" button hover
+    const stickyBtn = document.getElementById('sticky-cta');
+    stickyBtn.addEventListener('mouseenter', () => {
+      const sound = document.getElementById('hover-sound');
+      sound.currentTime = 0;
+      sound.play();
+    });
+  </script>
+</body>
+</html>
