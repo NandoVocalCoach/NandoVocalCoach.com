@@ -55,7 +55,6 @@
             background: var(--bg-color);
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
-            /* Removed fixed padding-top as the fixed header and scroll-padding-top handle it */
             text-align: center;
         }
 
@@ -83,8 +82,6 @@
 
         .logo {
             position: relative; /* Changed from absolute for better flow */
-            left: auto; /* Reset left */
-            top: auto; /* Reset top */
             margin-left: 20px; /* Keep left margin */
             flex-shrink: 0; /* Prevent shrinking */
         }
@@ -96,34 +93,31 @@
             font-style: italic;
             font-size: 1.5rem; /* Responsive font size */
             font-weight: bold;
-            margin-top: 0; /* Reset margin-top */
             text-align: center;
             flex-grow: 1; /* Allow tagline to grow */
             padding: 0 10px; /* Add some padding */
         }
         .toggle-container {
             position: relative; /* Changed from absolute for better flow */
-            right: auto; /* Reset right */
-            top: auto; /* Reset top */
             margin-right: 40px; /* Keep right margin */
             display: flex;
             gap: 10px;
             flex-shrink: 0; /* Prevent shrinking */
         }
         #mode-toggle, #language-toggle {
-            padding: 8px 16px; /* Increased padding for better touch area */
+            padding: 6px 12px; /* Reduced padding for smaller buttons */
             font-family: "Bebas Neue", sans-serif;
-            font-size: 18px;
+            font-size: 16px; /* Reduced font size for buttons */
             border: 2px solid black;
             border-radius: 4px;
             cursor: pointer;
             background: var(--section-heading);
             color: var(--header-text);
-            transition: transform 0.2s ease, background-color 0.3s; /* Added background-color transition */
+            transition: transform 0.2s ease, background-color 0.3s;
         }
         #mode-toggle:hover, #language-toggle:hover {
             transform: scale(1.1);
-            background-color: var(--section-heading-darker); /* Darker shade on hover */
+            background-color: var(--section-heading-darker);
         }
         body.dark-mode #mode-toggle, body.dark-mode #language-toggle { border-color: white; }
         #language-toggle img {
@@ -138,22 +132,22 @@
             margin-top: 20px;
             width: 100%; /* Take full width for navigation */
             text-align: center;
-            padding-bottom: 5px; /* Added padding for better spacing */
+            padding-bottom: 5px;
         }
         nav a {
             font-family: "Bebas Neue", sans-serif;
             color: var(--nav-text);
-            margin: 0 15px; /* Increased horizontal margin */
+            margin: 0 15px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-size: 1.3rem; /* Responsive font size for desktop */
-            transition: color 0.3s; /* Added color transition for hover effect */
-            display: inline-block; /* Allows margin and padding */
+            font-size: 1.7rem; /* Increased by ~30% for desktop (was 1.3rem) */
+            transition: color 0.3s;
+            display: inline-block;
         }
         nav a:hover {
             text-decoration: underline;
             text-decoration-color: var(--section-heading);
-            color: var(--section-heading); /* Change color on hover */
+            color: var(--section-heading);
         }
 
         /* Hero Section with YouTube Video, Progress Bar, and Custom Controls */
@@ -165,7 +159,7 @@
             align-items: center;
             justify-content: center;
             color: var(--header-text);
-            margin-top: 150px; /* Adjusted margin-top to account for fixed header */
+            margin-top: 150px;
         }
         body:not(.dark-mode) #hero {
             border-top: 2px solid #ccc;
@@ -178,7 +172,6 @@
             z-index: 0;
             overflow: hidden;
         }
-        /* YouTube IFrame API will inject the video here */
         #hero-video { width: 100%; height: 100%; }
         .video-wrapper iframe {
             width: 100%;
@@ -187,7 +180,6 @@
             object-fit: cover;
             pointer-events: none;
         }
-        /* Transparent overlay to open the official YouTube video when clicked */
         #hero-video-overlay {
             position: absolute;
             top: 0; left: 0;
@@ -195,7 +187,6 @@
             z-index: 2;
             cursor: pointer;
         }
-        /* Video Control Area: contains horizontal progress bar and custom controls */
         #video-control-area {
             position: absolute;
             bottom: 0;
@@ -205,28 +196,27 @@
             flex-direction: column;
             gap: 4px;
             align-items: center;
-            padding-bottom: 10px; /* Added padding to lift controls from bottom edge */
+            padding-bottom: 10px;
         }
-        /* Full-width progress bar */
         #progress-container { width: 90%; }
         #progress-bar {
             width: 100%;
-            height: 8px; /* Increased height for better visibility */
+            height: 8px;
             -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 4px;
             outline: none;
         }
         #progress-bar::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px; /* Increased size of the thumb */
+            width: 16px;
             height: 16px;
-            background: var(--section-heading); /* Use branding color */
+            background: var(--section-heading);
             cursor: pointer;
             border-radius: 50%;
-            border: 2px solid #fff; /* White border */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         #progress-bar::-moz-range-thumb {
@@ -242,10 +232,9 @@
 
         #progress-bar::-webkit-slider-thumb:hover,
         #progress-bar::-moz-range-thumb:hover {
-            transform: scale(1.1); /* Slight scale on hover */
+            transform: scale(1.1);
         }
 
-        /* Style the filled progress */
         #progress-bar::-webkit-slider-runnable-track {
             background: rgba(255, 255, 255, 0.7);
             border-radius: 4px;
@@ -255,13 +244,12 @@
             background: rgba(255, 255, 255, 0.7);
             border-radius: 4px;
         }
-        /* Custom Controls: left group (play, mute, volume) and right group (open in YouTube) */
         #video-controls {
             width: 90%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 10px; /* Add space between progress bar and controls */
+            padding-top: 10px;
         }
         #left-controls, #right-controls {
             display: flex;
@@ -272,20 +260,20 @@
         #right-controls button {
             background: #fff;
             border: none;
-            padding: 8px 12px; /* Increased padding */
+            padding: 8px 12px;
             cursor: pointer;
             font-family: "Bebas Neue", sans-serif;
-            font-size: 1.1rem; /* Responsive font size */
+            font-size: 1.1rem;
             border-radius: 4px;
-            transition: background-color 0.3s; /* Added transition */
+            transition: background-color 0.3s;
         }
         #left-controls button:hover,
         #right-controls button:hover {
-            background-color: #eee; /* Slight background change on hover */
+            background-color: #eee;
         }
 
         #left-controls input[type=range] {
-            width: 120px; /* Increased width of volume slider */
+            width: 120px;
             height: 8px;
             -webkit-appearance: none;
             background: rgba(255, 255, 255, 0.7);
@@ -338,17 +326,17 @@
         #cta-button, #sticky-cta {
             padding: 1rem 2rem;
             font-family: "Bebas Neue", sans-serif;
-            font-size: 1.5rem; /* Responsive font size */
+            font-size: 1.5rem;
             background: var(--section-heading);
             border: 2px solid black;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s ease; /* Added transform transition */
+            transition: background 0.3s, transform 0.2s ease;
             color: black;
         }
         #cta-button:hover, #sticky-cta:hover {
             background: var(--section-heading-darker);
-            transform: scale(1.05); /* Slight scale on hover */
+            transform: scale(1.05);
         }
 
         #sticky-cta {
@@ -366,14 +354,14 @@
         section {
             padding: 32px;
             max-width: 1100px;
-            margin: 250px auto; /* Reduced margin for better flow */
+            margin: 250px auto;
             text-align: left;
             scroll-margin-top: 80px;
         }
         section h2 {
             font-family: "Bebas Neue", sans-serif;
             color: var(--section-heading);
-            font-size: 2.2rem; /* Responsive font size */
+            font-size: 2.2rem;
             border-bottom: 2px solid var(--section-heading);
             padding-bottom: 5px;
             margin-bottom: 1rem;
@@ -388,11 +376,18 @@
             gap: 20px;
             justify-content: center;
         }
-        #about .profile-image { flex-shrink: 0; }
+        #about .profile-image {
+            flex-shrink: 0;
+            /* Ensure image is not hidden by overflow */
+            overflow: visible; /* Explicitly set to visible */
+        }
         #about .profile-image img {
-            width: 240px;
+            width: 240px; /* Fixed width for desktop */
+            height: auto; /* Maintain aspect ratio */
             border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: block; /* Remove extra space below image */
+            margin: 0 auto; /* Center image if it's the only item in its container */
         }
         #about .about-details { flex: 1; text-align: left; }
         #about .about-details h2{
@@ -412,13 +407,13 @@
             border-radius: 5px;
         }
         #pricing p {
-            font-size: 1.2rem; /* Responsive font size */
+            font-size: 1.2rem;
             margin: 8px 0;
-            font-weight: bold; /* Make pricing stand out */
+            font-weight: bold;
             color: var(--section-heading);
         }
         #pricing ul {
-            list-style: none; /* Remove default list styling */
+            list-style: none;
             padding: 0;
             margin-top: 10px;
         }
@@ -448,16 +443,16 @@
         .testimonial-carousel {
             display: flex;
             transition: transform 0.5s ease-in-out;
-            margin-bottom: 20px; /* Add margin below carousel */
-            width: 100%; /* Ensure carousel takes full width */
+            margin-bottom: 20px;
+            width: 100%;
         }
         .testimonial-item {
             flex: 0 0 100%; /* Always show one testimonial at a time */
             padding: 0 16px;
-            opacity: 0; /* Start with 0 opacity */
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; /* Add opacity and visibility transition */
-            visibility: hidden; /* Hide initially */
-            display: flex; /* Use flex for content alignment within item */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            visibility: hidden;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -474,18 +469,18 @@
             padding-left: 16px;
             margin-bottom: 8px;
             white-space: pre-wrap;
-            font-size: 1.1rem; /* Increased font size of testimonial text */
-            line-height: 1.4; /* Improved line height for readability */
-            max-width: 800px; /* Limit width of quote */
+            font-size: 1.1rem;
+            line-height: 1.4;
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
         }
         .review-stars {
             color: var(--section-heading);
-            font-size: 1.5rem; /* Responsive font size */
+            font-size: 1.5rem;
             line-height: 1;
-            display: block; /* Ensure stars are on their own line */
-            margin-top: 10px; /* Add space above stars */
+            display: block;
+            margin-top: 10px;
         }
         .carousel-nav {
             position: absolute;
@@ -494,11 +489,11 @@
             background: var(--section-heading);
             color: #fff;
             border: none;
-            padding: 10px 14px; /* Increased padding */
+            padding: 10px 14px;
             cursor: pointer;
             z-index: 2;
             border-radius: 4px;
-            transition: background-color 0.3s, transform 0.2s ease; /* Added transform */
+            transition: background-color 0.3s, transform 0.2s ease;
         }
         .carousel-nav:hover {
             background-color: var(--section-heading-darker);
@@ -522,25 +517,25 @@
         /* Booking & Footer */
         #booking {
             text-align: center;
-            min-height: 700px; /* Ensures enough space for the Calendly widget */
+            min-height: 700px;
         }
         .calendly-inline-widget {
             margin: 0 auto;
-            width: 90%; /* Make Calendly widget responsive */
-            max-width: 800px; /* Limit maximum width */
-            height: 650px; /* Increased height for Calendly widget to be fully visible */
+            width: 90%;
+            max-width: 800px;
+            height: 650px;
         }
         footer {
             background: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
             padding: 1rem 0;
-            margin-top: 50px; /* Add margin above footer */
+            margin-top: 50px;
         }
         footer .social a {
-            margin: 0 15px; /* Increased margin */
+            margin: 0 15px;
             color: var(--footer-link);
-            font-size: 1.5rem; /* Responsive font size */
+            font-size: 1.5rem;
             transition: color 0.3s;
         }
         footer .social a:hover {
@@ -556,6 +551,7 @@
                 flex-direction: column; /* Stack header items vertically */
                 padding: 10px 0; /* Adjust padding */
                 height: auto; /* Allow height to adjust based on content */
+                align-items: center; /* Center items horizontally when stacked */
             }
             .logo {
                 margin: 0 auto 5px auto; /* Center logo and add bottom margin */
@@ -569,36 +565,58 @@
             }
             .toggle-container {
                 margin: 10px auto; /* Center toggles */
+                /* Ensure toggles don't steal attention by being too wide */
+                width: auto;
+            }
+            #mode-toggle, #language-toggle {
+                padding: 5px 10px; /* Further reduced padding for mobile buttons */
+                font-size: 14px; /* Further reduced font size for mobile buttons */
             }
             nav {
-                margin-top: 10px; /* Space between tagline/toggles and nav */
+                margin-top: 10px;
                 display: flex;
-                flex-wrap: wrap; /* Allow nav items to wrap */
-                justify-content: center; /* Center nav items */
-                padding-bottom: 0; /* Reset padding */
+                flex-wrap: wrap;
+                justify-content: center;
+                padding-bottom: 0;
             }
             nav a {
-                font-size: 1rem; /* Smaller nav links */
-                margin: 5px 8px; /* Adjusted spacing for nav links */
+                font-size: 0.9rem; /* Smaller nav links for tablets */
+                margin: 5px 8px;
             }
 
             /* Sticky CTA button */
             #sticky-cta {
                 font-size: 1.1rem; /* Smaller sticky CTA */
-                padding: 10px 20px; /* Adjusted padding */
-                right: 10px; /* Closer to edge */
-                bottom: 10px; /* Closer to edge */
+                padding: 10px 20px;
+                right: 10px;
+                bottom: 10px;
             }
 
             /* General section margins */
             section {
-                margin: 100px auto; /* Reduced margin for sections */
-                padding: 20px; /* Reduced padding */
+                margin: 100px auto;
+                padding: 20px;
+            }
+
+            /* About section adjustments for mobile */
+            #about .about-container {
+                flex-direction: column; /* Stack image and text vertically */
+                align-items: center; /* Center items when stacked */
+            }
+            #about .profile-image img {
+                width: 180px; /* Smaller image on mobile */
+                margin-bottom: 15px; /* Add space below image */
+            }
+            #about .about-details {
+                text-align: center; /* Center text content */
+            }
+            #about .about-details h2{
+                text-align: center; /* Center heading when text is centered */
             }
 
             /* Calendly widget height for mobile */
             .calendly-inline-widget {
-                height: 600px; /* Adjust height for better fit on tablets */
+                height: 600px;
             }
         }
 
@@ -608,33 +626,36 @@
                 font-size: 100%; /* Even smaller base font for phones */
             }
             .logo img {
-                max-width: 120px; /* Even smaller logo on phones */
+                max-width: 100px; /* Even smaller logo on phones */
             }
             #header-tagline {
-                font-size: 0.9rem; /* Even smaller tagline */
+                font-size: 0.8rem; /* Even smaller tagline */
             }
             nav a {
-                font-size: 0.8rem; /* Even smaller nav links */
-                margin: 3px 5px; /* Tighter spacing */
+                font-size: 0.75rem; /* Even smaller nav links */
+                margin: 3px 5px;
             }
             #sticky-cta {
-                font-size: 1rem; /* Smallest sticky CTA */
-                padding: 8px 16px; /* Smallest padding */
+                font-size: 0.9rem; /* Smallest sticky CTA */
+                padding: 8px 16px;
             }
             section {
-                margin: 80px auto; /* Further reduced margin for sections */
-                padding: 15px; /* Further reduced padding */
+                margin: 80px auto;
+                padding: 15px;
             }
             .calendly-inline-widget {
-                height: 550px; /* Further adjust height for smaller phones */
+                height: 550px;
             }
             #left-controls button,
             #right-controls button {
-                padding: 5px 8px; /* Smaller buttons in video controls */
+                padding: 5px 8px;
                 font-size: 0.9rem;
             }
             #left-controls input[type=range] {
-                width: 80px; /* Smaller volume slider */
+                width: 80px;
+            }
+            #about .profile-image img {
+                width: 150px; /* Even smaller image on very small phones */
             }
         }
     </style>
