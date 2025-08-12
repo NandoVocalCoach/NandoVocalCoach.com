@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nando Vocal Coach</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+    <!-- Font Awesome for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Global anchor offset for fixed header */
@@ -378,16 +380,15 @@
         }
         #about .profile-image {
             flex-shrink: 0;
-            /* Ensure image is not hidden by overflow */
-            overflow: visible; /* Explicitly set to visible */
+            overflow: visible;
         }
         #about .profile-image img {
             width: 240px; /* Fixed width for desktop */
             height: auto; /* Maintain aspect ratio */
             border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: block; /* Remove extra space below image */
-            margin: 0 auto; /* Center image if it's the only item in its container */
+            display: block;
+            margin: 0 auto;
         }
         #about .about-details { flex: 1; text-align: left; }
         #about .about-details h2{
@@ -660,6 +661,7 @@
     </style>
 </head>
 <body>
+    <!-- Audio element for hover sound on the floating button -->
     <audio id="hover-sound" src="hover-sound.mp3" preload="auto"></audio>
 
     <header>
@@ -684,11 +686,14 @@
         </nav>
     </header>
 
+    <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
     <section id="hero">
         <div class="video-wrapper">
             <div id="hero-video"></div>
         </div>
+        <!-- Transparent overlay to open the official YouTube video -->
         <div id="hero-video-overlay" onclick="window.open('https://www.youtube.com/watch?v=_OCuHsXcyEI')" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:2; cursor:pointer;"></div>
+        <!-- Video Control Area with progress bar and controls -->
         <div id="video-control-area">
             <div id="progress-container">
                 <input id="progress-bar" type="range" min="0" value="0">
@@ -730,35 +735,30 @@
     </section>
 
     <section id="services">
-        <h2 data-phrase-key="servicesTitle">Services</h2>
+        <h2 data-phrase-key="servicesTitle">Service</h2>
         <p data-phrase-key="servicesDescription">
-            I offer personalized vocal coaching to help you achieve your singing goals, whether you're an experienced singer or a complete beginner.
+            Whether you're an experienced singer or starting from scratch (even if you've been called tone-deaf!), I craft personalized plans to get your voice in shape fast.
         </p>
+        <p>You will:</p>
         <ul>
-            <li data-phrase-key="service1">Improve your pitch and agility</li>
-            <li data-phrase-key="service2">Build stamina and vocal power</li>
-            <li data-phrase-key="service3">Effortlessly hit high notes</li>
-            <li data-phrase-key="service4">Develop your unique vocal style</li>
-             <li>Personalized training plans</li>
-            <li>Vocal health and technique</li>
-            <li>Performance preparation</li>
+            <li data-phrase-key="service1">Improve your pitch</li>
+            <li data-phrase-key="service2">Hit those high notes!</li>
+            <li data-phrase-key="service3">Develop your style!</li>
         </ul>
+        <!-- Removed "Choose your path" and subsequent list items as requested -->
     </section>
 
     <section id="pricing">
         <h2 data-phrase-key="pricingTitle">Pricing</h2>
-        <p data-phrase-key="pricingItem1Title">First Session: $50 (40 minutes)</p>
-        <p data-phrase-key="pricingItem2Title">Voice Assessment + Training Plan: $90</p>
-        <p data-phrase-key="pricingItem3Title">4 Sessions + Coaching Support: $320</p>
-         <p>
-            <strong>Packages:</strong><br>
-            I offer three packages, each designed to meet you where you are on your vocal journey:
+        <p>
+            <strong>Get Started!:</strong> $50 (40 minutes) - An introduction to singing to explore your voice and know how to transform it! Get your singing training started!
         </p>
-        <ul>
-            <li><strong>Basic:</strong> 30-minute introductory session - explore your voice and get immediate tips.</li>
-            <li><strong>Standard:</strong> 4 singing training sessions + custom audio exercises with on-demand consultation.</li>
-            <li><strong>Premium Transformation:</strong> 8 intensive singing training sessions with custom exercises and full-time coaching support.</li>
-        </ul>
+        <p>
+            <strong>Fun Voicebuilding:</strong> $320 - 4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!
+        </p>
+        <p>
+            <strong>1-MONTH SINGING TRANSFORMATION!:</strong> $560 - 8 Singing Training Sessions + Custom Exercises + Full-time Coaching. Get amazing results with The Best Singing Transformation Program ever! *Only for those ready to put some extra reps for those extra gains!
+        </p>
     </section>
 
     <section id="testimonials">
@@ -828,7 +828,8 @@
         <p>
             Ready to take the next step in your vocal journey?  Book a session with me today!  Check my availability and choose a time that works best for you.
         </p>
-        <div class="calendly-inline-widget" data-url="https://calendly.com/nandovocalcoach/singing-training-session"></div>
+        <!-- TidyCal integration code -->
+        <div class="calendly-inline-widget" data-url="https://tidycal.com/nando-vocal-coach/1st-session"></div>
     </section>
 
     <footer id="contact">
@@ -843,6 +844,7 @@
         </div>
     </footer>
 
+    <!-- Load YouTube IFrame API & Calendly widget -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
     <script>
@@ -950,7 +952,7 @@
                 home: "Home",
                 aboutNav: "About Me",
                 aboutTitle: "About Me",
-                servicesNav: "Services",
+                servicesNav: "Service", /* Changed to singular */
                 pricingNav: "Pricing",
                 testimonialsNav: "Reviews",
                 bookingNav: "Book Now",
@@ -960,16 +962,15 @@
                 ctaButton: "Book a Session",
                 aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach.  I've dedicated my career to helping singers of all levels unlock their full potential.",
                 aboutAdditional: "My approach combines classical and modern techniques, tailored to your unique needs.  I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience.  My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.",
-                servicesTitle: "Services",
-                servicesDescription: "I offer personalized vocal coaching to help you achieve your singing goals, whether you're an experienced singer or a complete beginner.",
-                service1: "Improve your pitch and agility",
-                service2: "Build stamina and vocal power",
-                service3: "Effortlessly hit high notes",
-                service4: "Develop your unique vocal style",
+                servicesTitle: "Service", /* Changed to singular */
+                servicesDescription: "Whether you're an experienced singer or starting from scratch (even if you've been called tone-deaf!), I craft personalized plans to get your voice in shape fast.",
+                service1: "Improve your pitch",
+                service2: "Hit those high notes!",
+                service3: "Develop your style!",
                 pricingTitle: "Pricing",
-                pricingItem1Title: "First Session:",
-                pricingItem2Title: "Voice Assessment + Training Plan:",
-                pricingItem3Title: "4 Sessions + Coaching Support:",
+                pricingItem1Title: "Get Started!:",
+                pricingItem2Title: "Fun Voicebuilding:",
+                pricingItem3Title: "1-MONTH SINGING TRANSFORMATION!:",
                 testimonialsTitle: "Reviews",
                 testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
                 testimonial1: "Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby",
@@ -988,7 +989,7 @@
                 home: "Inicio",
                 aboutNav: "Sobre mí",
                 aboutTitle: "Sobre mí",
-                servicesNav: "Servicios",
+                servicesNav: "Servicio", /* Changed to singular */
                 pricingNav: "Precios",
                 testimonialsNav: "Testimonios",
                 bookingNav: "Reservar",
@@ -998,16 +999,15 @@
                 ctaButton: "Reserva una sesión",
                 aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima, con más de diez años de experiencia como profesor de canto y coach vocal. He dedicado mi carrera a ayudar a cantantes de todos los niveles a alcanzar su máximo potencial.",
                 aboutAdditional: "Mi método combina técnicas clásicas y modernas, adaptadas a tus necesidades únicas. Me especializo en superar desafíos vocales como quiebres, tensión y rango limitado, y me apasiona ayudarte a desarrollar una experiencia de canto saludable, sostenible y llena de alegría. Mi método único de entrenamiento vocal es el resultado de años de experiencia y de superar mis propios desafíos vocales.",
-                servicesTitle: "Servicios",
-                servicesDescription: "Ofrezco entrenamiento vocal personalizado para ayudarte a alcanzar tus metas de canto, ya seas un cantante experimentado o un principiante.",
-                service1: "Mejora tu afinación y agilidad",
-                service2: "Fortalece tu resistencia y potencia vocal",
-                service3: "Alcanza esas notas altas sin esfuerzo",
-                service4: "Desarrolla tu estilo vocal único",
+                servicesTitle: "Servicio", /* Changed to singular */
+                servicesDescription: "Ya seas un cantante experimentado o empezando de cero (¡incluso si te han dicho que no tienes oído!), diseño planes personalizados para que tu voz mejore rápidamente.",
+                service1: "Mejora tu afinación",
+                service2: "¡Alcanza esas notas altas!",
+                service3: "¡Desarrolla tu estilo!",
                 pricingTitle: "Precios",
-                pricingItem1Title: "Primera sesión:",
-                pricingItem2Title: "Evaluación vocal + plan de entrenamiento:",
-                pricingItem3Title: "4 sesiones + acompañamiento:",
+                pricingItem1Title: "¡Empieza!:",
+                pricingItem2Title: "Voz Divertida:",
+                pricingItem3Title: "¡TRANSFORMACIÓN VOCAL DE 1 MES!:",
                 testimonialsTitle: "Testimonios",
                 testimonial0: "Nando está en otra liga. He trabajado con entrenadores vocales excelentes, pero Nando aporta algo único: verdadera maestría combinada con un compromiso genuino. No solo me ayudó a volver a cantar, sino a entender el origen de mi tensión vocal con precisión, empatía y un plan personalizado. Su experiencia en el manejo de la hiperfunción vocal y las técnicas SOVT es realmente avanzada, y creó una rutina completa que abarcó desde la movilidad física hasta la conexión emocional. – Paul",
                 testimonial1: "Nando es un excelente coach vocal. Se concentra en lo que realmente necesitas, se preocupa por tu progreso, y te brinda retroalimentación rápida y detallada entre sesiones. – Colby",
@@ -1080,24 +1080,21 @@
         const carousel = document.querySelector('.testimonial-carousel');
         const items = document.querySelectorAll('.testimonial-item');
         let currentPage = 0;
-        const totalItems = items.length; // Total number of testimonial items
+        const totalItems = items.length;
 
-        // Add active class to the first item on initial load
         if (items.length > 0) {
             items[0].classList.add('active');
         }
 
         function showPage(page) {
-            // Ensure page wraps around
             currentPage = (page + totalItems) % totalItems;
 
             items.forEach((item, index) => {
                 item.classList.remove('active');
-                if (index === currentPage) { // Only show the current item
+                if (index === currentPage) {
                     item.classList.add('active');
                 }
             });
-            // Update transform to show only the active item
             carousel.style.transform = `translateX(-${currentPage * 100}%)`;
         }
 
@@ -1108,7 +1105,6 @@
             showPage(currentPage + 1);
         });
 
-        // Initial display
         showPage(currentPage);
 
         document.getElementById('cta-button') && document.getElementById('cta-button').addEventListener('click', () => {
@@ -1119,7 +1115,6 @@
             document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Audio effect for the floating "Book a Session" button hover
         const stickyBtn = document.getElementById('sticky-cta');
         stickyBtn.addEventListener('mouseenter', () => {
             const sound = document.getElementById('hover-sound');
@@ -1128,28 +1123,22 @@
         });
     </script>
      <script>
-        // Function to handle the intersection observer
         function handleIntersection(entries, observer) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Add a class to trigger the animation
                     entry.target.classList.add('in-view');
-                    // Unobserve the element after it's been in view
                     observer.unobserve(entry.target);
                 }
             });
         }
 
-        // Create an intersection observer
         const observer = new IntersectionObserver(handleIntersection, {
-            rootMargin: '0px', // No margin
-            threshold: 0.1 // 10% of the element needs to be visible
+            rootMargin: '0px',
+            threshold: 0.1
         });
 
-        // Get all the elements you want to animate
         const sections = document.querySelectorAll('section');
 
-        // Loop through each section and observe it
         sections.forEach(section => {
             observer.observe(section);
         });
