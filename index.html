@@ -395,32 +395,122 @@
             text-align: left;
         }
 
-        /* Services & Pricing */
+        /* Services section adjustments */
         #services {
             background: var(--services-bg);
             padding: 32px;
             border-radius: 5px;
         }
+        #services ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        #services li {
+            font-size: 1.2rem;
+        }
+        
+        /* New Pricing Card styles */
         #pricing {
             background: var(--pricing-bg);
             padding: 32px;
             text-align: center;
             border-radius: 5px;
+            margin-bottom: 150px;
         }
-        #pricing p {
-            font-size: 1.2rem;
-            margin: 8px 0;
-            font-weight: bold;
+        #pricing .pricing-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        .pricing-card {
+            background: var(--bg-color);
+            border: 2px solid var(--section-heading);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .pricing-card h3 {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 2rem;
             color: var(--section-heading);
+            margin-bottom: 1rem;
         }
-        #pricing ul {
+        .pricing-card .price {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .pricing-card .price .original-price {
+            font-size: 1.5rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-right: 10px;
+        }
+        .pricing-card .price span {
+            font-size: 1.2rem;
+            font-family: "Montserrat", sans-serif;
+            font-weight: 500;
+        }
+        .pricing-card p {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        .pricing-card ul {
             list-style: none;
             padding: 0;
-            margin-top: 10px;
+            text-align: left;
+            margin-bottom: 1.5rem;
         }
-        #pricing ul li {
-            margin-bottom: 5px;
-            font-size: 1.1rem;
+        .pricing-card ul li {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+            font-weight: 500;
+        }
+        .pricing-card ul li::before {
+            content: "✓";
+            color: var(--section-heading);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .pricing-card .book-btn {
+            background: var(--section-heading);
+            color: white;
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .pricing-card .book-btn:hover {
+            background: var(--section-heading-darker);
+            transform: scale(1.05);
         }
 
 
@@ -618,6 +708,11 @@
             .calendly-inline-widget {
                 height: 600px;
             }
+            /* Pricing card on mobile */
+            .pricing-card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
 
         /* Responsive adjustments for screens up to 480px (smaller phones) */
@@ -678,7 +773,7 @@
         <nav>
             <a href="#hero" data-phrase-key="home">Home</a>
             <a href="#about" data-phrase-key="aboutNav">About Me</a>
-            <a href="#services" data-phrase-key="servicesNav">Services</a>
+            <a href="#services" data-phrase-key="servicesNav">Service</a>
             <a href="#pricing" data-phrase-key="pricingNav">Pricing</a>
             <a href="#testimonials-anchor" data-phrase-key="testimonialsNav">Reviews</a>
             <a href="#booking" data-phrase-key="bookingNav">Book Now</a>
@@ -721,13 +816,13 @@
                 <h2 class="about-title" data-phrase-key="aboutTitle">About Me</h2>
                 <div class="about-text">
                     <p id="about-intro" data-phrase-key="aboutIntro">
-                        Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach.  I've dedicated my career to helping singers of all levels unlock their full potential.
+                        Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach. I've dedicated my career to helping singers of all levels unlock their full potential.
                     </p>
                     <p id="about-additional" data-phrase-key="aboutAdditional">
-                        My approach combines classical and modern techniques, tailored to your unique needs.  I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience.  My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.
+                        My approach combines classical and modern techniques, tailored to your unique needs. I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience. My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.
                     </p>
                      <p>
-                        I understand that every voice is different.  Whether you're an experienced performer or just starting your vocal journey, I'm here to guide you.  I offer personalized training to improve your pitch, build stamina, expand your range, and develop your unique style.  Let's work together to achieve your vocal goals!
+                        I understand that every voice is different. Whether you're an experienced performer or just starting your vocal journey, I'm here to guide you. I offer personalized training to improve your pitch, build stamina, expand your range, and develop your unique style. Let's work together to achieve your vocal goals!
                     </p>
                 </div>
             </div>
@@ -745,20 +840,60 @@
             <li data-phrase-key="service2">Hit those high notes!</li>
             <li data-phrase-key="service3">Develop your style!</li>
         </ul>
-        <!-- Removed "Choose your path" and subsequent list items as requested -->
     </section>
 
     <section id="pricing">
         <h2 data-phrase-key="pricingTitle">Pricing</h2>
-        <p>
-            <strong>Get Started!:</strong> $50 (40 minutes) - An introduction to singing to explore your voice and know how to transform it! Get your singing training started!
-        </p>
-        <p>
-            <strong>Fun Voicebuilding:</strong> $320 - 4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!
-        </p>
-        <p>
-            <strong>1-MONTH SINGING TRANSFORMATION!:</strong> $560 - 8 Singing Training Sessions + Custom Exercises + Full-time Coaching. Get amazing results with The Best Singing Transformation Program ever! *Only for those ready to put some extra reps for those extra gains!
-        </p>
+        <div class="pricing-container">
+            <!-- Get Started! -->
+            <div class="pricing-card">
+                <h3>Your 1st vocal workout!</h3>
+                <div class="price"><span class="original-price">$100</span>$40<span>/session</span></div>
+                <p>
+                    A 40-min Intro Session to understand the basics, get to know your voice, and how to get it in shape!
+                </p>
+                <ul>
+                    <li>40-min Intro session</li>
+                    <li>Explore your voice</li>
+                    <li>Learn immediate tips for transformation</li>
+                </ul>
+                <p>
+                    Get started!
+                </p>
+                <a href="https://tidycal.com/nando-vocal-coach/1st-session" class="book-btn">Book a Session</a>
+            </div>
+
+            <!-- Fun Voicebuilding -->
+            <div class="pricing-card">
+                <h3>Fun Voicebuilding</h3>
+                <div class="price">$320</div>
+                <p>
+                    4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!
+                </p>
+                <ul>
+                    <li>4 personalized sessions</li>
+                    <li>Custom audio exercises</li>
+                    <li>On-demand consultation</li>
+                </ul>
+                <a href="https://tidycal.com/nando-vocal-coach/1st-session" class="book-btn">Book a Session</a>
+            </div>
+
+            <!-- 1-MONTH SINGING TRANSFORMATION! -->
+            <div class="pricing-card">
+                <h3>1-MONTH SINGING TRANSFORMATION!</h3>
+                <div class="price">$560</div>
+                <p>
+                    8 Singing Training Sessions + Custom Exercises + Full-time Coaching. Get amazing results with The Best Singing Transformation Program ever! *Only for those ready to put some extra reps for those extra gains!
+                </p>
+                <ul>
+                    <li>8 intensive sessions</li>
+                    <li>Custom exercises</li>
+                    <li>Full-time coaching support</li>
+                    <li>Amazing, life-changing results</li>
+                </ul>
+                <a href="https://tidycal.com/nando-vocal-coach/1st-session" class="book-btn">Book a Session</a>
+            </div>
+        </div>
     </section>
 
     <section id="testimonials">
@@ -828,7 +963,6 @@
         <p>
             Ready to take the next step in your vocal journey?  Book a session with me today!  Check my availability and choose a time that works best for you.
         </p>
-        <!-- TidyCal integration code -->
         <div class="calendly-inline-widget" data-url="https://tidycal.com/nando-vocal-coach/1st-session"></div>
     </section>
 
@@ -844,9 +978,10 @@
         </div>
     </footer>
 
-    <!-- Load YouTube IFrame API & Calendly widget -->
+    <!-- Load YouTube IFrame API & TidyCal widget -->
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+    <!-- Updated script for TidyCal. Note: the class name `calendly-inline-widget` is still used in the HTML for simplicity, but the JS is now TidyCal's. -->
+    <script type="text/javascript" src="https://assets.tidycal.com/js/embed.js" async></script>
     <script>
         // YouTube IFrame API integration for hero video with progress tracking
         let player;
@@ -952,7 +1087,7 @@
                 home: "Home",
                 aboutNav: "About Me",
                 aboutTitle: "About Me",
-                servicesNav: "Service", /* Changed to singular */
+                servicesNav: "Service",
                 pricingNav: "Pricing",
                 testimonialsNav: "Reviews",
                 bookingNav: "Book Now",
@@ -962,7 +1097,7 @@
                 ctaButton: "Book a Session",
                 aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach.  I've dedicated my career to helping singers of all levels unlock their full potential.",
                 aboutAdditional: "My approach combines classical and modern techniques, tailored to your unique needs.  I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience.  My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.",
-                servicesTitle: "Service", /* Changed to singular */
+                servicesTitle: "Service",
                 servicesDescription: "Whether you're an experienced singer or starting from scratch (even if you've been called tone-deaf!), I craft personalized plans to get your voice in shape fast.",
                 service1: "Improve your pitch",
                 service2: "Hit those high notes!",
@@ -989,7 +1124,7 @@
                 home: "Inicio",
                 aboutNav: "Sobre mí",
                 aboutTitle: "Sobre mí",
-                servicesNav: "Servicio", /* Changed to singular */
+                servicesNav: "Servicio",
                 pricingNav: "Precios",
                 testimonialsNav: "Testimonios",
                 bookingNav: "Reservar",
@@ -999,7 +1134,7 @@
                 ctaButton: "Reserva una sesión",
                 aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima, con más de diez años de experiencia como profesor de canto y coach vocal. He dedicado mi carrera a ayudar a cantantes de todos los niveles a alcanzar su máximo potencial.",
                 aboutAdditional: "Mi método combina técnicas clásicas y modernas, adaptadas a tus necesidades únicas. Me especializo en superar desafíos vocales como quiebres, tensión y rango limitado, y me apasiona ayudarte a desarrollar una experiencia de canto saludable, sostenible y llena de alegría. Mi método único de entrenamiento vocal es el resultado de años de experiencia y de superar mis propios desafíos vocales.",
-                servicesTitle: "Servicio", /* Changed to singular */
+                servicesTitle: "Servicio",
                 servicesDescription: "Ya seas un cantante experimentado o empezando de cero (¡incluso si te han dicho que no tienes oído!), diseño planes personalizados para que tu voz mejore rápidamente.",
                 service1: "Mejora tu afinación",
                 service2: "¡Alcanza esas notas altas!",
