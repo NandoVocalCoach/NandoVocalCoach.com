@@ -58,8 +58,8 @@
         #carousel-left { left: 10px; } #carousel-right { right: 10px; }
         footer { background: var(--foot); padding: 1rem 0; margin-top: 50px; }
         footer .social a { margin: 0 15px; font-size: 1.5rem; }
-        /* TidyCal standard embed div */
-        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; border: none; }
+        /* TidyCal fix: Added min-height to stop infinite growing */
+        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; min-height: 700px; border: none; }
         @media (max-width: 768px) {
             body { font-size: 110%; }
             header { flex-direction: column; }
@@ -68,6 +68,7 @@
             section { margin: 100px auto; }
             .about-container { flex-direction: column; align-items: center; }
             .pricing-card { width: 100%; }
+            .tidycal-embed { min-height: 850px; }
         }
     </style>
 </head>
@@ -157,9 +158,9 @@
     <section id="testimonials">
         <h2 data-phrase-key="testimonialsTitle">Reviews</h2>
         <div class="testimonial-carousel">
-            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul</blockquote></div>
+            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. – Paul</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial1">Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I have noticed considerable improvements in my voice and singing techniques. – Patrick</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I have noticed improvements in my voice and singing techniques. – Patrick</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial3">The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial4">I've worked with Nando and my voice improved notably. – Joseph</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial5">Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity. – Miguel</blockquote></div>
@@ -175,7 +176,7 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <!-- Standard TidyCal embed with data-path fix -->
+        <!-- Corrected attribute to data-path as required by TidyCal script -->
         <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
@@ -188,7 +189,8 @@
         </div>
     </footer>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://tidycal.com/js/embed.js" async></script>
+    <!-- Correct script source from assets server -->
+    <script src="https://assets.tidycal.com/js/embed.js" async></script>
     <script>
         let player;
         function onYouTubeIframeAPIReady() {
