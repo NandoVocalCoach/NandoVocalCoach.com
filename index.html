@@ -9,10 +9,9 @@
     <style>
         :root { 
             --bg: #fff; --text: #333; --head: rgba(224,224,224,0.5); 
-            --nav: #FF5500; 
-            --brand: #FF5500; 
-            --brand-dark: #e64500; 
-            --serv: #f9f9f9; --price: #f5f5f5; --foot: #FF5500; --border: #FF5500; 
+            --nav: #FF5500; /* Header letters Orange */
+            --brand: #FF5500; /* Brand Orange */
+            --brand-dark: #e64500; --serv: #f9f9f9; --price: #f5f5f5; --foot: #FF5500; --border: #FF5500; 
         }
         .dark-mode { --bg: #000; --text: #fff; --head: rgba(26,26,26,0.5); --nav: #FF5500; --serv: #222; --price: #222; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,12 +24,12 @@
         #header-tagline { font-style: italic; font-size: 1.5rem; font-weight: bold; flex-grow: 1; padding: 0 10px; }
         .toggle-container { margin-right: 40px; display: flex; gap: 10px; }
         
-        /* Buttons: Orange bg, White text for visibility */
+        /* Fixed button colors: Orange background, White text */
         #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); color: white; }
         #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
         
         nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
+        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; transition: color 0.2s; }
         nav a:hover { color: var(--brand-dark); text-decoration: underline; }
         
         #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
@@ -43,7 +42,7 @@
         #left-controls button, #right-controls button { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
         #volume-slider { width: 120px; height: 8px; }
         
-        /* Sticky CTA: Orange bg, White text */
+        /* Sticky CTA: Orange background, White text */
         #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); color: white; border: 2px solid black; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
         #sticky-cta:hover { transform: scale(1.05); }
 
@@ -54,7 +53,7 @@
         #services { background: var(--serv); border-radius: 5px; }
         #services ul { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
         
-        /* Pricing Section restored */
+        /* Pricing Cards layout */
         #pricing { background: var(--price); border-radius: 5px; text-align: center; }
         .pricing-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 2rem; }
         .pricing-card { background: var(--bg); border: 2px solid var(--brand); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
@@ -181,7 +180,7 @@
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial4">I've worked with Nando and my voice improved notably. – Joseph</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial5">Working with Nando has been exceptional! He exceeded my expectations. – Miguel</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial6">Nando is very patient and a great communicator. – Ben</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial7">I take solo singing classes with Nando and even gifted a duet class to relatives—they loved it! – Colby</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial7">I take solo singing classes and even gifted a duet class to relatives—they loved it! – Colby</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial8">Nando changed my life. – Jonathan</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial9">Beyond happy—thank you so much for your patience! – Crystal</blockquote></div>
         </div>
@@ -192,7 +191,6 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <!-- Corrected to data-path based on functional history -->
         <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
@@ -205,7 +203,6 @@
         </div>
     </footer>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <!-- Use assets.tidycal.com script as confirmed functional -->
     <script src="https://assets.tidycal.com/js/embed.js" async></script>
     <script>
         let player;
@@ -223,8 +220,8 @@
             document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
         });
         const translations = {
-            en: { headerTagline: "Get your voice in its best shape ever!", home: "Home", aboutNav: "About Me", aboutTitle: "About Me", servicesNav: "Service", pricingNav: "Pricing", testimonialsNav: "Reviews", bookingNav: "Book Now", contactNav: "Contact", ctaButton: "Book a Session", aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach. I've dedicated my career to helping singers of all levels unlock their full potential.", servicesTitle: "Service", pricingTitle: "Pricing", testimonialsTitle: "Reviews", bookingTitle: "Book a Session" },
-            es: { headerTagline: "¡Pon tu voz en la mejor versión!", home: "Inicio", aboutNav: "Sobre mí", aboutTitle: "Sobre mí", servicesNav: "Servicio", pricingNav: "Precios", testimonialsNav: "Testimonios", bookingNav: "Reservar", contactNav: "Contacto", ctaButton: "Reserva ya", aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima, con más de diez años de experiencia como profesor de canto y coach vocal. He dedicado mi carrera a ayudar a cantantes de todos los niveles a alcanzar su máximo potencial.", servicesTitle: "Servicio", pricingTitle: "Precios", testimonialsTitle: "Testimonios", bookingTitle: "Reserva una sesión" }
+            en: { headerTagline: "Get your voice in its best shape ever!", home: "Home", aboutNav: "About Me", aboutTitle: "About Me", servicesNav: "Service", pricingNav: "Pricing", testimonialsNav: "Reviews", bookingNav: "Book Now", contactNav: "Contact", ctaButton: "Book a Session", aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory...", servicesTitle: "Service", pricingTitle: "Pricing", testimonialsTitle: "Reviews", bookingTitle: "Book a Session" },
+            es: { headerTagline: "¡Pon tu voz en la mejor versión!", home: "Inicio", aboutNav: "Sobre mí", aboutTitle: "Sobre mí", servicesNav: "Servicio", pricingNav: "Precios", testimonialsNav: "Testimonios", bookingNav: "Reservar", contactNav: "Contacto", ctaButton: "Reserva ya", aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima...", servicesTitle: "Servicio", pricingTitle: "Precios", testimonialsTitle: "Testimonios", bookingTitle: "Reserva una sesión" }
         };
         let lang = 'en';
         const languageToggle = document.getElementById('language-toggle');
