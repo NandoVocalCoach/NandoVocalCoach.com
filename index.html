@@ -25,7 +25,7 @@
         #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); color: white; }
         #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
         nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
+        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; transition: color 0.2s; }
         nav a:hover { color: var(--brand-dark); text-decoration: underline; }
         #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
@@ -62,7 +62,9 @@
         #carousel-left { left: 10px; } #carousel-right { right: 10px; }
         footer { background: var(--foot); padding: 1rem 0; margin-top: 50px; }
         footer .social a { margin: 0 15px; font-size: 1.5rem; }
-        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; min-height: 750px; border: none; }
+        /* Calendar Container Fix */
+        #booking { text-align: center; }
+        .tidycal-iframe { width: 100%; max-width: 800px; height: 800px; border: none; margin: 0 auto; display: block; }
         @media (max-width: 768px) {
             body { font-size: 110%; }
             header { flex-direction: column; }
@@ -71,7 +73,7 @@
             section { margin: 100px auto; }
             .about-container { flex-direction: column; align-items: center; }
             .pricing-card { width: 100%; }
-            .tidycal-embed { min-height: 850px; }
+            .tidycal-iframe { height: 950px; }
         }
     </style>
 </head>
@@ -146,7 +148,7 @@
                 <h3>Get your voice in shape, have fun!</h3>
                 <div class="price">$360</div>
                 <p>4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!</p>
-                <ul><li>4 personalized sessions</li><li>Custom audio exercises</li><li>On-demand consultation</li></ul>
+                <ul><li>4 personalized sessions</li><li>Custom audio exercises</li><li>Consultation</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
             <div class="pricing-card">
@@ -179,7 +181,8 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
+        <!-- Re-adding integration using the bulletproof iframe method -->
+        <iframe src="https://tidycal.com/nando-vocal-coach/1st-session" class="tidycal-iframe"></iframe>
     </section>
     <footer id="contact">
         <p>Connect with me:</p>
@@ -191,7 +194,6 @@
         </div>
     </footer>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://assets.tidycal.com/js/embed.js" async></script>
     <script>
         let player;
         function onYouTubeIframeAPIReady() {
@@ -201,9 +203,9 @@
         }
         window.addEventListener('load', () => {
             const btn = document.getElementById('play-toggle'), mute = document.getElementById('mute-toggle'), vol = document.getElementById('volume-slider');
-            btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
-            mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
-            vol.oninput = () => player.setVolume(vol.value);
+            if (btn) btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
+            if (mute) mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
+            if (vol) vol.oninput = () => player.setVolume(vol.value);
             document.getElementById('open-youtube').onclick = () => window.open("https://www.youtube.com/watch?v="+player.getVideoData().video_id);
             document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
         });
@@ -213,13 +215,13 @@
         };
         let lang = 'en';
         const languageToggle = document.getElementById('language-toggle');
-        languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
+        if (languageToggle) languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
         function update() {
             document.querySelectorAll('[data-phrase-key]').forEach(el => {
                 const key = el.dataset.phraseKey;
                 if(translations[lang][key]) el.innerText = translations[lang][key];
             });
-            languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
+            if (languageToggle) languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
         }
         update();
         document.getElementById('mode-toggle').onclick = () => { document.body.classList.toggle('dark-mode'); document.getElementById('logo').src = document.body.classList.contains('dark-mode') ? 'logodark.png' : 'logolight.png'; };
@@ -228,7 +230,7 @@
         document.getElementById('carousel-right').onclick = () => show(cur+1);
         document.getElementById('carousel-left').onclick = () => show(cur-1);
         const stickyBtn = document.getElementById('sticky-cta');
-        stickyBtn.addEventListener('mouseenter', () => { document.getElementById('hover-sound').currentTime = 0; document.getElementById('hover-sound').play(); });
+        if (stickyBtn) stickyBtn.addEventListener('mouseenter', () => { document.getElementById('hover-sound').currentTime = 0; document.getElementById('hover-sound').play(); });
     </script>
 </body>
 </html>
