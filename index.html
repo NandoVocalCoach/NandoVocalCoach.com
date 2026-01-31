@@ -7,40 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        :root { 
-            --bg-color: #fff; 
-            --text-color: #333; 
-            --header-bg: rgba(224,224,224,0.5); 
-            --nav-text: #000; 
-            --section-heading: #FF5500; 
-            --section-heading-darker: #e64500; 
-            --services-bg: #f9f9f9; 
-            --pricing-bg: #f5f5f5; 
-            --footer-bg: #FF5500; 
-            --header-border-color: #FF5500; 
-        }
-        .dark-mode { 
-            --bg-color: #000; 
-            --text-color: #fff; 
-            --header-bg: rgba(26,26,26,0.5); 
-            --nav-text: #fff; 
-            --services-bg: #222; 
-            --pricing-bg: #222; 
-        }
+        :root { --bg: #fff; --text: #333; --head: rgba(224,224,224,0.5); --nav: #000; --brand: #FF5500; --brand-dark: #e64500; --serv: #f9f9f9; --price: #f5f5f5; --foot: #FF5500; --border: #FF5500; }
+        .dark-mode { --bg: #000; --text: #fff; --head: rgba(26,26,26,0.5); --nav: #fff; --serv: #222; --price: #222; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-padding-top: 80px; scroll-behavior: smooth; }
-        body { font-family: "Montserrat", sans-serif; font-size: 130%; line-height: 1.6; background: var(--bg-color); color: var(--text-color); transition: background 0.3s; text-align: center; }
+        body { font-family: "Montserrat", sans-serif; font-size: 130%; line-height: 1.6; background: var(--bg); color: var(--text); transition: background 0.3s; text-align: center; }
         a { text-decoration: none; color: inherit; }
-        header { background: var(--header-bg); padding: 0.5rem 0; position: fixed; top: 0; width: 100%; border-bottom: 2px solid var(--header-border-color); z-index: 1000; backdrop-filter: blur(10px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        header { background: var(--head); padding: 0.5rem 0; position: fixed; top: 0; width: 100%; border-bottom: 2px solid var(--border); z-index: 1000; backdrop-filter: blur(10px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
         .logo { margin-left: 20px; flex-shrink: 0; }
         .logo img { max-width: 280px; }
         #header-tagline { font-style: italic; font-size: 1.5rem; font-weight: bold; flex-grow: 1; padding: 0 10px; }
         .toggle-container { margin-right: 40px; display: flex; gap: 10px; }
-        #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--section-heading); }
+        #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); }
         #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
         nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav-text); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
-        nav a:hover { color: var(--section-heading); text-decoration: underline; text-decoration-color: var(--section-heading); }
+        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
+        nav a:hover { color: var(--brand); text-decoration: underline; text-decoration-color: var(--brand); }
         #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         #hero-video { width: 100%; height: 100%; }
@@ -48,39 +30,35 @@
         #video-control-area { position: absolute; bottom: 0; width: 100%; z-index: 3; padding-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         #progress-bar { width: 90%; height: 8px; -webkit-appearance: none; background: rgba(255,255,255,0.7); border-radius: 4px; }
         #video-controls { width: 90%; display: flex; justify-content: space-between; padding-top: 10px; }
-        #left-controls { display: flex; gap: 8px; align-items: center; }
-        #left-controls button, #open-youtube { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
+        #left-controls, #right-controls { display: flex; gap: 8px; align-items: center; }
+        #left-controls button, #right-controls button { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
         #volume-slider { width: 120px; height: 8px; }
         #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); border: 2px solid black; border-radius: 4px; cursor: pointer; }
         section { padding: 32px; max-width: 1100px; margin: 250px auto; text-align: left; }
-        section h2 { font-family: "Bebas Neue"; color: var(--section-heading); font-size: 2.2rem; border-bottom: 2px solid var(--section-heading); margin-bottom: 1rem; text-align: center; }
+        section h2 { font-family: "Bebas Neue"; color: var(--brand); font-size: 2.2rem; border-bottom: 2px solid var(--brand); margin-bottom: 1rem; text-align: center; }
         .about-container { display: flex; gap: 20px; align-items: flex-start; }
         .profile-image img { width: 240px; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        #services { background: var(--services-bg); border-radius: 5px; }
+        #services { background: var(--serv); border-radius: 5px; }
         #services ul { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
-        #pricing { background: var(--pricing-bg); border-radius: 5px; text-align: center; }
+        #pricing { background: var(--price); border-radius: 5px; text-align: center; }
         .pricing-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 2rem; }
-        .pricing-card { background: var(--bg-color); border: 2px solid var(--section-heading); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; }
+        .pricing-card { background: var(--bg); border: 2px solid var(--brand); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; }
         .price { font-family: "Bebas Neue"; font-size: 2.5rem; }
         .original-price { font-size: 1.5rem; color: #999; text-decoration: line-through; margin-right: 10px; }
         .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
-        .pricing-card ul li::before { content: "✓ "; color: var(--section-heading); font-weight: bold; }
-        .book-btn { background: var(--section-heading); color: #fff; font-family: "Bebas Neue"; padding: 1rem; border-radius: 4px; text-align: center; cursor: pointer; display: block; }
+        .pricing-card ul li::before { content: "✓ "; color: var(--brand); font-weight: bold; }
+        .book-btn { background: var(--brand); color: #fff; font-family: "Bebas Neue"; padding: 1rem; border-radius: 4px; text-align: center; cursor: pointer; display: block; }
         #testimonials { text-align: center; overflow: hidden; position: relative; }
         .testimonial-carousel { display: flex; transition: 0.5s; width: 100%; }
         .testimonial-item { flex: 0 0 100%; padding: 0 16px; opacity: 0; visibility: hidden; display: flex; flex-direction: column; align-items: center; }
         .testimonial-item.active { opacity: 1; visibility: visible; }
-        .testimonial-item blockquote { font-style: italic; border-left: 4px solid var(--section-heading); padding-left: 16px; font-size: 1.1rem; max-width: 800px; }
-        .review-stars { color: var(--section-heading); font-size: 1.5rem; margin: 10px 0; }
-        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: var(--section-heading); color: #fff; padding: 10px 14px; border-radius: 4px; cursor: pointer; border: none; z-index: 5; }
+        .testimonial-item blockquote { font-style: italic; border-left: 4px solid var(--brand); padding-left: 16px; font-size: 1.1rem; max-width: 800px; }
+        .review-stars { color: var(--brand); font-size: 1.5rem; margin: 10px 0; }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: var(--brand); color: #fff; padding: 10px 14px; border-radius: 4px; cursor: pointer; border: none; z-index: 5; }
         #carousel-left { left: 10px; } #carousel-right { right: 10px; }
-        footer { background: var(--footer-bg); padding: 1rem 0; margin-top: 50px; }
+        footer { background: var(--foot); padding: 1rem 0; margin-top: 50px; }
         footer .social a { margin: 0 15px; font-size: 1.5rem; }
-
-        /* FIXED HEIGHT FOR WIDGET TO STOP INFINITE GROWTH */
-        #booking { min-height: 800px; max-height: 900px; overflow: hidden; }
-        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; height: 750px; border: none; overflow: hidden; }
-
+        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; min-height: 750px; border: none; overflow: hidden; }
         @media (max-width: 768px) {
             body { font-size: 110%; }
             header { flex-direction: column; }
@@ -89,16 +67,7 @@
             section { margin: 100px auto; }
             .about-container { flex-direction: column; align-items: center; }
             .pricing-card { width: 100%; }
-            #booking { min-height: 900px; max-height: 1000px; }
-        }
-        @media (max-width: 480px) {
-            body { font-size: 100%; }
-            .logo img { max-width: 100px; }
-            #header-tagline { font-size: 0.8rem; }
-            nav a { font-size: 0.75rem; margin: 3px 5px; }
-            #sticky-cta { font-size: 0.9rem; padding: 8px 16px; }
-            section { margin: 80px auto; padding: 15px; }
-            #about .profile-image img { width: 150px; }
+            .tidycal-embed { min-height: 850px; }
         }
     </style>
 </head>
@@ -179,7 +148,7 @@
             <div class="pricing-card">
                 <h3>1-MONTH SINGING TRANSFORMATION!</h3>
                 <div class="price">$590</div>
-                <p>8 Sessions + Custom Exercises + Full-time Coaching. Only for those ready to put some extra reps for those extra gains!</p>
+                <p>8 Sessions + Custom Exercises + Full-time Coaching. Only for those ready to put some extra gains!</p>
                 <ul><li>8 sessions</li><li>Full coaching</li><li>Life-changing results</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
@@ -206,7 +175,7 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
+        <div class="tidycal-embed" data-tidycal-endpoint="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
         <p>Connect with me:</p>
@@ -228,9 +197,9 @@
         }
         window.addEventListener('load', () => {
             const btn = document.getElementById('play-toggle'), mute = document.getElementById('mute-toggle'), vol = document.getElementById('volume-slider');
-            if (btn) btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
-            if (mute) mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
-            if (vol) vol.oninput = () => player.setVolume(vol.value);
+            btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
+            mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
+            vol.oninput = () => player.setVolume(vol.value);
             document.getElementById('open-youtube').onclick = () => window.open("https://www.youtube.com/watch?v="+player.getVideoData().video_id);
             document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
         });
@@ -240,13 +209,13 @@
         };
         let lang = 'en';
         const languageToggle = document.getElementById('language-toggle');
-        if (languageToggle) languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
+        languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
         function update() {
             document.querySelectorAll('[data-phrase-key]').forEach(el => {
                 const key = el.dataset.phraseKey;
                 if(translations[lang][key]) el.innerText = translations[lang][key];
             });
-            if (languageToggle) languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
+            languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
         }
         update();
         document.getElementById('mode-toggle').onclick = () => { document.body.classList.toggle('dark-mode'); document.getElementById('logo').src = document.body.classList.contains('dark-mode') ? 'logodark.png' : 'logolight.png'; };
@@ -255,7 +224,7 @@
         document.getElementById('carousel-right').onclick = () => show(cur+1);
         document.getElementById('carousel-left').onclick = () => show(cur-1);
         const stickyBtn = document.getElementById('sticky-cta');
-        if (stickyBtn) stickyBtn.addEventListener('mouseenter', () => { document.getElementById('hover-sound').currentTime = 0; document.getElementById('hover-sound').play(); });
+        stickyBtn.addEventListener('mouseenter', () => { document.getElementById('hover-sound').currentTime = 0; document.getElementById('hover-sound').play(); });
     </script>
 </body>
 </html>
