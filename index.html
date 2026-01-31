@@ -37,13 +37,14 @@
         #header-tagline { font-style: italic; font-size: 1.5rem; font-weight: bold; flex-grow: 1; padding: 0 10px; }
         .toggle-container { margin-right: 40px; display: flex; gap: 10px; }
         
-        /* Fixed button colors for visibility */
+        /* Fixed button colors for high contrast */
         #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); color: white; }
         #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
         
         nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
-        nav a:hover { color: var(--brand); text-decoration: underline; text-decoration-color: var(--brand); }
+        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; transition: color 0.2s; }
+        nav a:hover { color: var(--brand-dark); text-decoration: underline; }
+        
         #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         #hero-video { width: 100%; height: 100%; }
@@ -55,8 +56,9 @@
         #left-controls button, #right-controls button { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
         #volume-slider { width: 120px; height: 8px; }
         
-        /* Sticky CTA color fix */
-        #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); color: white; border: 2px solid black; border-radius: 4px; cursor: pointer; }
+        /* Sticky CTA color fixed to White on Orange */
+        #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); color: white; border: 2px solid black; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
+        #sticky-cta:hover { transform: scale(1.05); }
         
         section { padding: 32px; max-width: 1100px; margin: 250px auto; text-align: left; }
         section h2 { font-family: "Bebas Neue"; color: var(--brand); font-size: 2.2rem; border-bottom: 2px solid var(--brand); margin-bottom: 1rem; text-align: center; }
@@ -64,6 +66,8 @@
         .profile-image img { width: 240px; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         #services { background: var(--serv); border-radius: 5px; }
         #services ul { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
+        
+        /* Pricing Cards Styles */
         #pricing { background: var(--price); border-radius: 5px; text-align: center; }
         .pricing-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 2rem; }
         .pricing-card { background: var(--bg); border: 2px solid var(--brand); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
@@ -72,6 +76,7 @@
         .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
         .pricing-card ul li::before { content: "✓ "; color: var(--brand); font-weight: bold; }
         .book-btn { background: var(--brand); color: #fff; font-family: "Bebas Neue"; padding: 1rem; border-radius: 4px; text-align: center; cursor: pointer; display: block; }
+        
         #testimonials { text-align: center; overflow: hidden; }
         .testimonial-carousel { display: flex; transition: 0.5s; width: 100%; }
         .testimonial-item { flex: 0 0 100%; padding: 0 16px; opacity: 0; visibility: hidden; display: flex; flex-direction: column; align-items: center; }
@@ -158,7 +163,7 @@
                 <h3>Your 1st vocal workout!</h3>
                 <div class="price"><span class="original-price">$100</span>$40<span>/session</span></div>
                 <p>A 40-min Intro Session to understand the basics, get to know your voice, and how to get it in shape!</p>
-                <ul><li>40-min Intro session</li><li>Explore your voice</li><li>Immediate tips for transformation</li></ul>
+                <ul><li>40-min Intro session</li><li>Explore your voice</li><li>Immediate tips</li></ul>
                 <p>Get started!</p>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
@@ -166,14 +171,14 @@
                 <h3>Get your voice in shape, have fun!</h3>
                 <div class="price">$360</div>
                 <p>4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!</p>
-                <ul><li>4 personalized sessions</li><li>Custom audio exercises</li><li>On-demand consultation</li></ul>
+                <ul><li>4 sessions</li><li>Custom exercises</li><li>Consultation</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
             <div class="pricing-card">
                 <h3>1-MONTH SINGING TRANSFORMATION!</h3>
                 <div class="price">$590</div>
-                <p>8 Sessions + Custom Exercises + Full-time Coaching. Get amazing results with the transformation program!</p>
-                <ul><li>8 intensive sessions</li><li>Custom exercises</li><li>Full-time coaching support</li></ul>
+                <p>8 Sessions + Custom Exercises + Full-time Coaching. Only for those ready to put some extra gains!</p>
+                <ul><li>8 sessions</li><li>Full coaching</li><li>Life-changing results</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
         </div>
@@ -181,14 +186,14 @@
     <section id="testimonials">
         <h2 data-phrase-key="testimonialsTitle">Reviews</h2>
         <div class="testimonial-carousel">
-            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. – Paul</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial1">Nando is a great vocal coach. He focuses on what you need, he cares about your progress. – Colby</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I have noticed improvements in my voice and techniques. – Patrick</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial3">The progress I've made in four sessions with Nando is incredible. – Vannia</blockquote></div>
+            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial1">Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing techniques. – Patrick</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial3">The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial4">I've worked with Nando and my voice improved notably. – Joseph</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial5">Working with Nando has been exceptional! He exceeded my expectations. – Miguel</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial5">Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity. – Miguel</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial6">Nando is very patient and a great communicator. – Ben</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial7">I take solo singing classes with Nando and relatives loved the duet class! – Colby</blockquote></div>
+            <div class="testimonial-item"><blockquote data-phrase-key="testimonial7">I take solo singing classes with Nando and even gifted a duet class to relatives—they loved it! – Colby</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial8">Nando changed my life. – Jonathan</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial9">Beyond happy—thank you so much for your patience! – Crystal</blockquote></div>
         </div>
@@ -199,7 +204,6 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <!-- Reverted to the attribute name you confirmed was functional -->
         <div class="tidycal-embed" data-tidycal-endpoint="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
@@ -229,8 +233,8 @@
             document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
         });
         const translations = {
-            en: { headerTagline: "Get your voice in its best shape ever!", home: "Home", aboutNav: "About Me", aboutTitle: "About Me", servicesNav: "Service", pricingNav: "Pricing", testimonialsNav: "Reviews", bookingNav: "Book Now", contactNav: "Contact", ctaButton: "Book a Session", aboutIntro: "Hi, I'm Nando...", aboutAdditional: "My approach combines...", servicesTitle: "Service", pricingTitle: "Pricing", testimonialsTitle: "Reviews", bookingTitle: "Book a Session" },
-            es: { headerTagline: "¡Pon tu voz en la mejor versión!", home: "Inicio", aboutNav: "Sobre mí", aboutTitle: "Sobre mí", servicesNav: "Servicio", pricingNav: "Precios", testimonialsNav: "Testimonios", bookingNav: "Reservar", contactNav: "Contacto", ctaButton: "Reserva ya", aboutIntro: "Hola, soy Nando...", aboutAdditional: "Mi método combina...", servicesTitle: "Servicio", pricingTitle: "Precios", testimonialsTitle: "Testimonios", bookingTitle: "Reserva una sesión" }
+            en: { headerTagline: "Get your voice in its best shape ever!", home: "Home", aboutNav: "About Me", aboutTitle: "About Me", servicesNav: "Service", pricingNav: "Pricing", testimonialsNav: "Reviews", bookingNav: "Book Now", contactNav: "Contact", ctaButton: "Book a Session", aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach. I've dedicated my career to helping singers of all levels unlock their full potential.", aboutAdditional: "My approach combines classical and modern techniques, tailored to your unique needs. I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience. My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.", servicesTitle: "Service", pricingTitle: "Pricing", testimonialsTitle: "Reviews", bookingTitle: "Book a Session" },
+            es: { headerTagline: "¡Pon tu voz en la mejor versión!", home: "Inicio", aboutNav: "Sobre mí", aboutTitle: "Sobre mí", servicesNav: "Servicio", pricingNav: "Precios", testimonialsNav: "Testimonios", bookingNav: "Reservar", contactNav: "Contacto", ctaButton: "Reserva ya", aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima, con más de diez años de experiencia como profesor de canto y coach vocal. He dedicado mi carrera a ayudar a cantantes de todos los niveles a alcanzar su máximo potencial.", aboutAdditional: "Mi método combina técnicas clásicas y modernas, adaptadas a tus necesidades únicas. Me especializo en superar desafíos vocales como quiebres, tensión y rango limitado, y me apasiona ayudarte a desarrollar una experiencia de canto saludable, sostenible y llena de alegría. Mi método único de entrenamiento vocal es el resultado de años de experiencia y de superar mis propios desafíos vocales.", servicesTitle: "Servicio", pricingTitle: "Precios", testimonialsTitle: "Testimonios", bookingTitle: "Reserva una sesión" }
         };
         let lang = 'en';
         const languageToggle = document.getElementById('language-toggle');
