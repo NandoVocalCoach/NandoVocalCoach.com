@@ -8,25 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root { 
-            --bg: #fff; 
-            --text: #333; 
-            --head: rgba(224,224,224,0.5); 
-            --nav: #FF5500; /* Restored Orange */
-            --brand: #FF5500; 
-            --brand-dark: #e64500; 
-            --serv: #f9f9f9; 
-            --price: #f5f5f5; 
-            --foot: #FF5500; 
-            --border: #FF5500; 
+            --bg: #fff; --text: #333; --head: rgba(224,224,224,0.5); 
+            --nav: #FF5500; --brand: #FF5500; --brand-dark: #e64500; 
+            --serv: #f9f9f9; --price: #f5f5f5; --foot: #FF5500; --border: #FF5500; 
         }
-        .dark-mode { 
-            --bg: #000; 
-            --text: #fff; 
-            --head: rgba(26,26,26,0.5); 
-            --nav: #FF5500; /* Restored Orange */
-            --serv: #222; 
-            --price: #222; 
-        }
+        .dark-mode { --bg: #000; --text: #fff; --head: rgba(26,26,26,0.5); --nav: #FF5500; --serv: #222; --price: #222; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-padding-top: 80px; scroll-behavior: smooth; }
         body { font-family: "Montserrat", sans-serif; font-size: 130%; line-height: 1.6; background: var(--bg); color: var(--text); transition: background 0.3s; text-align: center; }
@@ -36,15 +22,11 @@
         .logo img { max-width: 280px; }
         #header-tagline { font-style: italic; font-size: 1.5rem; font-weight: bold; flex-grow: 1; padding: 0 10px; }
         .toggle-container { margin-right: 40px; display: flex; gap: 10px; }
-        
-        /* Fixed button colors for high contrast */
         #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); color: white; }
         #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
-        
         nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; transition: color 0.2s; }
+        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; }
         nav a:hover { color: var(--brand-dark); text-decoration: underline; }
-        
         #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         #hero-video { width: 100%; height: 100%; }
@@ -52,22 +34,16 @@
         #video-control-area { position: absolute; bottom: 0; width: 100%; z-index: 3; padding-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         #progress-bar { width: 90%; height: 8px; -webkit-appearance: none; background: rgba(255,255,255,0.7); border-radius: 4px; }
         #video-controls { width: 90%; display: flex; justify-content: space-between; padding-top: 10px; }
-        #left-controls, #right-controls { display: flex; gap: 8px; align-items: center; }
         #left-controls button, #right-controls button { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
         #volume-slider { width: 120px; height: 8px; }
-        
-        /* Sticky CTA color fixed to White on Orange */
         #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); color: white; border: 2px solid black; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
         #sticky-cta:hover { transform: scale(1.05); }
-        
         section { padding: 32px; max-width: 1100px; margin: 250px auto; text-align: left; }
         section h2 { font-family: "Bebas Neue"; color: var(--brand); font-size: 2.2rem; border-bottom: 2px solid var(--brand); margin-bottom: 1rem; text-align: center; }
         .about-container { display: flex; gap: 20px; align-items: flex-start; }
         .profile-image img { width: 240px; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         #services { background: var(--serv); border-radius: 5px; }
         #services ul { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
-        
-        /* Pricing Cards Styles */
         #pricing { background: var(--price); border-radius: 5px; text-align: center; }
         .pricing-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 2rem; }
         .pricing-card { background: var(--bg); border: 2px solid var(--brand); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
@@ -76,7 +52,6 @@
         .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
         .pricing-card ul li::before { content: "✓ "; color: var(--brand); font-weight: bold; }
         .book-btn { background: var(--brand); color: #fff; font-family: "Bebas Neue"; padding: 1rem; border-radius: 4px; text-align: center; cursor: pointer; display: block; }
-        
         #testimonials { text-align: center; overflow: hidden; }
         .testimonial-carousel { display: flex; transition: 0.5s; width: 100%; }
         .testimonial-item { flex: 0 0 100%; padding: 0 16px; opacity: 0; visibility: hidden; display: flex; flex-direction: column; align-items: center; }
@@ -87,7 +62,7 @@
         #carousel-left { left: 10px; } #carousel-right { right: 10px; }
         footer { background: var(--foot); padding: 1rem 0; margin-top: 50px; }
         footer .social a { margin: 0 15px; font-size: 1.5rem; }
-        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; min-height: 750px; border: none; overflow: hidden; }
+        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; min-height: 750px; border: none; }
         @media (max-width: 768px) {
             body { font-size: 110%; }
             header { flex-direction: column; }
@@ -130,7 +105,7 @@
                     <button id="mute-toggle">🔇</button>
                     <input id="volume-slider" type="range" min="0" max="100" value="100">
                 </div>
-                <button id="open-youtube">↗</button>
+                <button id="open-youtube" style="background:#fff; border:none; padding:8px 12px; cursor:pointer; font-family:'Bebas Neue'; font-size:1.1rem; border-radius:4px;">↗</button>
             </div>
         </div>
     </section>
@@ -163,7 +138,7 @@
                 <h3>Your 1st vocal workout!</h3>
                 <div class="price"><span class="original-price">$100</span>$40<span>/session</span></div>
                 <p>A 40-min Intro Session to understand the basics, get to know your voice, and how to get it in shape!</p>
-                <ul><li>40-min Intro session</li><li>Explore your voice</li><li>Immediate tips</li></ul>
+                <ul><li>40-min Intro session</li><li>Explore your voice</li><li>Immediate tips for transformation</li></ul>
                 <p>Get started!</p>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
@@ -171,14 +146,14 @@
                 <h3>Get your voice in shape, have fun!</h3>
                 <div class="price">$360</div>
                 <p>4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!</p>
-                <ul><li>4 sessions</li><li>Custom exercises</li><li>Consultation</li></ul>
+                <ul><li>4 personalized sessions</li><li>Custom audio exercises</li><li>On-demand consultation</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
             <div class="pricing-card">
                 <h3>1-MONTH SINGING TRANSFORMATION!</h3>
                 <div class="price">$590</div>
-                <p>8 Sessions + Custom Exercises + Full-time Coaching. Only for those ready to put some extra gains!</p>
-                <ul><li>8 sessions</li><li>Full coaching</li><li>Life-changing results</li></ul>
+                <p>8 Sessions + Custom Exercises + Full-time Coaching. Get amazing results with the transformation program!</p>
+                <ul><li>8 intensive sessions</li><li>Custom exercises</li><li>Full-time coaching support</li></ul>
                 <a href="#booking" class="book-btn">Book now</a>
             </div>
         </div>
@@ -186,7 +161,7 @@
     <section id="testimonials">
         <h2 data-phrase-key="testimonialsTitle">Reviews</h2>
         <div class="testimonial-carousel">
-            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul</blockquote></div>
+            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. – Paul</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial1">Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing techniques. – Patrick</blockquote></div>
             <div class="testimonial-item"><blockquote data-phrase-key="testimonial3">The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia</blockquote></div>
@@ -204,7 +179,7 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <div class="tidycal-embed" data-tidycal-endpoint="nando-vocal-coach/1st-session"></div>
+        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
         <p>Connect with me:</p>
