@@ -69,6 +69,17 @@
             .pricing-card { width: 100%; }
             .tidycal-embed { min-height: 850px; }
         }
+        @media (max-width: 480px) {
+            body { font-size: 100%; }
+            .logo img { max-width: 100px; }
+            #header-tagline { font-size: 0.8rem; }
+            nav a { font-size: 0.75rem; margin: 3px 5px; }
+            #sticky-cta { font-size: 0.9rem; padding: 8px 16px; }
+            section { margin: 80px auto; padding: 15px; }
+            #left-controls button, #right-controls button { padding: 5px 8px; font-size: 0.9rem; }
+            #left-controls input[type=range] { width: 80px; }
+            #about .profile-image img { width: 150px; }
+        }
     </style>
 </head>
 <body>
@@ -175,7 +186,8 @@
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book a Session</h2>
         <p>Ready to take the next step? Check availability below.</p>
-        <div class="tidycal-embed" data-tidycal-endpoint="nando-vocal-coach/1st-session"></div>
+        <!-- Corrected attribute data-path -->
+        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
     </section>
     <footer id="contact">
         <p>Connect with me:</p>
@@ -187,7 +199,8 @@
         </div>
     </footer>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://assets.tidycal.com/js/embed.js" async></script>
+    <!-- Corrected TidyCal script source -->
+    <script src="https://tidycal.com/js/embed.js" async></script>
     <script>
         let player;
         function onYouTubeIframeAPIReady() {
@@ -197,9 +210,9 @@
         }
         window.addEventListener('load', () => {
             const btn = document.getElementById('play-toggle'), mute = document.getElementById('mute-toggle'), vol = document.getElementById('volume-slider');
-            btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
-            mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
-            vol.oninput = () => player.setVolume(vol.value);
+            if (btn) btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
+            if (mute) mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
+            if (vol) vol.oninput = () => player.setVolume(vol.value);
             document.getElementById('open-youtube').onclick = () => window.open("https://www.youtube.com/watch?v="+player.getVideoData().video_id);
             document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
         });
@@ -209,13 +222,13 @@
         };
         let lang = 'en';
         const languageToggle = document.getElementById('language-toggle');
-        languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
+        if (languageToggle) languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
         function update() {
             document.querySelectorAll('[data-phrase-key]').forEach(el => {
                 const key = el.dataset.phraseKey;
                 if(translations[lang][key]) el.innerText = translations[lang][key];
             });
-            languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
+            if (languageToggle) languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
         }
         update();
         document.getElementById('mode-toggle').onclick = () => { document.body.classList.toggle('dark-mode'); document.getElementById('logo').src = document.body.classList.contains('dark-mode') ? 'logodark.png' : 'logolight.png'; };
