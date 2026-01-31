@@ -3,244 +3,1056 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nando Vocal Coach</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        :root { 
-            --bg: #fff; --text: #333; --head: rgba(224,224,224,0.5); 
-            --nav: #FF5500; /* Header letters Orange */
-            --brand: #FF5500; /* Brand Orange */
-            --brand-dark: #e64500; --serv: #f9f9f9; --price: #f5f5f5; --foot: #FF5500; --border: #FF5500; 
-        }
-        .dark-mode { --bg: #000; --text: #fff; --head: rgba(26,26,26,0.5); --nav: #FF5500; --serv: #222; --price: #222; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-padding-top: 80px; scroll-behavior: smooth; }
-        body { font-family: "Montserrat", sans-serif; font-size: 130%; line-height: 1.6; background: var(--bg); color: var(--text); transition: background 0.3s; text-align: center; }
-        a { text-decoration: none; color: inherit; }
-        header { background: var(--head); padding: 0.5rem 0; position: fixed; top: 0; width: 100%; border-bottom: 2px solid var(--border); z-index: 1000; backdrop-filter: blur(10px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .logo { margin-left: 20px; flex-shrink: 0; }
-        .logo img { max-width: 280px; }
-        #header-tagline { font-style: italic; font-size: 1.5rem; font-weight: bold; flex-grow: 1; padding: 0 10px; }
-        .toggle-container { margin-right: 40px; display: flex; gap: 10px; }
-        
-        /* Fixed button colors: Orange background, White text */
-        #mode-toggle, #language-toggle { padding: 6px 12px; font-family: "Bebas Neue"; font-size: 16px; border: 2px solid black; border-radius: 4px; cursor: pointer; background: var(--brand); color: white; }
-        #language-toggle img { width: 20px; vertical-align: middle; margin-right: 5px; border-radius: 50%; border: 2px solid black; }
-        
-        nav { margin-top: 20px; width: 100%; padding-bottom: 5px; }
-        nav a { font-family: "Bebas Neue"; color: var(--nav); margin: 0 15px; text-transform: uppercase; font-size: 2.2rem; transition: color 0.2s; }
-        nav a:hover { color: var(--brand-dark); text-decoration: underline; }
-        
-        #hero { position: relative; height: 70vh; overflow: hidden; margin-top: 150px; display: flex; align-items: center; justify-content: center; }
-        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
-        #hero-video { width: 100%; height: 100%; }
-        #hero-video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; cursor: pointer; }
-        #video-control-area { position: absolute; bottom: 0; width: 100%; z-index: 3; padding-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        #progress-bar { width: 90%; height: 8px; -webkit-appearance: none; background: rgba(255,255,255,0.7); border-radius: 4px; }
-        #video-controls { width: 90%; display: flex; justify-content: space-between; padding-top: 10px; }
-        #left-controls button, #right-controls button { background: #fff; border: none; padding: 8px 12px; cursor: pointer; font-family: "Bebas Neue"; font-size: 1.1rem; border-radius: 4px; }
-        #volume-slider { width: 120px; height: 8px; }
-        
-        /* Sticky CTA: Orange background, White text */
-        #sticky-cta { position: fixed; right: 20px; bottom: 20px; z-index: 1100; padding: 1rem 2rem; font-family: "Bebas Neue"; font-size: 1.5rem; background: var(--brand); color: white; border: 2px solid black; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
-        #sticky-cta:hover { transform: scale(1.05); }
+    <title>Nando Vocal Coach | Unlock Your True Voice</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        section { padding: 32px; max-width: 1100px; margin: 250px auto; text-align: left; }
-        section h2 { font-family: "Bebas Neue"; color: var(--brand); font-size: 2.2rem; border-bottom: 2px solid var(--brand); margin-bottom: 1rem; text-align: center; }
-        .about-container { display: flex; gap: 20px; align-items: flex-start; }
-        .profile-image img { width: 240px; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        #services { background: var(--serv); border-radius: 5px; }
-        #services ul { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            /* Palette */
+            --brand-primary: #FF5500;
+            --brand-dark: #cc4400;
+            --brand-light: #ff7733;
+            
+            /* Light Mode Defaults */
+            --bg-body: #ffffff;
+            --bg-surface: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border-color: #e5e5e5;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-mode {
+            --bg-body: #0f0f0f;
+            --bg-surface: #1a1a1a;
+            --bg-card: #242424;
+            --text-main: #f0f0f0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --glass: rgba(15, 15, 15, 0.9);
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Pricing Cards layout */
-        #pricing { background: var(--price); border-radius: 5px; text-align: center; }
-        .pricing-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 2rem; }
-        .pricing-card { background: var(--bg); border: 2px solid var(--brand); border-radius: 8px; padding: 2rem; width: 300px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
-        .price { font-family: "Bebas Neue"; font-size: 2.5rem; }
-        .original-price { font-size: 1.5rem; color: #999; text-decoration: line-through; margin-right: 10px; }
-        .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
-        .pricing-card ul li::before { content: "✓ "; color: var(--brand); font-weight: bold; }
-        .book-btn { background: var(--brand); color: #fff; font-family: "Bebas Neue"; padding: 1rem; border-radius: 4px; text-align: center; cursor: pointer; display: block; }
+        html { 
+            scroll-behavior: smooth; 
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Bebas Neue', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- COMPONENTS --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--brand-primary);
+            color: #fff;
+            padding: 12px 30px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: var(--brand-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 85, 0, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--text-main);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--text-main);
+            color: var(--bg-body);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--brand-primary);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 0;
+            transition: all 0.3s;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 50px;
+            width: auto;
+            transition: 0.3s;
+        }
+
+        nav {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        nav a {
+            font-family: 'Bebas Neue';
+            font-size: 1.4rem;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--brand-primary);
+            transition: width 0.3s;
+        }
+
+        nav a:hover { color: var(--brand-primary); }
+        nav a:hover::after { width: 100%; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .icon-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .icon-btn:hover {
+            background: var(--brand-primary);
+            color: #fff;
+            border-color: var(--brand-primary);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- HERO SECTION --- */
+        #hero {
+            position: relative;
+            height: 90vh;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 0;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* Allows clicks to pass through to overlay */
+        }
         
-        #testimonials { text-align: center; overflow: hidden; }
-        .testimonial-carousel { display: flex; transition: 0.5s; width: 100%; }
-        .testimonial-item { flex: 0 0 100%; padding: 0 16px; opacity: 0; visibility: hidden; display: flex; flex-direction: column; align-items: center; }
-        .testimonial-item.active { opacity: 1; visibility: visible; }
-        .testimonial-item blockquote { font-style: italic; border-left: 4px solid var(--brand); padding-left: 16px; font-size: 1.1rem; max-width: 800px; }
-        .review-stars { color: var(--brand); font-size: 1.5rem; margin: 10px 0; }
-        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: var(--brand); color: #fff; padding: 10px 14px; border-radius: 4px; cursor: pointer; border: none; z-index: 5; }
-        #carousel-left { left: 10px; } #carousel-right { right: 10px; }
-        footer { background: var(--foot); padding: 1rem 0; margin-top: 50px; }
-        footer .social a { margin: 0 15px; font-size: 1.5rem; }
+        .video-background iframe {
+            width: 100vw;
+            height: 56.25vw; /* Given a 16:9 aspect ratio */
+            min-height: 100vh;
+            min-width: 177.77vh; /* Given a 16:9 aspect ratio */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6); /* Darkens video for text readability */
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .hero-tagline {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--brand-primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            line-height: 0.9;
+        }
+
+        .hero-controls-custom {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            display: flex;
+            gap: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .hero-controls-custom button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
         
-        .tidycal-embed { margin: 0 auto; width: 100%; max-width: 800px; border: none; }
+        .hero-controls-custom button:hover { color: var(--brand-primary); }
+
+        /* --- STICKY CTA --- */
+        #sticky-cta {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 900;
+            box-shadow: 0 4px 20px rgba(255, 85, 0, 0.4);
+            animation: bounceIn 1s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- SECTIONS GENERAL --- */
+        section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        /* --- ABOUT SECTION --- */
+        #about {
+            background: var(--bg-surface);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-img {
+            position: relative;
+        }
         
+        .about-img img {
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            object-fit: cover;
+            border: 4px solid var(--brand-primary);
+        }
+
+        .about-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat h3 {
+            font-size: 2.5rem;
+            color: var(--brand-primary);
+        }
+        
+        .stat p { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
+
+        /* --- SERVICES --- */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--brand-primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            color: var(--brand-primary);
+            margin-bottom: 20px;
+        }
+
+        /* --- PRICING (GRAND SLAM OFFERS) --- */
+        #pricing {
+            background: var(--bg-surface);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--brand-primary);
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 10px 40px rgba(255, 85, 0, 0.15);
+        }
+
+        .pricing-header {
+            padding: 30px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .pricing-card.featured .pricing-header {
+            background: var(--brand-primary);
+            color: white;
+        }
+        
+        .pricing-card.featured .pricing-header h3 { color: white; }
+        .pricing-card.featured .pricing-header .price { color: white; }
+
+        .pricing-header h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-family: 'Bebas Neue';
+            color: var(--brand-primary);
+        }
+
+        .price span { font-size: 1rem; color: var(--text-muted); font-family: 'Montserrat'; }
+        
+        .pricing-body {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .features-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list i { color: var(--brand-primary); }
+
+        .pricing-footer {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffdbcc;
+            color: var(--brand-primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* --- TESTIMONIALS --- */
+        .carousel-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            overflow: hidden;
+            background: var(--bg-card);
+            padding: 50px 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            opacity: 0.4;
+            transform: scale(0.9);
+            transition: 0.5s;
+        }
+        
+        .carousel-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .quote-icon {
+            font-size: 3rem;
+            color: var(--brand-primary);
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .review-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .reviewer {
+            font-family: 'Bebas Neue';
+            font-size: 1.5rem;
+            color: var(--brand-primary);
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-surface);
+            border: none;
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        
+        .carousel-btn:hover { background: var(--brand-primary); color: white; }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        /* --- FOOTER --- */
+        footer {
+            background: #0f0f0f;
+            color: white;
+            padding: 50px 0 20px;
+            text-align: center;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .footer-social a {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .footer-social a:hover { color: var(--brand-primary); }
+
+        .copyright {
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
-            body { font-size: 110%; }
-            header { flex-direction: column; }
-            .logo img { max-width: 180px; }
-            nav a { font-size: 1.1rem; margin: 5px; }
-            section { margin: 100px auto; }
-            .about-container { flex-direction: column; align-items: center; }
-            .pricing-card { width: 100%; }
+            .hero-title { font-size: 3.5rem; }
+            .pricing-card.featured { transform: scale(1); }
+            
+            .nav-wrapper { padding: 0 20px; }
+            nav {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: var(--bg-card);
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+                clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); /* Hidden */
+                transition: 0.4s ease-in-out;
+            }
+            
+            nav.active { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            
+            .menu-toggle { display: block; }
+            
+            .about-grid { grid-template-columns: 1fr; }
+            .about-img { order: -1; }
         }
     </style>
 </head>
 <body>
-    <audio id="hover-sound" src="hover-sound.mp3" preload="auto"></audio>
+
+    <!-- Header -->
     <header>
-        <div class="logo"><img id="logo" src="logolight.png" alt="Logo"></div>
-        <p id="header-tagline" data-phrase-key="headerTagline">Get your voice in its best shape ever!</p>
-        <div class="toggle-container">
-            <button id="mode-toggle">Black</button>
-            <button id="language-toggle"></button>
-        </div>
-        <nav>
-            <a href="#hero" data-phrase-key="home">Home</a>
-            <a href="#about" data-phrase-key="aboutNav">About Me</a>
-            <a href="#services" data-phrase-key="servicesNav">Service</a>
-            <a href="#pricing" data-phrase-key="pricingNav">Pricing</a>
-            <a href="#testimonials" data-phrase-key="testimonialsNav">Reviews</a>
-            <a href="#booking" data-phrase-key="bookingNav">Book Now</a>
-            <a href="#contact" data-phrase-key="contactNav">Contact</a>
-        </nav>
-    </header>
-    <section id="hero">
-        <div class="video-wrapper"><div id="hero-video"></div></div>
-        <div id="hero-video-overlay" onclick="window.open('https://www.youtube.com/watch?v=_OCuHsXcyEI')"></div>
-        <div id="video-control-area">
-            <input id="progress-bar" type="range" min="0" value="0">
-            <div id="video-controls">
-                <div id="left-controls">
-                    <button id="play-toggle">⏸</button>
-                    <button id="mute-toggle">🔇</button>
-                    <input id="volume-slider" type="range" min="0" max="100" value="100">
+        <div class="container nav-wrapper">
+            <a href="#" class="logo">
+                <img id="logo" src="logolight.png" alt="Nando Vocal Coach">
+            </a>
+            
+            <nav id="navbar">
+                <a href="#hero" data-key="home">Home</a>
+                <a href="#about" data-key="about">About</a>
+                <a href="#services" data-key="services">Services</a>
+                <a href="#pricing" data-key="pricing">Pricing</a>
+                <a href="#testimonials" data-key="reviews">Reviews</a>
+                <a href="#booking" class="mobile-cta" style="color: var(--brand-primary);">Book Now</a>
+            </nav>
+
+            <div class="controls">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                <!-- Language Toggle -->
+                <button id="lang-toggle" class="icon-btn" title="Switch Language" style="padding: 0;">
+                    <img src="spain-flag.png" id="lang-icon" alt="Language">
+                </button>
+                
+                <!-- Mobile Menu Icon -->
+                <div class="menu-toggle" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
                 </div>
-                <button id="open-youtube" style="background:#fff; border:none; padding:8px 12px; cursor:pointer; font-family:'Bebas Neue'; font-size:1.1rem; border-radius:4px;">↗</button>
             </div>
         </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="video-background">
+            <div id="youtube-player"></div>
+        </div>
+        
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content container">
+            <p class="hero-tagline" data-key="tagline">Get your voice in its best shape ever!</p>
+            <h1 class="hero-title" data-key="heroTitle">UNLOCK YOUR TRUE<br>VOCAL POTENTIAL</h1>
+            <p class="section-subtitle" style="color: #ddd;" data-key="heroSub">
+                Professional coaching to build power, range, and confidence.
+            </p>
+            <a href="#booking" class="btn" data-key="cta">Start Your Transformation</a>
+        </div>
+
+        <!-- Custom Video Controls -->
+        <div class="hero-controls-custom">
+            <button id="vid-play"><i class="fas fa-pause"></i></button>
+            <button id="vid-mute"><i class="fas fa-volume-mute"></i></button>
+        </div>
     </section>
-    <button id="sticky-cta" data-phrase-key="ctaButton">Book a Session</button>
+
+    <!-- Sticky CTA -->
+    <a href="#booking" id="sticky-cta" class="btn">
+        <i class="fas fa-calendar-check"></i> <span data-key="sticky">Book Now</span>
+    </a>
+
+    <!-- About Section -->
     <section id="about">
-        <div class="about-container">
-            <div class="profile-image"><img src="profile.JPG" alt="Nando"></div>
-            <div class="about-details">
-                <h2 data-phrase-key="aboutTitle">About Me</h2>
-                <p data-phrase-key="aboutIntro">Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory with over a decade of experience as a Singing Teacher and Vocal Coach. I've dedicated my career to helping singers of all levels unlock their full potential.</p>
-                <p data-phrase-key="aboutAdditional">My approach combines classical and modern techniques, tailored to your unique needs. I specialize in overcoming vocal challenges like cracking, strain, and limited range, and I'm passionate about helping you develop a healthy, sustainable, and joyful singing experience. My unique Vocal Workout Method is the result of years of experience and overcoming my own vocal challenges.</p>
-                <p>I understand that every voice is different. Whether you're an experienced performer or just starting your vocal journey, I'm here to guide you. I offer personalized training to improve your pitch, build stamina, expand your range, and develop your unique style. Let's work together to achieve your vocal goals!</p>
+        <div class="container about-grid">
+            <div class="about-info">
+                <h2 class="section-title" style="text-align: left;" data-key="aboutTitle">About Nando</h2>
+                <h4 style="margin-bottom: 20px; color: var(--text-muted);">Choir Conductor & Vocal Strategist</h4>
+                <p style="margin-bottom: 15px;">
+                    Hi, I'm Nando. My journey wasn't easy. Despite graduating from the <strong>Tolima Conservatory</strong>, I struggled with <em>Vocal Hyperfunction (MTD)</em>. I nearly lost my voice, but that struggle became my greatest teacher.
+                </p>
+                <p>
+                    I spent years deconstructing vocal mechanics to rebuild my own voice. Now, I use that same <strong>"Vocal Workout Method"</strong> to help singers like you avoid strain, extend range, and find true freedom.
+                </p>
+                
+                <div class="about-stats">
+                    <div class="stat">
+                        <h3>15+</h3>
+                        <p data-key="exp">Years Experience</p>
+                    </div>
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p data-key="students">Happy Students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-img">
+                <img src="profile.JPG" alt="Nando Profile" id="profile-img">
             </div>
         </div>
     </section>
+
+    <!-- Services Section -->
     <section id="services">
-        <h2 data-phrase-key="servicesTitle">Service</h2>
-        <p data-phrase-key="servicesDescription">Whether you're an experienced singer or starting from scratch (even if you've been called tone-deaf!), I craft personalized plans to get your voice in shape fast.</p>
-        <p>You will:</p>
-        <ul>
-            <li data-phrase-key="service1">Improve your pitch</li>
-            <li data-phrase-key="service2">Hit those high notes!</li>
-            <li data-phrase-key="service3">Develop your style!</li>
-        </ul>
+        <div class="container">
+            <h2 class="section-title" data-key="servicesTitle">The Vocal Gym</h2>
+            <p class="section-subtitle" data-key="servicesSub">A holistic approach to vocal fitness. We don't just sing; we train.</p>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-dumbbell service-icon"></i>
+                    <h3>Vocal Stamina</h3>
+                    <p>Build the endurance to perform longer sets without fatigue.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-wave-square service-icon"></i>
+                    <h3>Pitch Control</h3>
+                    <p>Train your ear and muscle memory for laser-precise intonation.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-bolt service-icon"></i>
+                    <h3>Power & Range</h3>
+                    <p>Safely expand your limits to hit those high notes with power.</p>
+                </div>
+            </div>
+        </div>
     </section>
+
+    <!-- Pricing Section -->
     <section id="pricing">
-        <h2 data-phrase-key="pricingTitle">Pricing</h2>
-        <div class="pricing-container">
-            <div class="pricing-card">
-                <h3>Your 1st vocal workout!</h3>
-                <div class="price"><span class="original-price">$100</span>$40<span>/session</span></div>
-                <p>A 40-min Intro Session to understand the basics, get to know your voice, and how to get it in shape!</p>
-                <ul><li>40-min Intro session</li><li>Explore your voice</li><li>Immediate tips for transformation</li></ul>
-                <p>Get started!</p>
-                <a href="#booking" class="book-btn">Book now</a>
-            </div>
-            <div class="pricing-card">
-                <h3>Get your voice in shape, have fun!</h3>
-                <div class="price">$360</div>
-                <p>4 Singing Training Sessions + Audio Exercises. Get your voice in shape, have fun!</p>
-                <ul><li>4 personalized sessions</li><li>Custom audio exercises</li><li>On-demand consultation</li></ul>
-                <a href="#booking" class="book-btn">Book now</a>
-            </div>
-            <div class="pricing-card">
-                <h3>1-MONTH SINGING TRANSFORMATION!</h3>
-                <div class="price">$590</div>
-                <p>8 Sessions + Custom Exercises + Full-time Coaching. Get amazing results with the transformation program!</p>
-                <ul><li>8 intensive sessions</li><li>Custom exercises</li><li>Full-time coaching support</li></ul>
-                <a href="#booking" class="book-btn">Book now</a>
+        <div class="container">
+            <h2 class="section-title" data-key="pricingTitle">Invest In Your Voice</h2>
+            
+            <div class="pricing-grid">
+                <!-- Basic -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 data-key="plan1">Intro Workout</h3>
+                        <div class="price">$40 <span>/ session</span></div>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="features-list">
+                            <li><i class="fas fa-check"></i> 45-Min Assessment</li>
+                            <li><i class="fas fa-check"></i> Voice Diagnosis</li>
+                            <li><i class="fas fa-check"></i> Immediate Tips</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#booking" class="btn btn-outline" style="width:100%">Book Intro</a>
+                    </div>
+                </div>
+
+                <!-- Standard (Featured) -->
+                <div class="pricing-card featured">
+                    <div class="badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3 data-key="plan2">Vocal Fitness</h3>
+                        <div class="price">$360 <span>/ pack</span></div>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="features-list">
+                            <li><i class="fas fa-check"></i> <strong>4</strong> Private Sessions</li>
+                            <li><i class="fas fa-check"></i> Custom Audio Exercises</li>
+                            <li><i class="fas fa-check"></i> Whatsapp Support</li>
+                            <li><i class="fas fa-check"></i> Progress Tracking</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#booking" class="btn" style="width:100%">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Premium -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 data-key="plan3">Transformation</h3>
+                        <div class="price">$590 <span>/ month</span></div>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="features-list">
+                            <li><i class="fas fa-check"></i> <strong>8</strong> Intensive Sessions</li>
+                            <li><i class="fas fa-check"></i> Full-time Coaching</li>
+                            <li><i class="fas fa-check"></i> Repertoire Building</li>
+                            <li><i class="fas fa-check"></i> Career Consultation</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#booking" class="btn btn-outline" style="width:100%">Go Pro</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- Testimonials Section -->
     <section id="testimonials">
-        <h2 data-phrase-key="testimonialsTitle">Reviews</h2>
-        <div class="testimonial-carousel">
-            <div class="testimonial-item active"><blockquote data-phrase-key="testimonial0">Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. – Paul</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial1">Nando is a great vocal coach. He focuses on what you need, he cares about your progress. – Colby</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial2">I couldn't ask for a better vocal coach. I have noticed improvements in my voice and singing techniques. – Patrick</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial3">The progress I've made in four sessions with Nando is incredible. – Vannia</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial4">I've worked with Nando and my voice improved notably. – Joseph</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial5">Working with Nando has been exceptional! He exceeded my expectations. – Miguel</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial6">Nando is very patient and a great communicator. – Ben</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial7">I take solo singing classes and even gifted a duet class to relatives—they loved it! – Colby</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial8">Nando changed my life. – Jonathan</blockquote></div>
-            <div class="testimonial-item"><blockquote data-phrase-key="testimonial9">Beyond happy—thank you so much for your patience! – Crystal</blockquote></div>
+        <div class="container">
+            <h2 class="section-title" data-key="reviewsTitle">Success Stories</h2>
+            
+            <div class="carousel-container">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <div class="carousel-track" id="track">
+                    <!-- Slide 1 -->
+                    <div class="carousel-slide active">
+                        <p class="review-text">"Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care."</p>
+                        <p class="reviewer">- Paul</p>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="carousel-slide">
+                        <p class="review-text">"The progress I've made in just four sessions is incredible. He focuses exactly on what you need."</p>
+                        <p class="reviewer">- Vannia</p>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="carousel-slide">
+                        <p class="review-text">"I gifted a duet class to my relatives and they loved it! Nando is very patient and a great communicator."</p>
+                        <p class="reviewer">- Colby</p>
+                    </div>
+                </div>
+                
+                <button class="carousel-btn prev-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://www.fiverr.com/s/ljNDLq7" target="_blank" style="color: var(--brand-primary); font-weight: bold; text-decoration: underline;">
+                    See 100+ Verified 5-Star Reviews on Fiverr
+                </a>
+            </div>
         </div>
-        <button class="carousel-nav" id="carousel-left">◀</button>
-        <button class="carousel-nav" id="carousel-right">▶</button>
-        <div class="fiverr-link"><a href="https://www.fiverr.com/s/ljNDLq7" target="_blank">See more reviews on Fiverr</a></div>
     </section>
-    <section id="booking">
-        <h2 data-phrase-key="bookingTitle">Book a Session</h2>
-        <p>Ready to take the next step? Check availability below.</p>
-        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
+
+    <!-- Booking Section -->
+    <section id="booking" style="background: var(--bg-surface);">
+        <div class="container">
+            <h2 class="section-title" data-key="bookTitle">Book Your Session</h2>
+            <p class="section-subtitle">Ready to work? Select a time below to secure your spot in the vocal gym.</p>
+            
+            <!-- TidyCal Embed Wrapper -->
+            <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session" style="max-width: 800px; margin: 0 auto; box-shadow: var(--shadow); border-radius: 8px; overflow: hidden;"></div>
+        </div>
     </section>
+
+    <!-- Footer -->
     <footer id="contact">
-        <p>Connect with me:</p>
-        <div class="social">
-            <a href="#"><i class="fab fa-facebook-square"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-            <p><a href="mailto:contact@nandovocalcoach.com">contact@nandovocalcoach.com</a></p>
+        <div class="container">
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="mailto:contact@nandovocalcoach.com"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="copyright">© 2024 Nando Vocal Coach. All Rights Reserved.</p>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://assets.tidycal.com/js/embed.js" async></script>
+    
     <script>
+        // --- TRANSLATION DATA ---
+        const translations = {
+            en: {
+                home: "Home", about: "About", services: "Services", pricing: "Pricing", reviews: "Reviews",
+                tagline: "Get your voice in its best shape ever!",
+                heroTitle: "UNLOCK YOUR TRUE\nVOCAL POTENTIAL",
+                heroSub: "Professional coaching to build power, range, and confidence.",
+                cta: "Start Your Transformation",
+                sticky: "Book Now",
+                aboutTitle: "About Nando",
+                exp: "Years Experience",
+                students: "Happy Students",
+                servicesTitle: "The Vocal Gym",
+                servicesSub: "A holistic approach to vocal fitness. We don't just sing; we train.",
+                pricingTitle: "Invest In Your Voice",
+                plan1: "Intro Workout", plan2: "Vocal Fitness", plan3: "Transformation",
+                reviewsTitle: "Success Stories",
+                bookTitle: "Book Your Session"
+            },
+            es: {
+                home: "Inicio", about: "Sobre Mí", services: "Servicios", pricing: "Planes", reviews: "Reseñas",
+                tagline: "¡Pon tu voz en su mejor forma!",
+                heroTitle: "DESBLOQUEA TU\nPOTENCIAL VOCAL",
+                heroSub: "Entrenamiento profesional para construir poder, rango y confianza.",
+                cta: "Comienza Tu Transformación",
+                sticky: "Reservar",
+                aboutTitle: "Sobre Nando",
+                exp: "Años de Experiencia",
+                students: "Estudiantes Felices",
+                servicesTitle: "El Gimnasio Vocal",
+                servicesSub: "Un enfoque holístico. No solo cantamos; entrenamos.",
+                pricingTitle: "Invierte en tu Voz",
+                plan1: "Sesión Intro", plan2: "Fitness Vocal", plan3: "Transformación",
+                reviewsTitle: "Historias de Éxito",
+                bookTitle: "Reserva Tu Sesión"
+            }
+        };
+
+        let currentLang = 'en';
+
+        // --- DOM ELEMENTS ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const langBtn = document.getElementById('lang-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+        const profileImg = document.getElementById('profile-img');
+        const logoImg = document.getElementById('logo');
+
+        // --- THEME TOGGLE ---
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = themeBtn.querySelector('i');
+            
+            // Toggle Logo
+            if(document.body.classList.contains('dark-mode')){
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                logoImg.src = "logodark.png";
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                logoImg.src = "logolight.png";
+            }
+        });
+
+        // --- LANGUAGE TOGGLE ---
+        langBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'es' : 'en';
+            
+            // Switch Flag Image
+            const langIcon = document.getElementById('lang-icon');
+            langIcon.src = currentLang === 'en' ? 'spain-flag.png' : 'uk-flag.png';
+            
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if(translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+        });
+
+        // --- MOBILE MENU ---
+        mobileMenu.addEventListener('click', () => {
+            navbar.classList.toggle('active');
+        });
+        
+        // Close menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('active');
+            });
+        });
+
+        // --- YOUTUBE API ---
         let player;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('hero-video', { videoId: '_OCuHsXcyEI', playerVars: { autoplay: 1, mute: 1, controls: 0, loop: 1, playlist: '_OCuHsXcyEI' },
-                events: { 'onReady': () => setInterval(() => { if(player.getDuration) document.getElementById('progress-bar').value = (player.getCurrentTime()/player.getDuration())*100 }, 1000) }
+            player = new YT.Player('youtube-player', {
+                videoId: '_OCuHsXcyEI', // Replaced with video from prompt
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': '_OCuHsXcyEI',
+                    'mute': 1,
+                    'showinfo': 0,
+                    'modestbranding': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
             });
         }
-        window.addEventListener('load', () => {
-            const btn = document.getElementById('play-toggle'), mute = document.getElementById('mute-toggle'), vol = document.getElementById('volume-slider');
-            if (btn) btn.onclick = () => { if(player.getPlayerState()==1) { player.pauseVideo(); btn.innerText="▶"; } else { player.playVideo(); btn.innerText="⏸"; } };
-            if (mute) mute.onclick = () => { if(player.isMuted()) { player.unMute(); mute.innerText="🔊"; } else { player.mute(); mute.innerText="🔇"; } };
-            if (vol) vol.oninput = () => player.setVolume(vol.value);
-            document.getElementById('open-youtube').onclick = () => window.open("https://www.youtube.com/watch?v="+player.getVideoData().video_id);
-            document.getElementById('sticky-cta').onclick = () => document.getElementById('booking').scrollIntoView();
+
+        function onPlayerReady(event) {
+            event.target.mute();
+            event.target.playVideo();
+        }
+
+        // Custom Video Controls
+        const playBtn = document.getElementById('vid-play');
+        const muteBtn = document.getElementById('vid-mute');
+
+        playBtn.addEventListener('click', () => {
+            const icon = playBtn.querySelector('i');
+            if (player.getPlayerState() === 1) { // Playing
+                player.pauseVideo();
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+            } else {
+                player.playVideo();
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+            }
         });
-        const translations = {
-            en: { headerTagline: "Get your voice in its best shape ever!", home: "Home", aboutNav: "About Me", aboutTitle: "About Me", servicesNav: "Service", pricingNav: "Pricing", testimonialsNav: "Reviews", bookingNav: "Book Now", contactNav: "Contact", ctaButton: "Book a Session", aboutIntro: "Hi, I'm Nando, a Choir Conductor graduate from Tolima Conservatory...", servicesTitle: "Service", pricingTitle: "Pricing", testimonialsTitle: "Reviews", bookingTitle: "Book a Session" },
-            es: { headerTagline: "¡Pon tu voz en la mejor versión!", home: "Inicio", aboutNav: "Sobre mí", aboutTitle: "Sobre mí", servicesNav: "Servicio", pricingNav: "Precios", testimonialsNav: "Testimonios", bookingNav: "Reservar", contactNav: "Contacto", ctaButton: "Reserva ya", aboutIntro: "Hola, soy Nando, graduado en dirección coral del Conservatorio del Tolima...", servicesTitle: "Servicio", pricingTitle: "Precios", testimonialsTitle: "Testimonios", bookingTitle: "Reserva una sesión" }
-        };
-        let lang = 'en';
-        const languageToggle = document.getElementById('language-toggle');
-        if (languageToggle) languageToggle.onclick = () => { lang = lang === 'en' ? 'es' : 'en'; update(); };
-        function update() {
-            document.querySelectorAll('[data-phrase-key]').forEach(el => {
-                const key = el.dataset.phraseKey;
-                if(translations[lang][key]) el.innerText = translations[lang][key];
+
+        muteBtn.addEventListener('click', () => {
+            const icon = muteBtn.querySelector('i');
+            if (player.isMuted()) {
+                player.unMute();
+                icon.classList.remove('fa-volume-mute');
+                icon.classList.add('fa-volume-up');
+            } else {
+                player.mute();
+                icon.classList.remove('fa-volume-up');
+                icon.classList.add('fa-volume-mute');
+            }
+        });
+
+        // --- TESTIMONIAL CAROUSEL ---
+        const track = document.getElementById('track');
+        const slides = Array.from(track.children);
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        let currentSlideIndex = 0;
+
+        function updateSlide(index) {
+            // Hide all
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none'; // Simple hide
             });
-            if (languageToggle) languageToggle.innerHTML = lang === 'en' ? '<img src="spain-flag.png"> ESP' : '<img src="uk-flag.png"> ENG';
+            
+            // Show current
+            slides[index].classList.add('active');
+            slides[index].style.display = 'block';
         }
-        update();
-        document.getElementById('mode-toggle').onclick = () => { document.body.classList.toggle('dark-mode'); document.getElementById('logo').src = document.body.classList.contains('dark-mode') ? 'logodark.png' : 'logolight.png'; };
-        let cur = 0; const items = document.querySelectorAll('.testimonial-item');
-        const show = (n) => { items[cur].classList.remove('active'); cur = (n+items.length)%items.length; items[cur].classList.add('active'); };
-        document.getElementById('carousel-right').onclick = () => show(cur+1);
-        document.getElementById('carousel-left').onclick = () => show(cur-1);
-        const stickyBtn = document.getElementById('sticky-cta');
-        if (stickyBtn) stickyBtn.addEventListener('mouseenter', () => { document.getElementById('hover-sound').currentTime = 0; document.getElementById('hover-sound').play(); });
+
+        // Initialize
+        updateSlide(0);
+
+        nextBtn.addEventListener('click', () => {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            updateSlide(currentSlideIndex);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+            updateSlide(currentSlideIndex);
+        });
+
+        // Auto advance
+        setInterval(() => {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            updateSlide(currentSlideIndex);
+        }, 6000);
+
     </script>
 </body>
 </html>
