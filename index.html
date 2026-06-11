@@ -1000,14 +1000,13 @@
     <section id="lead-magnet">
         <h2 data-phrase-key="lmTitle">Free: The Daily Vocal Gym Routine</h2>
         <p class="lm-subtitle" data-phrase-key="lmSubtitle">5 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.</p>
-        <form action="https://assets.mailerlite.com/jsonp/2425061/forms/189967385843730142/subscribe" method="post" id="ml-subscribe-form" target="_blank" novalidate>
+        <form id="ml-subscribe-form" novalidate>
             <div class="lm-form">
                 <input type="email" name="fields[email]" id="ml-email" placeholder="Your email address" required autocomplete="email">
-                <button type="submit">Send Me the PDF</button>
+                <button type="submit" id="ml-submit-btn">Send Me the PDF</button>
             </div>
-            <input type="hidden" name="ml-submit" value="1">
-            <input type="hidden" name="anticsrf" value="true">
         </form>
+        <p id="ml-success-msg" style="display:none;color:#FF5500;font-weight:700;margin-top:1rem;" data-phrase-key="lmSuccess">Check your inbox! The PDF is on its way.</p>
         <p class="lm-note" data-phrase-key="lmNote">No spam. Unsubscribe anytime.</p>
     </section>
 
@@ -1181,7 +1180,8 @@
                 bookingTitle: "Book a Session",
                 lmTitle: "Free: The Daily Vocal Gym Routine",
                 lmSubtitle: "5 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.",
-                lmNote: "No spam. Unsubscribe anytime."
+                lmNote: "No spam. Unsubscribe anytime.",
+                lmSuccess: "Check your inbox! The PDF is on its way."
             },
             es: {
                 headerTagline: "¡Vamos a poner tu voz en su mejor forma!",
@@ -1229,7 +1229,8 @@
                 bookingTitle: "Reserva una sesión",
                 lmTitle: "Gratis: La Rutina Diaria del Gimnasio Vocal",
                 lmSubtitle: "5 ejercicios, 10 minutos. La misma base de calentamiento que uso con cada estudiante. Gratis.",
-                lmNote: "Sin spam. Cancela cuando quieras."
+                lmNote: "Sin spam. Cancela cuando quieras.",
+                lmSuccess: "Revisa tu bandeja de entrada. El PDF ya está en camino."
             }
         };
 
@@ -1353,6 +1354,40 @@
             observer.observe(section);
         });
 
+    </script>
+
+    <script>
+    (function() {
+        var form = document.getElementById('ml-subscribe-form');
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = document.getElementById('ml-email').value.trim();
+            if (!email) return;
+            var btn = document.getElementById('ml-submit-btn');
+            btn.disabled = true;
+            btn.textContent = '...';
+            var body = new URLSearchParams();
+            body.append('fields[email]', email);
+            body.append('ml-submit', '1');
+            body.append('anticsrf', 'true');
+            fetch('https://assets.mailerlite.com/jsonp/2425061/forms/189967385843730142/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                form.style.display = 'none';
+                document.getElementById('ml-success-msg').style.display = 'block';
+            })
+            .catch(function() {
+                btn.disabled = false;
+                btn.textContent = 'Send Me the PDF';
+                alert('Something went wrong. Please try again.');
+            });
+        });
+    })();
     </script>
 </body>
 </html>
