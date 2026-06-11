@@ -995,22 +995,13 @@
     <section id="lead-magnet">
         <h2 data-phrase-key="lmTitle">Free: The Daily Vocal Gym Routine</h2>
         <p class="lm-subtitle" data-phrase-key="lmSubtitle">5 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.</p>
-        <!--
-            SETUP INSTRUCTIONS (one-time, ~5 min):
-            1. Log into mailchimp.com → Audience → Signup forms → Embedded forms
-            2. Copy the "action" URL from the form code (looks like: https://ACCOUNT.us1.list-manage.com/subscribe/post?u=XXX&id=XXX)
-            3. Paste it as the "action" value below, replacing MAILCHIMP_ACTION_URL_HERE
-            4. In the hidden honeypot input, replace b_XXXXX with the b_ value from your Mailchimp form code
-        -->
-        <form action="MAILCHIMP_ACTION_URL_HERE" method="post" id="mc-subscribe-form" target="_blank" novalidate>
+        <form action="https://assets.mailerlite.com/jsonp/2425061/forms/189967385843730142/subscribe" method="post" id="ml-subscribe-form" target="_blank" novalidate>
             <div class="lm-form">
-                <input type="email" name="EMAIL" id="mce-EMAIL" placeholder="Your email address" required>
-                <button type="submit" name="subscribe">Send Me the PDF</button>
+                <input type="email" name="fields[email]" id="ml-email" placeholder="Your email address" required autocomplete="email">
+                <button type="submit">Send Me the PDF</button>
             </div>
-            <!-- Mailchimp anti-spam honeypot — do not remove -->
-            <div style="position:absolute;left:-5000px;" aria-hidden="true">
-                <input type="text" name="b_REPLACE_ME" tabindex="-1" value="">
-            </div>
+            <input type="hidden" name="ml-submit" value="1">
+            <input type="hidden" name="anticsrf" value="true">
         </form>
         <p class="lm-note" data-phrase-key="lmNote">No spam. Unsubscribe anytime.</p>
     </section>
