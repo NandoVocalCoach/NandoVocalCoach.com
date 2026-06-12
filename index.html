@@ -519,6 +519,12 @@
             line-height: 1;
             color: var(--section-heading);
         }
+        .plan-price-strike {
+            font-size: 1.6rem;
+            text-decoration: line-through;
+            opacity: 0.45;
+            color: var(--text-color);
+        }
         .pricing-card .plan-sub {
             font-size: 0.8rem;
             opacity: 0.6;
@@ -991,8 +997,8 @@
         <div class="pricing-cards">
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan1Name">Voice Diagnosis</div>
-                <div class="plan-price">$40</div>
-                <div class="plan-sub" data-phrase-key="pricingPlan1Sub">1 session</div>
+                <div class="plan-price"><span class="plan-price-strike">$100</span> $40</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan1Sub">First session only</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan1Desc">One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.</div>
                 <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Book Now →</a>
             </div>
@@ -1244,7 +1250,7 @@
                 pricingTitle: "Invest In Your Voice",
                 pricingBadge: "Most Popular",
                 pricingPlan1Name: "Voice Diagnosis",
-                pricingPlan1Sub: "1 session",
+                pricingPlan1Sub: "First session only",
                 pricingPlan1Desc: "One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.",
                 pricingPlan2Name: "Vocal Fitness",
                 pricingPlan2Sub: "4 sessions + custom audio",
@@ -1300,7 +1306,7 @@
                 pricingTitle: "Invierte en Tu Voz",
                 pricingBadge: "Más Popular",
                 pricingPlan1Name: "Diagnóstico Vocal",
-                pricingPlan1Sub: "1 sesión",
+                pricingPlan1Sub: "Solo primera sesión",
                 pricingPlan1Desc: "Una sesión. Escucho, evalúo y te digo exactamente qué está pasando con tu voz. Sales con un diagnóstico y un camino claro. La mayoría de estudiantes nota una diferencia antes de que la sesión termine.",
                 pricingPlan2Name: "Fitness Vocal",
                 pricingPlan2Sub: "4 sesiones + audio personalizado",
