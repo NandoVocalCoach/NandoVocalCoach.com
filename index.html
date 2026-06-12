@@ -461,24 +461,95 @@
         }
         #pricing {
             background: var(--pricing-bg);
-            padding: 32px;
+            padding: 48px 32px;
             text-align: center;
             border-radius: 5px;
         }
-        #pricing p {
-            font-size: 1.2rem;
-            margin: 8px 0;
-            font-weight: bold;
+        #pricing h2 {
+            margin-bottom: 2rem;
+        }
+        .pricing-cards {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        .pricing-card {
+            background: var(--bg-color);
+            border: 2px solid rgba(128,128,128,0.2);
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            flex: 1;
+            min-width: 240px;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: left;
+        }
+        .pricing-card.featured {
+            border-color: var(--section-heading);
+            position: relative;
+        }
+        .pricing-card .badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--section-heading);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 3px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .pricing-card .plan-name {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+            color: var(--text-color);
+        }
+        .pricing-card .plan-price {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 3rem;
+            line-height: 1;
             color: var(--section-heading);
         }
-        #pricing ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 10px;
+        .pricing-card .plan-sub {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: -0.5rem;
         }
-        #pricing ul li {
-            margin-bottom: 5px;
-            font-size: 1.1rem;
+        .pricing-card .plan-desc {
+            font-size: 0.9rem;
+            line-height: 1.55;
+            opacity: 0.85;
+            flex: 1;
+        }
+        .pricing-card .plan-cta {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--section-heading);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .pricing-card .plan-cta:hover {
+            background: var(--section-heading-darker);
+        }
+        .pricing-scarcity {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
         }
 
 
@@ -917,19 +988,31 @@
 
     <section id="pricing">
         <h2 data-phrase-key="pricingTitle">Invest In Your Voice</h2>
-        <p>
-            <strong data-phrase-key="pricingPlan1Name">Voice Diagnosis: $40</strong><br>
-            <span data-phrase-key="pricingPlan1Desc">One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.</span>
-        </p>
-        <p>
-            <strong data-phrase-key="pricingPlan2Name">Vocal Fitness: $360</strong><br>
-            <span data-phrase-key="pricingPlan2Desc">4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.</span>
-        </p>
-        <p>
-            <strong data-phrase-key="pricingPlan3Name">Transformation: $590</strong><br>
-            <span data-phrase-key="pricingPlan3Desc">8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.</span>
-        </p>
-        <p style="margin-top: 1.5rem; font-size: 0.95rem; opacity: 0.75;" data-phrase-key="pricingScarcity">
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="plan-name" data-phrase-key="pricingPlan1Name">Voice Diagnosis</div>
+                <div class="plan-price">$40</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan1Sub">1 session</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan1Desc">One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.</div>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Book Now →</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="badge" data-phrase-key="pricingBadge">Most Popular</div>
+                <div class="plan-name" data-phrase-key="pricingPlan2Name">Vocal Fitness</div>
+                <div class="plan-price">$360</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions + custom audio</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan2Desc">4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.</div>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA2">Book Now →</a>
+            </div>
+            <div class="pricing-card">
+                <div class="plan-name" data-phrase-key="pricingPlan3Name">Transformation</div>
+                <div class="plan-price">$590</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions + full access</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan3Desc">8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.</div>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA3">Book Now →</a>
+            </div>
+        </div>
+        <p class="pricing-scarcity" data-phrase-key="pricingScarcity">
             I work with a limited number of students each month to keep coaching quality high. <a href="#booking" style="color: var(--section-heading); font-weight: bold;">Check availability →</a>
         </p>
     </section>
@@ -1159,12 +1242,19 @@
                 service2: "Hit those high notes!",
                 service3: "Develop your style!",
                 pricingTitle: "Invest In Your Voice",
-                pricingPlan1Name: "Voice Diagnosis: $40",
+                pricingBadge: "Most Popular",
+                pricingPlan1Name: "Voice Diagnosis",
+                pricingPlan1Sub: "1 session",
                 pricingPlan1Desc: "One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.",
-                pricingPlan2Name: "Vocal Fitness: $360",
+                pricingPlan2Name: "Vocal Fitness",
+                pricingPlan2Sub: "4 sessions + custom audio",
                 pricingPlan2Desc: "4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.",
-                pricingPlan3Name: "Transformation: $590",
+                pricingPlan3Name: "Transformation",
+                pricingPlan3Sub: "8 sessions + full access",
                 pricingPlan3Desc: "8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.",
+                pricingCTA: "Book Now →",
+                pricingCTA2: "Book Now →",
+                pricingCTA3: "Book Now →",
                 pricingScarcity: "I work with a limited number of students each month to keep coaching quality high. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Check availability →</a>",
                 testimonialsTitle: "Reviews",
                 testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
@@ -1208,12 +1298,19 @@
                 service2: "¡Alcanza esas notas altas!",
                 service3: "¡Desarrolla tu estilo!",
                 pricingTitle: "Invierte en Tu Voz",
-                pricingPlan1Name: "Diagnóstico Vocal: $40",
+                pricingBadge: "Más Popular",
+                pricingPlan1Name: "Diagnóstico Vocal",
+                pricingPlan1Sub: "1 sesión",
                 pricingPlan1Desc: "Una sesión. Escucho, evalúo y te digo exactamente qué está pasando con tu voz. Sales con un diagnóstico y un camino claro. La mayoría de estudiantes nota una diferencia antes de que la sesión termine.",
-                pricingPlan2Name: "Fitness Vocal: $360",
+                pricingPlan2Name: "Fitness Vocal",
+                pricingPlan2Sub: "4 sesiones + audio personalizado",
                 pricingPlan2Desc: "4 sesiones privadas más ejercicios de audio personalizados. Aquí es donde se construye la técnica real. La mayoría nota un cambio claro en la sesión 2: más potencia, menos esfuerzo, más control.",
-                pricingPlan3Name: "Transformación: $590",
+                pricingPlan3Name: "Transformación",
+                pricingPlan3Sub: "8 sesiones + acceso completo",
                 pricingPlan3Desc: "8 sesiones intensivas, un programa de ejercicios personalizado y acceso completo al coaching entre sesiones. Esto es para cantantes serios. Vamos profundo, nos mantenemos constantes, y al final... apenas reconocerás tu propia voz.",
+                pricingCTA: "Reservar →",
+                pricingCTA2: "Reservar →",
+                pricingCTA3: "Reservar →",
                 pricingScarcity: "Trabajo con un número limitado de estudiantes cada mes para mantener la calidad del coaching. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Ver disponibilidad →</a>",
                 testimonialsTitle: "Testimonios",
                 testimonial0: "Nando está en otra liga. He trabajado con entrenadores vocales excelentes, pero Nando aporta algo único: verdadera maestría combinada con un compromiso genuino. No solo me ayudó a volver a cantar, sino a entender el origen de mi tensión vocal con precisión, empatía y un plan personalizado. Su experiencia en el manejo de la hiperfunción vocal y las técnicas SOVT es realmente avanzada, y creó una rutina completa que abarcó desde la movilidad física hasta la conexión emocional. – Paul",
