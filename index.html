@@ -939,7 +939,7 @@
             For the voice that fights itself.
         </p>
         <div class="toggle-container">
-            <button id="mode-toggle">Black</button>
+            <button id="mode-toggle">🌙</button>
             <button id="language-toggle"></button>
         </div>
         <nav>
@@ -1422,21 +1422,21 @@
 
         if (localStorage.getItem('mode') === 'dark') {
             document.body.classList.add('dark-mode');
-            modeToggle.innerText = 'White';
+            modeToggle.innerText = '☀️';
             logo.src = 'logodark.png';
         } else {
-            modeToggle.innerText = 'Black';
+            modeToggle.innerText = '🌙';
             logo.src = 'logolight.png';
         }
 
         modeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
-                modeToggle.innerText = 'White';
+                modeToggle.innerText = '☀️';
                 logo.src = 'logodark.png';
                 localStorage.setItem('mode', 'dark');
             } else {
-                modeToggle.innerText = 'Black';
+                modeToggle.innerText = '🌙';
                 logo.src = 'logolight.png';
                 localStorage.setItem('mode', 'light');
             }
