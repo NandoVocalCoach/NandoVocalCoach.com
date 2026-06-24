@@ -948,7 +948,7 @@
             <a href="#services" data-phrase-key="servicesNav">Services</a>
             <a href="#pricing" data-phrase-key="pricingNav">Pricing</a>
             <a href="#testimonials-anchor" data-phrase-key="testimonialsNav">Reviews</a>
-            <a href="#booking" data-phrase-key="bookingNav">Book Now</a>
+            <a href="#booking" data-phrase-key="bookingNav">Pick Your Time</a>
             <a href="#contact" data-phrase-key="contactNav">Contact</a>
         </nav>
     </header>
@@ -984,7 +984,7 @@
             </div>
         </div>
     </section>
-    <button id="sticky-cta" data-phrase-key="ctaButton">Get Your Voice Diagnosed — 5 Spots Left</button>
+    <button id="sticky-cta" data-phrase-key="ctaButton">Get Your Voice Diagnosed</button>
 
     <section id="about">
         <div class="about-container">
@@ -1034,7 +1034,7 @@
                 <div class="plan-sub" data-phrase-key="pricingPlan1Sub">First session only</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan1Desc">One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.</div>
                 <div class="plan-guarantee" data-phrase-key="pricingGuarantee">Hear a difference, or it's free.</div>
-                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Book Now →</a>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Pick Your Time →</a>
             </div>
             <div class="pricing-card featured">
                 <div class="badge" data-phrase-key="pricingBadge">Most Popular</div>
@@ -1042,14 +1042,14 @@
                 <div class="plan-price">$360</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions + custom audio</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan2Desc">4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.</div>
-                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA2">Book Now →</a>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA2">Pick Your Time →</a>
             </div>
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan3Name">Transformation</div>
                 <div class="plan-price">$590</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions + full access</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan3Desc">8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.</div>
-                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA3">Book Now →</a>
+                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA3">Pick Your Time →</a>
             </div>
         </div>
         <p class="pricing-scarcity" data-phrase-key="pricingScarcity">
@@ -1146,7 +1146,7 @@
             If your voice has been stuck at the same wall, here's where you find out why. One session. I listen, assess, and tell you exactly what's happening physically — and what needs to change. If you don't hear a clear difference before the session ends, you don't pay.
         </p>
         <!-- TidyCal integration code -->
-        <div class="calendly-inline-widget" data-url="https://tidycal.com/nando-vocal-coach/1st-session"></div>
+        <div class="tidycal-embed" data-path="nando-vocal-coach/1st-session"></div>
     </section>
 
     <footer id="contact">
@@ -1161,9 +1161,9 @@
         </div>
     </footer>
 
-    <!-- Load YouTube IFrame API & Calendly widget -->
+    <!-- Load YouTube IFrame API & TidyCal embed -->
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+    <script src="https://asset-tidycal.b-cdn.net/js/embed.js" async></script>
     <script>
         // YouTube IFrame API integration for hero video with progress tracking
         let player;
@@ -1274,11 +1274,11 @@
                 servicesNav: "Service", /* Changed to singular */
                 pricingNav: "Pricing",
                 testimonialsNav: "Reviews",
-                bookingNav: "Book Now",
+                bookingNav: "Pick Your Time",
                 contactNav: "Contact",
                 heroHeading: "Unlock Your True Voice",
                 heroSubheading: "Transform your singing with innovative techniques and expert guidance.",
-                ctaButton: "Get Your Voice Diagnosed — 5 Spots Left",
+                ctaButton: "Get Your Voice Diagnosed",
                 aboutIntro: "I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.",
                 aboutAdditional: "Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.",
                 aboutPart3: "So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong>",
@@ -1300,9 +1300,9 @@
                 pricingPlan3Name: "Transformation",
                 pricingPlan3Sub: "8 sessions + full access",
                 pricingPlan3Desc: "8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.",
-                pricingCTA: "Book Now →",
-                pricingCTA2: "Book Now →",
-                pricingCTA3: "Book Now →",
+                pricingCTA: "Pick Your Time →",
+                pricingCTA2: "Pick Your Time →",
+                pricingCTA3: "Pick Your Time →",
                 pricingScarcity: "I work with a limited number of students each month to keep coaching quality high. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Check availability →</a>",
                 testimonialsTitle: "Reviews",
                 testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
@@ -1339,7 +1339,7 @@
                 contactNav: "Contacto",
                 heroHeading: "Descubre tu verdadera voz",
                 heroSubheading: "Transforma tu canto con técnicas innovadoras y asesoría experta.",
-                ctaButton: "Obtén tu diagnóstico vocal — 5 Cupos",
+                ctaButton: "Obtén tu diagnóstico vocal",
                 aboutIntro: "Estaba en quinto semestre del conservatorio cuando un médico me dijo que <strong>dejara de cantar</strong>.",
                 aboutAdditional: "Tres años de entrenamiento me habían dejado con fatiga vocal: cuerdas inflamadas, un cuerpo apretando donde debería estar libre. Me mudé de ciudad a estudiar dirección de coros. El maestro que encontré allí, un cantante de ópera cubano que llevaba décadas en los escenarios, me observó luchar y me dijo que yo no tenía el talento, que dañaría otras voces si seguía. No era maldad de su parte. Para él, el canto nunca había sido difícil. Simplemente no sabía qué hacer con <strong>una voz que se peleaba consigo misma</strong>.",
                 aboutPart3: "Así que me obsesioné. Fonoaudiólogos, investigación en vocología, cada ejercicio probado en mí mismo antes de dárselo a un estudiante. Lo que seguía encontrando, caso tras caso: hiperfunción vocal. Dos grupos musculares opuestos contrayéndose al mismo tiempo, en cada fonación. La voz no es débil. Se pelea consigo misma. <strong>Y entre más fuerza haces, más se traba.</strong>",
