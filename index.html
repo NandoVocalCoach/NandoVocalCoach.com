@@ -52,8 +52,8 @@
         "name": "Vocal Coaching Services",
         "itemListElement": [
           { "@type": "Offer", "name": "Voice Diagnosis (first session)", "price": "40", "priceCurrency": "USD" },
-          { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "360", "priceCurrency": "USD" },
-          { "@type": "Offer", "name": "Transformation (8 sessions)", "price": "590", "priceCurrency": "USD" }
+          { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "320", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "Transformation (8 sessions)", "price": "560", "priceCurrency": "USD" }
         ]
       }
     }
@@ -557,6 +557,11 @@
             font-size: 0.9rem;
             opacity: 0.7;
         }
+        .pricing-single-session {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
         .plan-guarantee {
             font-size: 0.78rem;
             font-weight: 700;
@@ -1039,14 +1044,14 @@
             <div class="pricing-card featured">
                 <div class="badge" data-phrase-key="pricingBadge">Most Popular</div>
                 <div class="plan-name" data-phrase-key="pricingPlan2Name">Vocal Fitness</div>
-                <div class="plan-price">$360</div>
+                <div class="plan-price">$320</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions + custom audio</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan2Desc">4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.</div>
                 <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA2">Pick Your Time →</a>
             </div>
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan3Name">Transformation</div>
-                <div class="plan-price">$590</div>
+                <div class="plan-price">$560</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions + full access</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan3Desc">8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.</div>
                 <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA3">Pick Your Time →</a>
@@ -1054,6 +1059,9 @@
         </div>
         <p class="pricing-scarcity" data-phrase-key="pricingScarcity">
             I work with a limited number of students each month to keep coaching quality high. <a href="#booking" style="color: var(--section-heading); font-weight: bold;">Check availability →</a>
+        </p>
+        <p class="pricing-single-session" data-phrase-key="pricingSingleSession">
+            Already finished the program, or just need a one-off tune-up? Single sessions are $99 — <a href="#booking" style="color: var(--section-heading); font-weight: bold;">message me to book one</a>.
         </p>
     </section>
 
@@ -1128,8 +1136,8 @@
 
     <!-- Lead Magnet: Free PDF opt-in -->
     <section id="lead-magnet">
-        <h2 data-phrase-key="lmTitle">Free: The Daily Vocal Gym Routine</h2>
-        <p class="lm-subtitle" data-phrase-key="lmSubtitle">5 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.</p>
+        <h2 data-phrase-key="lmTitle">Free: The Tension-Release Vocal Warm-Up</h2>
+        <p class="lm-subtitle" data-phrase-key="lmSubtitle">3 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.</p>
         <form id="ml-subscribe-form" novalidate>
             <div class="lm-form">
                 <input type="email" name="fields[email]" id="ml-email" placeholder="Your email address" required autocomplete="email">
@@ -1304,6 +1312,7 @@
                 pricingCTA2: "Pick Your Time →",
                 pricingCTA3: "Pick Your Time →",
                 pricingScarcity: "I work with a limited number of students each month to keep coaching quality high. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Check availability →</a>",
+                pricingSingleSession: "Already finished the program, or just need a one-off tune-up? Single sessions are $99 — <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">message me to book one</a>.",
                 testimonialsTitle: "Reviews",
                 testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
                 testimonial1: "Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby",
@@ -1320,8 +1329,8 @@
                 pricingGuarantee: "Hear a difference, or it's free.",
                 guaranteeTitle: "The First Session Guarantee",
                 guaranteeBody: "If you don't hear a clear, noticeable difference in your voice before our first session ends, you don't pay. Not \"you might improve.\" You will, or I don't take your money. In 270+ sessions, I have never had to honor this guarantee. That's not a boast. That's how the method works.",
-                lmTitle: "Free: The Daily Vocal Gym Routine",
-                lmSubtitle: "5 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.",
+                lmTitle: "Free: The Tension-Release Vocal Warm-Up",
+                lmSubtitle: "3 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.",
                 lmNote: "No spam. Unsubscribe anytime.",
                 lmSuccess: "Check your inbox! The PDF is on its way."
             },
@@ -1365,6 +1374,7 @@
                 pricingCTA2: "Reservar →",
                 pricingCTA3: "Reservar →",
                 pricingScarcity: "Trabajo con un número limitado de estudiantes cada mes para mantener la calidad del coaching. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Ver disponibilidad →</a>",
+                pricingSingleSession: "¿Ya terminaste el programa, o solo necesitas una sesión suelta? Las sesiones individuales cuestan $99 — <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">escríbeme para reservar una</a>.",
                 testimonialsTitle: "Testimonios",
                 testimonial0: "Nando está en otra liga. He trabajado con entrenadores vocales excelentes, pero Nando aporta algo único: verdadera maestría combinada con un compromiso genuino. No solo me ayudó a volver a cantar, sino a entender el origen de mi tensión vocal con precisión, empatía y un plan personalizado. Su experiencia en el manejo de la hiperfunción vocal y las técnicas SOVT es realmente avanzada, y creó una rutina completa que abarcó desde la movilidad física hasta la conexión emocional. – Paul",
                 testimonial1: "Nando es un excelente coach vocal. Se concentra en lo que realmente necesitas, se preocupa por tu progreso, y te brinda retroalimentación rápida y detallada entre sesiones. – Colby",
@@ -1381,8 +1391,8 @@
                 pricingGuarantee: "Nota la diferencia, o no pagas.",
                 guaranteeTitle: "La Garantía de Primera Sesión",
                 guaranteeBody: "Si no escuchas una diferencia real y notable en tu voz antes de que termine la primera sesión, no pagas. No es un \"puede que mejores\". Vas a mejorar, o no acepto tu dinero. En más de 270 sesiones, nunca he tenido que hacer válida esta garantía. No es alarde. Así funciona el método.",
-                lmTitle: "Gratis: La Rutina Diaria del Gimnasio Vocal",
-                lmSubtitle: "5 ejercicios, 10 minutos. La misma base de calentamiento que uso con cada estudiante. Gratis.",
+                lmTitle: "Gratis: El Calentamiento Vocal para Liberar Tensión",
+                lmSubtitle: "3 ejercicios, 10 minutos. La misma base de calentamiento que uso con cada estudiante. Gratis.",
                 lmNote: "Sin spam. Cancela cuando quieras.",
                 lmSuccess: "Revisa tu bandeja de entrada. El PDF ya está en camino."
             }
