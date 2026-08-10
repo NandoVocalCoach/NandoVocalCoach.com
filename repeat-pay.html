@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Unlock one repeat vocal diagnosis — $5, one-time.">
-  <title>Unlock a Repeat Diagnosis | Nando Vocal Coach</title>
+  <meta name="description" content="Unlock one repeat vocal assessment — $5, one-time.">
+  <title>Unlock a Repeat Assessment | Nando Vocal Coach</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
 
@@ -58,9 +58,9 @@
 <body>
 
 <div class="card">
-  <h1>Unlock a Repeat Diagnosis</h1>
+  <h1>Unlock a Repeat Assessment</h1>
   <div class="price">$5.00 · one-time</div>
-  <div class="subtitle">Your first diagnosis was free. This unlocks one more — including a real before/after comparison against your last result.</div>
+  <div class="subtitle">Your first assessment was free. This unlocks one more — including a real before/after comparison against your last result.</div>
 
   <div id="emailGate" class="email-gate">
     <input type="email" id="emailField" placeholder="Your email">
@@ -96,7 +96,7 @@
       createOrder: function (data, actions) {
         return actions.order.create({
           purchase_units: [{
-            description: 'Repeat vocal diagnosis unlock',
+            description: 'Repeat vocal assessment unlock',
             amount: { value: '5.00', currency_code: 'USD' },
           }],
         });
@@ -111,7 +111,7 @@
           .then((resp) => resp.json())
           .then((result) => {
             if (result.status === 'completed') {
-              statusEl.innerHTML = '<span class="success">Unlocked! Go redo your diagnosis whenever you\'re ready.</span>';
+              statusEl.innerHTML = '<span class="success">Unlocked! Go redo your assessment whenever you\'re ready.</span>';
             } else {
               statusEl.textContent = `Status: ${result.status}. Contact nando@nandovocalcoach.com if this seems wrong.`;
             }
