@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Your daily pitch-matching drill from Nando Vocal Coach — 30 seconds, keep your streak alive.">
+  <title>Daily Drill | Nando Vocal Coach</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #fff; --text: #1F2937; --muted: #6B7280;
+      --heading: #FF5500; --navy: #1B2A4A; --card-bg: #F9FAFB; --border: #E5E7EB;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0D0D0D; --text: #F3F4F6; --muted: #9CA3AF; --card-bg: #1A1A1A; --border: #374151; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      max-width: 440px; width: 100%; text-align: center;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 28px;
+    }
+    h1 {
+      font-family: "Bebas Neue", sans-serif; font-size: 2rem;
+      color: var(--heading); letter-spacing: 0.02em; margin-bottom: 6px;
+    }
+    .streak {
+      font-size: 0.95rem; color: var(--muted); margin-bottom: 24px;
+    }
+    .streak strong { color: var(--heading); }
+    .drill-btn {
+      background: #FF5500; color: white; border: none; border-radius: 8px;
+      padding: 16px 24px; font-family: "Bebas Neue", sans-serif; font-size: 1.2rem;
+      letter-spacing: 0.03em; cursor: pointer; width: 100%;
+    }
+    .drill-btn:disabled { opacity: 0.6; cursor: default; }
+    .status { margin-top: 16px; font-size: 0.9rem; color: var(--muted); min-height: 20px; }
+    .result { display: none; margin-top: 20px; }
+    .result-score { font-family: "Bebas Neue", sans-serif; font-size: 2.4rem; color: var(--heading); }
+    .result-note { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+    .email-gate { margin-top: 16px; }
+    .email-gate input {
+      width: 100%; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--border);
+      font-family: "Montserrat", sans-serif; font-size: 0.95rem; margin-bottom: 10px;
+      background: var(--bg); color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Today's Drill</h1>
+  <div class="streak" id="streakDisplay">&nbsp;</div>
+
+  <div id="emailGate" class="email-gate" style="display:none;">
+    <input type="email" id="emailField" placeholder="Your email">
+    <button class="drill-btn" id="emailContinueBtn">Continue</button>
+  </div>
+
+  <div id="drillArea" style="display:none;">
+    <button class="drill-btn" id="startBtn">🎤 Start Drill</button>
+    <div class="status" id="statusEl"></div>
+    <div class="result" id="resultEl">
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-note" id="resultNote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5055'
+    : 'https://api.nandovocalcoach.com';
+  const DETECT_PITCH_URL = `${API_BASE}/detect-pitch`;
+  const DRILL_URL = `${API_BASE}/drill`;
+  const STREAK_URL = `${API_BASE}/drill/streak`;
+
+  // ── Identity: URL param (from the trial-invite email) wins, then
+  // localStorage for repeat same-device visits, then ask once. ──
+  const params = new URLSearchParams(location.search);
+  let email = params.get('email') || localStorage.getItem('nvc_drill_email') || '';
+
+  const emailGate = document.getElementById('emailGate');
+  const emailField = document.getElementById('emailField');
+  const drillArea = document.getElementById('drillArea');
+  const streakDisplay = document.getElementById('streakDisplay');
+
+  function showStreak(n) {
+    streakDisplay.innerHTML = n > 0
+      ? `<strong>${n}-day streak</strong> — keep it going`
+      : `Your first drill today — let's start a streak`;
+  }
+
+  async function loadStreak() {
+    if (!email) return;
+    try {
+      const resp = await fetch(`${STREAK_URL}?email=${encodeURIComponent(email)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        showStreak(data.streak || 0);
+      }
+    } catch (err) { /* non-critical, just skip the greeting */ }
+  }
+
+  function init() {
+    if (email) {
+      localStorage.setItem('nvc_drill_email', email);
+      drillArea.style.display = 'block';
+      loadStreak();
+    } else {
+      emailGate.style.display = 'block';
+    }
+  }
+
+  document.getElementById('emailContinueBtn').addEventListener('click', () => {
+    const v = emailField.value.trim();
+    if (!v) return;
+    email = v;
+    localStorage.setItem('nvc_drill_email', email);
+    emailGate.style.display = 'none';
+    drillArea.style.display = 'block';
+    loadStreak();
+  });
+
+  // ── Same pitch-match mechanism as diagnose.html step 1: measured root
+  // (not asked) via a short speech sample, then a 4-note triad, call and
+  // response, timing constants matched to build_guide_track()'s defaults. ──
+  const TRIAD_SEMITONES = [0, 4, 7, 12];
+  const TONE_SEC = 1.5, PRE_PAUSE_SEC = 0.3, BEEP_HZ = 880, BEEP_SEC = 0.15,
+        SING_SEC = 2.5, POST_PAUSE_SEC = 0.5, LEAD_IN_SEC = 0.3, SPEECH_CHECK_SEC = 3;
+  const DEFAULT_ROOT_HZ = 220.0;
+
+  let micStream = null;
+  async function getMicStream() {
+    if (micStream) return micStream;
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    return micStream;
+  }
+
+  function pickMimeType() {
+    return (window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
+      ? 'audio/webm;codecs=opus' : '';
+  }
+
+  function buildTriadHz(rootHz) {
+    return TRIAD_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
+  }
+
+  function scheduleTone(ctx, hz, durationSec, startTime) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = hz;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const fade = 0.02;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.5, startTime + fade);
+    gain.gain.setValueAtTime(0.5, startTime + durationSec - fade);
+    gain.gain.linearRampToValueAtTime(0, startTime + durationSec);
+    osc.start(startTime);
+    osc.stop(startTime + durationSec);
+  }
+
+  function recordFixedClip(stream, durationSec) {
+    return new Promise((resolve) => {
+      const mimeType = pickMimeType();
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType || 'audio/webm' }));
+      recorder.start();
+      setTimeout(() => recorder.stop(), durationSec * 1000);
+    });
+  }
+
+  async function detectRootHz(speechBlob) {
+    try {
+      const formData = new FormData();
+      formData.append('speech', speechBlob, 'speech.webm');
+      const resp = await fetch(DETECT_PITCH_URL, { method: 'POST', body: formData });
+      if (!resp.ok) throw new Error(`detect-pitch responded ${resp.status}`);
+      const data = await resp.json();
+      return data.root_hz || DEFAULT_ROOT_HZ;
+    } catch (err) {
+      return DEFAULT_ROOT_HZ;
+    }
+  }
+
+  const startBtn  = document.getElementById('startBtn');
+  const statusEl  = document.getElementById('statusEl');
+  const resultEl  = document.getElementById('resultEl');
+  const resultScore = document.getElementById('resultScore');
+  const resultNote  = document.getElementById('resultNote');
+
+  async function runDrill() {
+    startBtn.disabled = true;
+    resultEl.style.display = 'none';
+
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    statusEl.textContent = 'Requesting microphone…';
+    let stream;
+    try {
+      stream = await getMicStream();
+    } catch (err) {
+      statusEl.textContent = "Couldn't access your microphone — check browser permissions.";
+      startBtn.disabled = false;
+      return;
+    }
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    statusEl.textContent = "Say a sentence naturally…";
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    statusEl.textContent = `Recording… (${SPEECH_CHECK_SEC}s)`;
+    const speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+
+    statusEl.textContent = 'Getting your range…';
+    const rootHz = await detectRootHz(speechBlob);
+
+    statusEl.textContent = 'Starting…';
+    await new Promise((resolve) => setTimeout(resolve, 700));
+
+    const NOTES = buildTriadHz(rootHz);
+    const mimeType = pickMimeType();
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const chunks = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+
+    recorder.start();
+    let t = ctx.currentTime + LEAD_IN_SEC;
+    let statusCursorSec = LEAD_IN_SEC;
+
+    NOTES.forEach((hz, i) => {
+      scheduleTone(ctx, hz, TONE_SEC, t);
+      setTimeout(() => { statusEl.textContent = `Note ${i + 1}/${NOTES.length} — listen…`; }, statusCursorSec * 1000);
+      t += TONE_SEC + PRE_PAUSE_SEC;
+      statusCursorSec += TONE_SEC + PRE_PAUSE_SEC;
+
+      scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
+      t += BEEP_SEC;
+      statusCursorSec += BEEP_SEC;
+
+      setTimeout(() => { statusEl.textContent = `Note ${i + 1}/${NOTES.length} — sing now!`; }, statusCursorSec * 1000);
+      t += SING_SEC;
+      statusCursorSec += SING_SEC;
+
+      t += POST_PAUSE_SEC;
+      statusCursorSec += POST_PAUSE_SEC;
+    });
+
+    const totalMs = statusCursorSec * 1000;
+    setTimeout(() => { recorder.stop(); }, totalMs + 300);
+    await stopped;
+
+    const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
+    statusEl.textContent = 'Scoring…';
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('pitch_root_hz', String(rootHz));
+    formData.append('pitch', blob, 'pitch.webm');
+
+    try {
+      const resp = await fetch(DRILL_URL, { method: 'POST', body: formData });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'scoring failed');
+
+      statusEl.textContent = '';
+      resultScore.textContent = `${data.on_pitch}/${data.total_notes} on pitch`;
+      resultNote.textContent = data.streak > 0
+        ? `${data.streak}-day streak — see you tomorrow`
+        : `Streak started — come back tomorrow`;
+      resultEl.style.display = 'block';
+      showStreak(data.streak || 0);
+      startBtn.textContent = '🔁 Do It Again';
+    } catch (err) {
+      statusEl.textContent = "Something went wrong scoring that — try again?";
+    }
+
+    startBtn.disabled = false;
+  }
+
+  startBtn.addEventListener('click', runDrill);
+  init();
+})();
+</script>
+
+</body>
+</html>

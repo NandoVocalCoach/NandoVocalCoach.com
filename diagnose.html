@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Get a free AI-powered vocal diagnosis. Record 4 short guided steps right in your browser, receive a full report — your pattern, pitch graph, and a clear direction. From Nando Vocal Coach.">
+  <link rel="canonical" href="https://nandovocalcoach.com/diagnose">
+  <title>Free Vocal Diagnosis | Nando Vocal Coach</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #fff;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --heading: #FF5500;
+      --navy: #1B2A4A;
+      --card-bg: #F9FAFB;
+      --border: #E5E7EB;
+      --header-bg: rgba(224,224,224,0.5);
+      --header-border: #FF5500;
+    }
+    .dark-mode {
+      --bg: #0D0D0D;
+      --text: #F3F4F6;
+      --muted: #9CA3AF;
+      --card-bg: #1A1A1A;
+      --border: #374151;
+      --header-bg: rgba(20,20,20,0.7);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+      line-height: 1.7;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Header ── */
+    header {
+      position: fixed;
+      top: 0; width: 100%;
+      background: var(--header-bg);
+      border-bottom: 2px solid var(--header-border);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+    }
+    .logo img { max-width: 180px; }
+    .header-right { display: flex; gap: 10px; align-items: center; }
+    .header-right a {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    #mode-toggle {
+      padding: 5px 12px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 15px;
+      border: 2px solid #FF5500;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #FF5500;
+      color: white;
+    }
+
+    /* ── Page ── */
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero { text-align: center; margin-bottom: 56px; }
+    .hero-label {
+      display: inline-block;
+      background: #FF5500;
+      color: white;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      padding: 4px 14px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      color: var(--navy);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .dark-mode .hero h1 { color: #fff; }
+    .hero h1 span { color: #FF5500; }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 28px;
+    }
+    .pill-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .pill strong { color: var(--text); }
+
+    /* ── How it works ── */
+    .section-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.8rem;
+      color: var(--navy);
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+    }
+    .dark-mode .section-title { color: #fff; }
+    .section-title span { color: #FF5500; }
+
+    .steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 48px; }
+    .step {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      background: #FF5500;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.1rem;
+    }
+    .step-body h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step-body p { font-size: 0.9rem; color: var(--muted); }
+    .step-body code {
+      background: var(--border);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 0.82rem;
+      font-family: monospace;
+    }
+
+    /* ── Record-in-place widgets (all 4 steps) ── */
+    .rec-widget-box { margin-top: 14px; }
+    .rec-btn {
+      display: inline-block;
+      background: #FF5500;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    .rec-btn:disabled { opacity: 0.5; cursor: default; }
+    .rec-btn-outline {
+      background: transparent;
+      color: #FF5500;
+      border: 2px solid #FF5500;
+      padding: 8px 16px;
+    }
+    .rec-status {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--navy);
+      min-height: 1.2em;
+    }
+    .dark-mode .rec-status { color: #fff; }
+    .rec-done-msg { font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .rec-hint { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+    .step-complete { border-color: #FF5500; }
+
+    /* ── What you get ── */
+    .gets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 48px; }
+    .get {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .get-icon { font-size: 1.3rem; margin-bottom: 6px; }
+    .get h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .get p  { font-size: 0.83rem; color: var(--muted); }
+
+    @media (max-width: 520px) { .gets { grid-template-columns: 1fr; } }
+
+    /* ── Form section ── */
+    .form-section {
+      background: var(--navy);
+      border-radius: 14px;
+      padding: 40px 32px;
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    .form-section h2 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2rem;
+      color: white;
+      margin-bottom: 8px;
+    }
+    .form-section p { color: #9CA3AF; font-size: 0.92rem; margin-bottom: 24px; }
+
+    /* ── Patterns preview ── */
+    .patterns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 48px; }
+    .pattern-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .pattern-card h4 {
+      font-family: "Bebas Neue", sans-serif;
+      color: #FF5500;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    .pattern-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+    @media (max-width: 560px) { .patterns { grid-template-columns: 1fr 1fr; } }
+
+    /* ── FAQ ── */
+    .faqs { margin-bottom: 56px; }
+    .faq { border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .faq-q {
+      font-weight: 700;
+      font-size: 0.98rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-q::after { content: "+"; color: #FF5500; font-size: 1.2rem; }
+    .faq-q.open::after { content: "−"; }
+    .faq-a { display: none; font-size: 0.9rem; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+    .faq-a.open { display: block; }
+
+    /* ── Social proof ── */
+    .proof {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .proof-stars { color: #FF5500; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 8px; }
+    .proof p { font-style: italic; color: var(--muted); font-size: 0.92rem; }
+    .proof cite { display: block; margin-top: 10px; font-size: 0.82rem; font-weight: 700; font-style: normal; }
+
+    /* ── Footer ── */
+    footer {
+      background: #FF5500;
+      color: black;
+      text-align: center;
+      padding: 24px;
+      font-size: 0.85rem;
+    }
+    footer a { color: black; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <a href="/" class="logo">
+    <img id="logo" src="logolight.png" alt="Nando Vocal Coach" />
+  </a>
+  <div class="header-right">
+    <a href="/">← Back to site</a>
+    <button id="mode-toggle">🌙</button>
+  </div>
+</header>
+
+<!-- ── Page ── -->
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">FREE · NO STRINGS</div>
+    <h1>Find out <span>exactly</span> what's<br>holding your voice back.</h1>
+    <p>4 short guided steps, right here in your browser — hear an example, record, done. Get a full AI vocal diagnosis — your pattern, a pitch graph, and a clear direction. In your inbox in minutes.</p>
+    <div class="pill-row">
+      <span class="pill"><strong>6 min</strong>, all in-browser</span>
+      <span class="pill"><strong>Free</strong> forever</span>
+      <span class="pill"><strong>PDF</strong> in your inbox</span>
+      <span class="pill">No account needed</span>
+    </div>
+  </div>
+
+  <!-- What to send -->
+  <div style="margin-bottom: 48px;">
+    <div class="section-title">What to <span>Send</span></div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">Everything happens right here — hear an example, record, done. Nothing to upload.</p>
+    <div class="steps">
+      <div class="step" id="stepPitch">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Pitch match — right here, ~25 sec</h3>
+          <p>Headphones or speakers on. First a quick voice check (just talk naturally for a few seconds) so the test lands in your own range — then you'll hear 4 notes, sing each one back right after the beep. All automatic, no separate app needed.</p>
+
+          <div class="rec-widget-box">
+            <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
+            <div id="pitchStatus" class="rec-status"></div>
+            <div id="pitchResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="pitchPreview" controls style="width:100%; margin: 10px 0;"></audio>
+              <p class="rec-hint">Included automatically when you submit below.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step" id="stepGlide">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Glide: low to high to low</h3>
+          <p>Lip trill or straw phonation. Start at your lowest comfortable note, go as high as you can, then come back down. No stopping.</p>
+
+          <div class="rec-widget-box">
+            <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
+            <button id="glideStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
+            <button id="glideStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
+            <div id="glideStatus" class="rec-status"></div>
+            <div id="glideResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="glidePreview" controls style="width:100%; margin: 10px 0;"></audio>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step" id="stepSustained">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Sustained "ah"</h3>
+          <p>Pick any comfortable note and hold a steady "ah" for 5 seconds. No vibrato, no fancy technique — just hold it.</p>
+
+          <div class="rec-widget-box">
+            <button id="sustainedAhExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
+            <button id="sustainedAhStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
+            <button id="sustainedAhStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
+            <div id="sustainedAhStatus" class="rec-status"></div>
+            <div id="sustainedAhResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="sustainedAhPreview" controls style="width:100%; margin: 10px 0;"></audio>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step" id="stepSong">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>A bit of a song</h3>
+          <p>Any song you're working on right now. The part that feels hardest is best. Up to a minute is great — take the time you need.</p>
+          <p style="font-size: 0.85rem; color: var(--muted); margin-top: -4px;">Tip: singing along to a karaoke or backing track can help — just play it through headphones, not through this computer's speakers, so it doesn't bleed into the recording.</p>
+
+          <div class="rec-widget-box">
+            <button id="songClipStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
+            <button id="songClipStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
+            <div id="songClipStatus" class="rec-status"></div>
+            <div id="songClipResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="songClipPreview" controls style="width:100%; margin: 10px 0;"></audio>
+            </div>
+            <p class="rec-hint">Prefer to send an existing recording instead? <label for="songClipUpload" style="color:#FF5500; cursor:pointer; font-weight:700;">Upload a file</label>.
+              <input type="file" id="songClipUpload" accept="audio/*,video/*" style="display:none;">
+            </p>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <input type="text" id="songField" name="song" placeholder="What song did you just sing? (optional)"
+              style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What you get -->
+  <div style="margin-bottom: 48px;">
+    <div class="section-title">What You <span>Get</span></div>
+    <div class="gets">
+      <div class="get">
+        <div class="get-icon">📈</div>
+        <h4>Pitch Track Graph</h4>
+        <p>Your actual pitch over time, with your bridge zone marked. See exactly where you stabilize and where you don't.</p>
+      </div>
+      <div class="get">
+        <div class="get-icon">🎙</div>
+        <h4>Spectrogram</h4>
+        <p>Your voice's frequency content — shows harmonic structure, tension signatures, and breathiness at a glance.</p>
+      </div>
+      <div class="get">
+        <div class="get-icon">🔍</div>
+        <h4>Your Pattern</h4>
+        <p>Named and explained. Clencher, Floater, Chest-Locked — what it means for your voice and why it happens.</p>
+      </div>
+      <div class="get">
+        <div class="get-icon">🎯</div>
+        <h4>3 Specific Tips</h4>
+        <p>Not generic advice — exercises and cues targeted to your exact pattern. Start using them today.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patterns preview -->
+  <div style="margin-bottom: 48px;">
+    <div class="section-title">The <span>Patterns</span> We Detect</div>
+    <div class="patterns">
+      <div class="pattern-card">
+        <h4>The Clencher</h4>
+        <p>Neck tension grips on higher notes. The most common pattern in untrained singers.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>The Floater</h4>
+        <p>Real range — but navigating around the bridge instead of crossing it.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Chest-Locked</h4>
+        <p>Singing entirely in chest voice. The top half of your voice is unused.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Breathy</h4>
+        <p>Folds not fully closing. Limits projection, dynamics, and endurance.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Pitch Instability</h4>
+        <p>Pitch moves around on sustained notes — a coordination issue, not an ear problem.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>Developing</h4>
+        <p>Solid foundation. The next level is about refinement and consistency.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-section" id="form">
+    <h2>Get Your Free Diagnosis</h2>
+    <p id="submitIntro">Fill in your name and email, then submit. PDF arrives in your inbox shortly after.</p>
+
+    <form id="diagnosisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
+      <div style="margin-bottom: 14px;">
+        <input type="text" id="nameField" name="name" placeholder="Your name" required
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
+      </div>
+      <div style="margin-bottom: 14px;">
+        <input type="email" id="emailField" name="email" placeholder="Your email" required
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
+      </div>
+      <div style="margin-bottom: 20px;">
+        <input type="text" id="selfReportField" name="self_report" placeholder="How's your voice today? Sick, tired, tense, normal... (optional)"
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
+        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;">This helps the diagnosis account for an off day, so it doesn't read a bad night's sleep as a technique problem.</p>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <p style="font-size: 0.85rem; color: white; margin: 0 0 3px; font-weight: 600;">Vocal Tract Discomfort (optional)</p>
+        <p style="font-size: 0.78rem; color: var(--muted); margin: 0 0 10px;">Rate each 0 (none) to 6 (severe) — helps tell a physical symptom apart from a technique issue.</p>
+        <div id="vtdScale" style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_tightness" style="flex:1; color:white; font-size:0.85rem;">Tightness</label>
+            <input type="range" id="vtd_tightness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_dryness" style="flex:1; color:white; font-size:0.85rem;">Dryness</label>
+            <input type="range" id="vtd_dryness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_burning" style="flex:1; color:white; font-size:0.85rem;">Burning</label>
+            <input type="range" id="vtd_burning" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_soreness" style="flex:1; color:white; font-size:0.85rem;">Soreness</label>
+            <input type="range" id="vtd_soreness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_itchiness" style="flex:1; color:white; font-size:0.85rem;">Itchiness</label>
+            <input type="range" id="vtd_itchiness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_sensitive" style="flex:1; color:white; font-size:0.85rem;">Sensitive throat</label>
+            <input type="range" id="vtd_sensitive" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_irritation" style="flex:1; color:white; font-size:0.85rem;">Irritation</label>
+            <input type="range" id="vtd_irritation" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label for="vtd_globus" style="flex:1; color:white; font-size:0.85rem;">Lump in throat</label>
+            <input type="range" id="vtd_globus" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
+            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
+          </div>
+        </div>
+      </div>
+      <button type="submit" id="submitBtn" class="rec-btn" style="width:100%; padding: 14px; font-size: 1.1rem;" disabled>
+        Complete the 4 steps above first
+      </button>
+      <div id="submitStatus" class="rec-status" style="color: white; text-align: center;"></div>
+    </form>
+  </div>
+
+  <!-- Social proof -->
+  <div class="proof">
+    <div class="proof-stars">★★★★★</div>
+    <p>"I've been singing for 10 years. In one session Nando showed me something no one had ever identified. The diagnosis was the turning point."</p>
+    <cite>— Verified Fiverr client · 270+ reviews, 5.0 average</cite>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faqs">
+    <div class="section-title">Questions</div>
+
+    <div class="faq">
+      <div class="faq-q">Is this actually free?</div>
+      <div class="faq-a">Yes. No credit card, no account, no trial. You send the clips, you get the diagnosis. The only thing I ask is that you give it an honest shot — the better the recording, the better the diagnosis.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q">How long until I get my diagnosis?</div>
+      <div class="faq-a">Automated analysis runs within minutes of your submission. You should have the PDF in your inbox within 24 hours — usually much faster.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q">What if my recording quality isn't great?</div>
+      <div class="faq-a">Your laptop or phone's built-in mic in a reasonably quiet room is enough. No need for studio equipment. The analysis works on the pitch and phonation data, not production quality.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q">What happens after I get the diagnosis?</div>
+      <div class="faq-a">Nothing, unless you want it to. The report stands on its own. If you want to go deeper, there's a link to book a first session — but there's no pressure and no follow-up emails.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q">I've had lessons before and nothing worked. Will this be different?</div>
+      <div class="faq-a">That's exactly who this is for. Most lessons work on technique without identifying the underlying pattern. The diagnosis names the specific mechanism — which changes everything about how you train.</div>
+    </div>
+  </div>
+
+</div><!-- .page -->
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="/">nandovocalcoach.com</a> &nbsp;·&nbsp;
+    <a href="https://www.instagram.com/nandovocalcoach/" target="_blank">Instagram</a> &nbsp;·&nbsp;
+    <a href="https://www.fiverr.com/nandovocalcoach" target="_blank">Fiverr</a>
+  </p>
+  <p style="margin-top: 8px; opacity: 0.7;">© 2026 Nando Vocal Coach. All rights reserved.</p>
+</footer>
+
+<script>
+  const modeToggle = document.getElementById('mode-toggle');
+  const logo = document.getElementById('logo');
+
+  if (localStorage.getItem('mode') === 'dark') {
+    document.body.classList.add('dark-mode');
+    modeToggle.innerText = '☀️';
+    logo.src = 'logodark.png';
+  }
+
+  modeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    modeToggle.innerText = isDark ? '☀️' : '🌙';
+    logo.src = isDark ? 'logodark.png' : 'logolight.png';
+    localStorage.setItem('mode', isDark ? 'dark' : 'light');
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      q.classList.toggle('open');
+      q.nextElementSibling.classList.toggle('open');
+    });
+  });
+</script>
+
+<!-- Guided in-browser recording — all 4 steps + direct submit -->
+<!-- Step 4 timing constants MUST match build_guide_track() defaults in pitch_test.py
+     (GUIDE_TONE_SEC, GUIDE_PRE_SING_PAUSE_SEC, GO_BEEP_HZ/SEC, GUIDE_SING_SEC,
+     GUIDE_POST_SING_PAUSE_SEC) — the server regenerates the same manifest from
+     that function rather than trusting one sent by the browser, so client and
+     server must independently derive identical note timings. -->
+<script>
+(function () {
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5055'
+    : 'https://api.nandovocalcoach.com';
+  const SUBMIT_URL = `${API_BASE}/submit`;
+  const DETECT_PITCH_URL = `${API_BASE}/detect-pitch`;
+
+  const recordings = {}; // key -> Blob, filled in as each step completes
+
+  // ── Shared mic stream — requested once, reused by every step, so the
+  // user only sees one permission prompt no matter which step they start
+  // with. Tracks are only stopped after a successful final submit.
+  let micStream = null;
+  async function getMicStream() {
+    if (micStream) return micStream;
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    return micStream;
+  }
+
+  function pickMimeType() {
+    return (window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
+      ? 'audio/webm;codecs=opus' : '';
+  }
+
+  function updateSubmitState() {
+    const submitBtn = document.getElementById('submitBtn');
+    if (!submitBtn) return;
+    const missing = [];
+    if (!recordings.glide) missing.push('glide');
+    if (!recordings.sustained_ah) missing.push('sustained "ah"');
+    if (!recordings.song_clip) missing.push('song clip');
+
+    if (missing.length === 0) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Get My Free Diagnosis →';
+    } else {
+      submitBtn.disabled = true;
+      submitBtn.textContent = `Complete: ${missing.join(', ')}`;
+    }
+  }
+
+  // ── Generic record-in-place controller for steps 1-3. Manual start/stop
+  // with a safety auto-stop cap, since each step's natural length varies
+  // (a glide runs until the singer runs out of range, a song clip is
+  // whatever length feels right) — unlike step 4, which is driven by a
+  // fixed cued sequence.
+  function setupRecordStep({ key, startBtn, stopBtn, statusEl, resultEl, previewEl, maxSec }) {
+    let recorder = null;
+    let chunks = [];
+    let timerInterval = null;
+    let elapsed = 0;
+
+    function stop() {
+      if (recorder && recorder.state === 'recording') recorder.stop();
+    }
+
+    async function start() {
+      startBtn.disabled = true;
+      resultEl.style.display = 'none';
+      statusEl.textContent = 'Requesting microphone…';
+
+      let stream;
+      try {
+        stream = await getMicStream();
+      } catch (err) {
+        statusEl.textContent = "Couldn't access your microphone — check browser permissions, or try a different browser.";
+        startBtn.disabled = false;
+        return;
+      }
+
+      const mimeType = pickMimeType();
+      recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+
+      recorder.start();
+      elapsed = 0;
+      statusEl.textContent = 'Recording… 0:00';
+      startBtn.style.display = 'none';
+      stopBtn.style.display = 'inline-block';
+
+      timerInterval = setInterval(() => {
+        elapsed += 1;
+        const m = Math.floor(elapsed / 60);
+        const s = String(elapsed % 60).padStart(2, '0');
+        statusEl.textContent = `Recording… ${m}:${s}`;
+        if (elapsed >= maxSec) stop();
+      }, 1000);
+
+      await stopped;
+      clearInterval(timerInterval);
+
+      const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
+      recordings[key] = blob;
+      previewEl.src = URL.createObjectURL(blob);
+
+      statusEl.textContent = '';
+      resultEl.style.display = 'block';
+      stopBtn.style.display = 'none';
+      startBtn.style.display = 'inline-block';
+      startBtn.textContent = '🔁 Retake';
+      startBtn.disabled = false;
+
+      updateSubmitState();
+    }
+
+    startBtn.addEventListener('click', start);
+    stopBtn.addEventListener('click', stop);
+  }
+
+  setupRecordStep({
+    key: 'glide',
+    startBtn: document.getElementById('glideStartBtn'),
+    stopBtn:  document.getElementById('glideStopBtn'),
+    statusEl: document.getElementById('glideStatus'),
+    resultEl: document.getElementById('glideResult'),
+    previewEl: document.getElementById('glidePreview'),
+    maxSec: 20,
+  });
+  setupRecordStep({
+    key: 'sustained_ah',
+    startBtn: document.getElementById('sustainedAhStartBtn'),
+    stopBtn:  document.getElementById('sustainedAhStopBtn'),
+    statusEl: document.getElementById('sustainedAhStatus'),
+    resultEl: document.getElementById('sustainedAhResult'),
+    previewEl: document.getElementById('sustainedAhPreview'),
+    maxSec: 8,
+  });
+  setupRecordStep({
+    key: 'song_clip',
+    startBtn: document.getElementById('songClipStartBtn'),
+    stopBtn:  document.getElementById('songClipStopBtn'),
+    statusEl: document.getElementById('songClipStatus'),
+    resultEl: document.getElementById('songClipResult'),
+    previewEl: document.getElementById('songClipPreview'),
+    maxSec: 75,
+  });
+
+  // ── Song clip alternative: upload an existing recording instead of
+  // singing live (some people just prefer this, or already have a take
+  // they like from a karaoke app on another device).
+  const songClipUpload = document.getElementById('songClipUpload');
+  if (songClipUpload) {
+    songClipUpload.addEventListener('change', () => {
+      const file = songClipUpload.files[0];
+      if (!file) return;
+      recordings.song_clip = file;
+      document.getElementById('songClipPreview').src = URL.createObjectURL(file);
+      document.getElementById('songClipStatus').textContent = '';
+      document.getElementById('songClipResult').style.display = 'block';
+      updateSubmitState();
+    });
+  }
+
+  // ── Synthesized vowel examples for steps 1-2 — a "virtual vocal
+  // instrument" (formant-filtered sawtooth, not a plain tone and not a
+  // real recorded voice): 3 parallel bandpass filters tuned to a vowel's
+  // formants, plus light vibrato and a touch of filtered noise so it
+  // reads as voice-like.
+  const VOWEL_FORMANTS = {
+    ah: { f: [700, 1220, 2600], gain: [1.0, 0.6, 0.3], q: [10, 12, 14] },
+    oo: { f: [300, 870, 2240],  gain: [1.0, 0.5, 0.25], q: [12, 14, 16] },
+  };
+
+  function playVowelExample({ vowel, duration, sustainedHz, glideFrom, glideTo }) {
+    return new Promise((resolve) => {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const preset = VOWEL_FORMANTS[vowel];
+      const source = ctx.createOscillator();
+      source.type = 'sawtooth';
+
+      const now = ctx.currentTime + 0.05;
+
+      if (glideFrom != null) {
+        source.frequency.setValueAtTime(glideFrom, now);
+        source.frequency.linearRampToValueAtTime(glideTo, now + duration / 2);
+        source.frequency.linearRampToValueAtTime(glideFrom, now + duration);
+      } else {
+        source.frequency.setValueAtTime(sustainedHz, now);
+        const lfo = ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 5.5;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = sustainedHz * 0.008; // light vibrato depth
+        lfo.connect(lfoGain);
+        lfoGain.connect(source.frequency);
+        lfo.start(now);
+        lfo.stop(now + duration);
+      }
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0, now);
+      masterGain.gain.linearRampToValueAtTime(0.5, now + 0.08);
+      masterGain.gain.setValueAtTime(0.5, now + duration - 0.15);
+      masterGain.gain.linearRampToValueAtTime(0, now + duration);
+      masterGain.connect(ctx.destination);
+
+      preset.f.forEach((freq, i) => {
+        const bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = freq;
+        bp.Q.value = preset.q[i];
+        const g = ctx.createGain();
+        g.gain.value = preset.gain[i];
+        source.connect(bp);
+        bp.connect(g);
+        g.connect(masterGain);
+      });
+
+      // Light breath noise for realism
+      const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      const noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 4000;
+      noiseFilter.Q.value = 0.7;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.value = 0.02;
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+
+      source.start(now);
+      source.stop(now + duration);
+      noiseSource.start(now);
+      noiseSource.stop(now + duration);
+
+      source.onended = () => {
+        ctx.close();
+        resolve();
+      };
+    });
+  }
+
+  const glideExampleBtn = document.getElementById('glideExampleBtn');
+  if (glideExampleBtn) {
+    glideExampleBtn.addEventListener('click', async () => {
+      glideExampleBtn.disabled = true;
+      await playVowelExample({ vowel: 'oo', duration: 6, glideFrom: 196.0, glideTo: 392.0 });
+      glideExampleBtn.disabled = false;
+    });
+  }
+
+  const sustainedAhExampleBtn = document.getElementById('sustainedAhExampleBtn');
+  if (sustainedAhExampleBtn) {
+    sustainedAhExampleBtn.addEventListener('click', async () => {
+      sustainedAhExampleBtn.disabled = true;
+      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 196.0 });
+      sustainedAhExampleBtn.disabled = false;
+    });
+  }
+
+  // ── Step 1 — pitch match. First a short natural-speech clip personalizes
+  // the guide track to this person's own range (measured, not asked — see
+  // detect_speech_root_hz() server-side), then the existing 4-note
+  // call-and-response sequence runs at that root instead of a fixed one.
+  const SPEECH_CHECK_SEC = 3;
+  const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches server's DIAGNOSTIC_ROOT_HZ
+  const TRIAD_SEMITONES = [0, 4, 7, 12]; // matches server's "triad" scale (build_sequence)
+  const TONE_SEC = 1.5;
+  const PRE_PAUSE_SEC = 0.3;
+  const BEEP_HZ = 880;
+  const BEEP_SEC = 0.15;
+  const SING_SEC = 2.5;
+  const POST_PAUSE_SEC = 0.5;
+  const LEAD_IN_SEC = 0.3; // head start before first tone, avoids scheduling right at ctx "now"
+
+  const startBtn   = document.getElementById('pitchStartBtn');
+  const statusEl   = document.getElementById('pitchStatus');
+  const resultEl   = document.getElementById('pitchResult');
+  const previewEl  = document.getElementById('pitchPreview');
+
+  function buildTriadHz(rootHz) {
+    return TRIAD_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
+  }
+
+  function scheduleTone(ctx, hz, durationSec, startTime) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = hz;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const fade = 0.02;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.5, startTime + fade);
+    gain.gain.setValueAtTime(0.5, startTime + durationSec - fade);
+    gain.gain.linearRampToValueAtTime(0, startTime + durationSec);
+
+    osc.start(startTime);
+    osc.stop(startTime + durationSec);
+  }
+
+  function recordFixedClip(stream, durationSec) {
+    return new Promise((resolve) => {
+      const mimeType = pickMimeType();
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType || 'audio/webm' }));
+      recorder.start();
+      setTimeout(() => recorder.stop(), durationSec * 1000);
+    });
+  }
+
+  async function detectRootHz(speechBlob) {
+    try {
+      const formData = new FormData();
+      formData.append('speech', speechBlob, 'speech.webm');
+      const resp = await fetch(DETECT_PITCH_URL, { method: 'POST', body: formData });
+      if (!resp.ok) throw new Error(`detect-pitch responded ${resp.status}`);
+      const data = await resp.json();
+      return data.root_hz || DEFAULT_ROOT_HZ;
+    } catch (err) {
+      return DEFAULT_ROOT_HZ; // proceed with the safe default rather than blocking the test
+    }
+  }
+
+  async function runPitchTest() {
+    startBtn.disabled = true;
+    resultEl.style.display = 'none';
+
+    // Create the AudioContext synchronously at the very start of the click
+    // handler (before any await) and keep it alive for the whole function —
+    // once resumed here, it stays usable for tone playback later even after
+    // the speech-check + detect-pitch round trip that follows, which some
+    // browsers wouldn't allow if the context were created fresh after that
+    // gap (autoplay policy).
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    statusEl.textContent = 'Requesting microphone…';
+    let stream;
+    try {
+      stream = await getMicStream();
+    } catch (err) {
+      statusEl.textContent = "Couldn't access your microphone — check browser permissions, or try a different browser.";
+      startBtn.disabled = false;
+      return;
+    }
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    statusEl.textContent = "Say a sentence naturally — like your name and where you're from…";
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    statusEl.textContent = `Recording… (${SPEECH_CHECK_SEC}s)`;
+    const speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+
+    statusEl.textContent = 'Analyzing your voice…';
+    const rootHz = await detectRootHz(speechBlob);
+    recordings.pitch_root_hz = rootHz;
+
+    statusEl.textContent = 'Starting pitch test in your range…';
+    await new Promise((resolve) => setTimeout(resolve, 700));
+
+    const NOTES = buildTriadHz(rootHz);
+
+    const mimeType = pickMimeType();
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const chunks = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+
+    recorder.start();
+
+    let t = ctx.currentTime + LEAD_IN_SEC;
+    let statusCursorSec = LEAD_IN_SEC;
+
+    NOTES.forEach((hz, i) => {
+      scheduleTone(ctx, hz, TONE_SEC, t);
+      setTimeout(() => {
+        statusEl.textContent = `Note ${i + 1}/${NOTES.length} — listen…`;
+      }, statusCursorSec * 1000);
+      t += TONE_SEC + PRE_PAUSE_SEC;
+      statusCursorSec += TONE_SEC + PRE_PAUSE_SEC;
+
+      scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
+      t += BEEP_SEC;
+      statusCursorSec += BEEP_SEC;
+
+      setTimeout(() => {
+        statusEl.textContent = `Note ${i + 1}/${NOTES.length} — sing now!`;
+      }, statusCursorSec * 1000);
+      t += SING_SEC;
+      statusCursorSec += SING_SEC;
+
+      t += POST_PAUSE_SEC;
+      statusCursorSec += POST_PAUSE_SEC;
+    });
+
+    const totalMs = statusCursorSec * 1000;
+
+    setTimeout(() => {
+      recorder.stop();
+    }, totalMs + 300);
+
+    await stopped;
+
+    const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
+    recordings.pitch = blob;
+    previewEl.src = URL.createObjectURL(blob);
+
+    statusEl.textContent = '';
+    resultEl.style.display = 'block';
+    startBtn.textContent = '🔁 Retake';
+    startBtn.disabled = false;
+  }
+
+  if (startBtn) startBtn.addEventListener('click', runPitchTest);
+
+  // ── Final submit — direct multipart POST, no Tally involved ──
+  const diagForm = document.getElementById('diagnosisForm');
+  if (diagForm) {
+    diagForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const submitStatus = document.getElementById('submitStatus');
+      submitBtn.disabled = true;
+      submitStatus.textContent = 'Submitting…';
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('nameField').value.trim());
+      formData.append('email', document.getElementById('emailField').value.trim());
+      formData.append('song', document.getElementById('songField').value.trim());
+      formData.append('self_report', document.getElementById('selfReportField').value.trim());
+      const vtdScores = {
+        tightness: +document.getElementById('vtd_tightness').value,
+        dryness: +document.getElementById('vtd_dryness').value,
+        burning: +document.getElementById('vtd_burning').value,
+        soreness: +document.getElementById('vtd_soreness').value,
+        itchiness: +document.getElementById('vtd_itchiness').value,
+        sensitive_throat: +document.getElementById('vtd_sensitive').value,
+        irritation: +document.getElementById('vtd_irritation').value,
+        globus: +document.getElementById('vtd_globus').value,
+      };
+      if (Object.values(vtdScores).some(v => v > 0)) {
+        formData.append('vtd_scores', JSON.stringify(vtdScores));
+      }
+      if (recordings.glide)        formData.append('glide', recordings.glide, 'glide.webm');
+      if (recordings.sustained_ah) formData.append('sustained_ah', recordings.sustained_ah, 'sustained_ah.webm');
+      if (recordings.song_clip) {
+        const songName = recordings.song_clip instanceof File ? recordings.song_clip.name : 'song_clip.webm';
+        formData.append('song_clip', recordings.song_clip, songName);
+      }
+      if (recordings.pitch)        formData.append('pitch', recordings.pitch, 'pitch.webm');
+      if (recordings.pitch_root_hz) formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
+
+      try {
+        const resp = await fetch(SUBMIT_URL, { method: 'POST', body: formData });
+        if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
+        submitStatus.textContent = '✓ Submitted! Check your inbox shortly.';
+        submitBtn.textContent = 'Submitted ✓';
+        if (micStream) micStream.getTracks().forEach((track) => track.stop());
+      } catch (err) {
+        submitStatus.textContent = "Something went wrong — try again, or email nando@nandovocalcoach.com directly.";
+        submitBtn.disabled = false;
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

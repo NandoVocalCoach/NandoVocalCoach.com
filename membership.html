@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nando Vocal Coach Membership — $7.99/month, unlimited daily drills plus periodic AI vocal diagnosis comparison.">
+  <title>Membership | Nando Vocal Coach</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #fff; --text: #1F2937; --muted: #6B7280;
+      --heading: #FF5500; --navy: #1B2A4A; --card-bg: #F9FAFB; --border: #E5E7EB;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0D0D0D; --text: #F3F4F6; --muted: #9CA3AF; --card-bg: #1A1A1A; --border: #374151; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      max-width: 440px; width: 100%; text-align: center;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 28px;
+    }
+    h1 {
+      font-family: "Bebas Neue", sans-serif; font-size: 2rem;
+      color: var(--heading); letter-spacing: 0.02em; margin-bottom: 6px;
+    }
+    .price {
+      font-family: "Bebas Neue", sans-serif; font-size: 1.4rem; color: var(--navy);
+      margin-bottom: 4px;
+    }
+    @media (prefers-color-scheme: dark) { .price { color: var(--text); } }
+    .subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 24px; }
+    .email-gate input {
+      width: 100%; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--border);
+      font-family: "Montserrat", sans-serif; font-size: 0.95rem; margin-bottom: 10px;
+      background: var(--bg); color: var(--text);
+    }
+    .continue-btn {
+      background: #FF5500; color: white; border: none; border-radius: 8px;
+      padding: 14px 24px; font-family: "Bebas Neue", sans-serif; font-size: 1.1rem;
+      letter-spacing: 0.03em; cursor: pointer; width: 100%;
+    }
+    #paypal-button-container { margin-top: 16px; }
+    .status { margin-top: 16px; font-size: 0.9rem; color: var(--muted); min-height: 20px; }
+    .success { color: #166534; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Membership</h1>
+  <div class="price">$7.99/month</div>
+  <div class="subtitle">Unlimited daily drills + periodic AI diagnosis comparison. Cancel anytime.</div>
+
+  <div id="emailGate" class="email-gate">
+    <input type="email" id="emailField" placeholder="Your email">
+    <button class="continue-btn" id="continueBtn">Continue to Payment</button>
+  </div>
+
+  <div id="paypal-button-container" style="display:none;"></div>
+  <div class="status" id="statusEl"></div>
+</div>
+
+<script src="https://www.paypal.com/sdk/js?client-id=ASTfpw4WOyzyx81UNAERhy5lwIXrmLQqCUw_Cpfq-oMx-Xu3D6hcig9oHkS7PuOQ0vDkwWxFCy3z7wg-&vault=true&intent=subscription"></script>
+<script>
+(function () {
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5055'
+    : 'https://api.nandovocalcoach.com';
+  const PLAN_ID = 'P-2BR056670L949532TNJXJB4Y';
+
+  const params = new URLSearchParams(location.search);
+  let email = params.get('email') || localStorage.getItem('nvc_drill_email') || '';
+
+  const emailGate = document.getElementById('emailGate');
+  const emailField = document.getElementById('emailField');
+  const buttonContainer = document.getElementById('paypal-button-container');
+  const statusEl = document.getElementById('statusEl');
+
+  function showButton() {
+    emailGate.style.display = 'none';
+    buttonContainer.style.display = 'block';
+
+    paypal.Buttons({
+      createSubscription: function (data, actions) {
+        return actions.subscription.create({ plan_id: PLAN_ID });
+      },
+      onApprove: function (data) {
+        statusEl.textContent = 'Confirming…';
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('subscription_id', data.subscriptionID);
+
+        fetch(`${API_BASE}/membership/activate`, { method: 'POST', body: formData })
+          .then((resp) => resp.json())
+          .then((result) => {
+            if (result.status === 'active') {
+              statusEl.innerHTML = '<span class="success">You\'re in! Membership active.</span>';
+            } else {
+              statusEl.textContent = `Status: ${result.status}. Contact nando@nandovocalcoach.com if this seems wrong.`;
+            }
+          })
+          .catch(() => {
+            statusEl.textContent = "Payment went through but confirming it failed — contact nando@nandovocalcoach.com.";
+          });
+      },
+      onError: function (err) {
+        statusEl.textContent = "Something went wrong — try again?";
+      },
+    }).render('#paypal-button-container');
+  }
+
+  if (email) {
+    localStorage.setItem('nvc_drill_email', email);
+    showButton();
+  } else {
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      const v = emailField.value.trim();
+      if (!v) return;
+      email = v;
+      localStorage.setItem('nvc_drill_email', email);
+      showButton();
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
