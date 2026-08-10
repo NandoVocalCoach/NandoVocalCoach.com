@@ -1076,12 +1076,18 @@
 
       try {
         const resp = await fetch(SUBMIT_URL, { method: 'POST', body: formData });
-        if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
+        if (!resp.ok) {
+          let message = null;
+          try { message = (await resp.json()).message; } catch (_) {}
+          throw new Error(message || `Server responded ${resp.status}`);
+        }
         submitStatus.textContent = '✓ Submitted! Check your inbox shortly.';
         submitBtn.textContent = 'Submitted ✓';
         if (micStream) micStream.getTracks().forEach((track) => track.stop());
       } catch (err) {
-        submitStatus.textContent = "Something went wrong — try again, or email nando@nandovocalcoach.com directly.";
+        submitStatus.textContent = err.message && err.message !== 'Failed to fetch'
+          ? err.message
+          : "Something went wrong — try again, or email nando@nandovocalcoach.com directly.";
         submitBtn.disabled = false;
       }
     });
