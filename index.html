@@ -22,6 +22,24 @@
     <meta name="twitter:description" content="Professional online vocal coaching. Build power, extend range, eliminate strain.">
     <meta name="twitter:image" content="https://nandovocalcoach.com/profile.JPG">
 
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '489233452706570');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=489233452706570&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel -->
+
     <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
     <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
@@ -1544,6 +1562,7 @@
             .then(function(data) {
                 form.style.display = 'none';
                 document.getElementById('ml-success-msg').style.display = 'block';
+                if (typeof fbq !== 'undefined') fbq('track', 'Lead');
             })
             .catch(function() {
                 btn.disabled = false;
