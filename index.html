@@ -473,6 +473,27 @@
         }
         #about .about-text p:last-child { margin-bottom: 0; }
 
+        /* Plan bullets */
+        .plan-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+        .plan-bullets li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            line-height: 1.5;
+        }
+        .plan-bullets li:last-child {
+            border-bottom: none;
+        }
+        .plan-bullets li::before {
+            content: "→ ";
+            color: #FF5500;
+            font-weight: bold;
+        }
+
         /* Services & Pricing */
         #services {
             background: var(--services-bg);
@@ -1042,7 +1063,7 @@
                 <div class="plan-name" data-phrase-key="pricingPlan1Name">Voice Diagnosis</div>
                 <div class="plan-price"><span class="plan-price-strike">$100</span> $40</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan1Sub">First session only</div>
-                <div class="plan-desc" data-phrase-key="pricingPlan1Desc">One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan1Desc"><ul class='plan-bullets'><li>One session — I listen, assess, diagnose</li><li>You leave knowing exactly what's happening</li><li>Clear path forward from session 1</li><li>Most students hear a shift before it ends</li></ul></div>
                 <div class="plan-guarantee" data-phrase-key="pricingGuarantee">Hear a difference, or it's free.</div>
                 <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Pick Your Time →</a>
             </div>
@@ -1051,14 +1072,14 @@
                 <div class="plan-name" data-phrase-key="pricingPlan2Name">Vocal Fitness</div>
                 <div class="plan-price">$360</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions + custom audio</div>
-                <div class="plan-desc" data-phrase-key="pricingPlan2Desc">4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan2Desc"><ul class='plan-bullets'><li>4 private sessions + custom audio exercises</li><li>Real technique, built from the ground up</li><li>More power, less effort, more control</li><li>Most students feel the shift by session 2</li></ul></div>
                 <a href="https://paypal.me/bustapater/360" target="_blank" rel="noopener" class="plan-cta" data-phrase-key="pricingCTA2">Get Started →</a>
             </div>
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan3Name">Transformation</div>
                 <div class="plan-price">$590</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions + full access</div>
-                <div class="plan-desc" data-phrase-key="pricingPlan3Desc">8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan3Desc"><ul class='plan-bullets'><li>8 intensive sessions</li><li>Custom exercise program</li><li>Full coaching access between sessions</li><li>By the end — you'll barely recognize your own voice</li></ul></div>
                 <a href="https://paypal.me/bustapater/590" target="_blank" rel="noopener" class="plan-cta" data-phrase-key="pricingCTA3">Get Started →</a>
             </div>
         </div>
@@ -1303,13 +1324,13 @@
                 pricingBadge: "Most Popular",
                 pricingPlan1Name: "Voice Diagnosis",
                 pricingPlan1Sub: "First session only",
-                pricingPlan1Desc: "One session. I listen, I assess, I tell you exactly what's going on with your voice. You leave with a diagnosis and a clear path forward. Most students notice a difference before the session is even over.",
+                pricingPlan1Desc: "<ul class='plan-bullets'><li>One session — I listen, assess, diagnose</li><li>You leave knowing exactly what's happening</li><li>Clear path forward from session 1</li><li>Most students hear a shift before it ends</li></ul>",
                 pricingPlan2Name: "Vocal Fitness",
                 pricingPlan2Sub: "4 sessions + custom audio",
-                pricingPlan2Desc: "4 private sessions plus custom audio exercises. This is where real technique gets built. Most students notice a clear shift by session 2: more power, less effort, more control.",
+                pricingPlan2Desc: "<ul class='plan-bullets'><li>4 private sessions + custom audio exercises</li><li>Real technique, built from the ground up</li><li>More power, less effort, more control</li><li>Most students feel the shift by session 2</li></ul>",
                 pricingPlan3Name: "Transformation",
                 pricingPlan3Sub: "8 sessions + full access",
-                pricingPlan3Desc: "8 intensive sessions, a custom exercise program, and full coaching access between sessions. This is for singers who are serious about results. We go deep, we stay consistent, and by the end... you'll barely recognize your own voice.",
+                pricingPlan3Desc: "<ul class='plan-bullets'><li>8 intensive sessions</li><li>Custom exercise program</li><li>Full coaching access between sessions</li><li>By the end — you'll barely recognize your own voice</li></ul>",
                 pricingCTA: "Pick Your Time →",
                 pricingCTA2: "Get Started →",
                 pricingCTA3: "Get Started →",
@@ -1364,13 +1385,13 @@
                 pricingBadge: "Más Popular",
                 pricingPlan1Name: "Diagnóstico Vocal",
                 pricingPlan1Sub: "Solo primera sesión",
-                pricingPlan1Desc: "Una sesión. Escucho, evalúo y te digo exactamente qué está pasando con tu voz. Sales con un diagnóstico y un camino claro. La mayoría de estudiantes nota una diferencia antes de que la sesión termine.",
+                pricingPlan1Desc: "<ul class='plan-bullets'><li>Una sesión — escucho, evalúo, diagnostico</li><li>Sales sabiendo exactamente qué está pasando</li><li>Camino claro desde la primera sesión</li><li>La mayoría escucha el cambio antes de que termine</li></ul>",
                 pricingPlan2Name: "Fitness Vocal",
                 pricingPlan2Sub: "4 sesiones + audio personalizado",
-                pricingPlan2Desc: "4 sesiones privadas más ejercicios de audio personalizados. Aquí es donde se construye la técnica real. La mayoría nota un cambio claro en la sesión 2: más potencia, menos esfuerzo, más control.",
+                pricingPlan2Desc: "<ul class='plan-bullets'><li>4 sesiones privadas + ejercicios de audio personalizados</li><li>Técnica real, construida desde la base</li><li>Más potencia, menos esfuerzo, más control</li><li>La mayoría siente el cambio en la sesión 2</li></ul>",
                 pricingPlan3Name: "Transformación",
                 pricingPlan3Sub: "8 sesiones + acceso completo",
-                pricingPlan3Desc: "8 sesiones intensivas, un programa de ejercicios personalizado y acceso completo al coaching entre sesiones. Esto es para cantantes serios. Vamos profundo, nos mantenemos constantes, y al final... apenas reconocerás tu propia voz.",
+                pricingPlan3Desc: "<ul class='plan-bullets'><li>8 sesiones intensivas</li><li>Programa de ejercicios personalizado</li><li>Acceso completo al coaching entre sesiones</li><li>Al final — apenas reconocerás tu propia voz</li></ul>",
                 pricingCTA: "Reservar →",
                 pricingCTA2: "Comenzar →",
                 pricingCTA3: "Comenzar →",
