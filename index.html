@@ -1203,20 +1203,6 @@
         </div>
     </section>
 
-    <!-- Lead Magnet: Free PDF opt-in -->
-    <section id="lead-magnet">
-        <h2 data-phrase-key="lmTitle">Free: The Tension-Release Vocal Warm-Up</h2>
-        <p class="lm-subtitle" data-phrase-key="lmSubtitle">3 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.</p>
-        <form id="ml-subscribe-form" novalidate>
-            <div class="lm-form">
-                <input type="email" name="fields[email]" id="ml-email" placeholder="Your email address" required autocomplete="email">
-                <button type="submit" id="ml-submit-btn">Send Me the PDF</button>
-            </div>
-        </form>
-        <p id="ml-success-msg" style="display:none;color:#FF5500;font-weight:700;margin-top:1rem;" data-phrase-key="lmSuccess">Check your inbox! The PDF is on its way.</p>
-        <p class="lm-note" data-phrase-key="lmNote">No spam. Unsubscribe anytime.</p>
-    </section>
-
     <section id="booking">
         <h2 data-phrase-key="bookingTitle">Book Your Session</h2>
         <p data-phrase-key="bookingDesc">
@@ -1588,43 +1574,5 @@
 
     </script>
 
-    <script>
-    (function() {
-        var form = document.getElementById('ml-subscribe-form');
-        if (!form) return;
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var email = document.getElementById('ml-email').value.trim();
-            if (!email) return;
-            var btn = document.getElementById('ml-submit-btn');
-            btn.disabled = true;
-            btn.textContent = '...';
-            var body = new URLSearchParams();
-            body.append('fields[email]', email);
-            body.append('ml-submit', '1');
-            body.append('anticsrf', 'true');
-            fetch('https://assets.mailerlite.com/jsonp/2425061/forms/189967385843730142/subscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body.toString()
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                form.style.display = 'none';
-                var msg = document.getElementById('ml-success-msg');
-                msg.innerHTML = (localStorage.getItem('language') || 'en') === 'es'
-                    ? 'Tu PDF está listo: <a href="/Tension-Release%20Vocal%20Warm-Up.pdf" download style="color:#FF5500;font-weight:700;">Descárgalo aquí</a>. También te lo enviamos por correo.'
-                    : 'Your PDF is ready: <a href="/Tension-Release%20Vocal%20Warm-Up.pdf" download style="color:#FF5500;font-weight:700;">Download it here</a>. We\'re also sending it to your inbox.';
-                msg.style.display = 'block';
-                if (typeof fbq !== 'undefined') fbq('track', 'Lead');
-            })
-            .catch(function() {
-                btn.disabled = false;
-                btn.textContent = 'Send Me the PDF';
-                alert('Something went wrong. Please try again.');
-            });
-        });
-    })();
-    </script>
 </body>
 </html>
