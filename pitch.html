@@ -52,7 +52,7 @@
         "@type": "OfferCatalog",
         "name": "Vocal Coaching Services",
         "itemListElement": [
-          { "@type": "Offer", "name": "Voice Diagnosis (first session)", "price": "40", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "Voice Analysis (first session)", "price": "40", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "320", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "Transformation (8 sessions)", "price": "560", "priceCurrency": "USD" }
         ]
@@ -555,7 +555,7 @@
         <h2>Invest In Your Voice</h2>
         <div class="pricing-cards">
             <div class="pricing-card">
-                <div class="plan-name">Voice Diagnosis</div>
+                <div class="plan-name">Voice Analysis</div>
                 <div class="plan-price"><span class="plan-price-strike">$100</span> $40</div>
                 <div class="plan-sub">First session only</div>
                 <div class="plan-desc">One session. I listen, assess, and identify exactly where the gap is between what you hear and what your voice does. You leave knowing what's happening — and with a clear path to fix it. Most students match pitches they couldn't before the session is even over.</div>
@@ -750,7 +750,9 @@
                 .then(function(r) { return r.json(); })
                 .then(function() {
                     form.style.display = 'none';
-                    document.getElementById('ml-success-msg').style.display = 'block';
+                    var msg = document.getElementById('ml-success-msg');
+                    msg.innerHTML = 'Your PDF is ready: <a href="/Tension-Release%20Vocal%20Warm-Up.pdf" download style="color:#FF5500;font-weight:700;">Download it here</a>. We\'re also sending it to your inbox.';
+                    msg.style.display = 'block';
                 })
                 .catch(function() {
                     btn.disabled = false;

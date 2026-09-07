@@ -1611,7 +1611,11 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 form.style.display = 'none';
-                document.getElementById('ml-success-msg').style.display = 'block';
+                var msg = document.getElementById('ml-success-msg');
+                msg.innerHTML = (localStorage.getItem('language') || 'en') === 'es'
+                    ? 'Tu PDF está listo: <a href="/Tension-Release%20Vocal%20Warm-Up.pdf" download style="color:#FF5500;font-weight:700;">Descárgalo aquí</a>. También te lo enviamos por correo.'
+                    : 'Your PDF is ready: <a href="/Tension-Release%20Vocal%20Warm-Up.pdf" download style="color:#FF5500;font-weight:700;">Download it here</a>. We\'re also sending it to your inbox.';
+                msg.style.display = 'block';
                 if (typeof fbq !== 'undefined') fbq('track', 'Lead');
             })
             .catch(function() {
