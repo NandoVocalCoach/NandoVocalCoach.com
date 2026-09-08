@@ -628,9 +628,6 @@
         .pricing-card .plan-cta:hover {
             background: var(--section-heading-darker);
         }
-        .paypal-btn-container {
-            margin-top: 0.5rem;
-        }
         .pricing-scarcity {
             margin-top: 2rem;
             font-size: 0.9rem;
@@ -1121,7 +1118,7 @@
                 <div class="plan-price">$360</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan2Sub">Get your voice in shape.</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan2Desc"><ul class='plan-bullets'><li>4 sessions + custom audio exercises</li><li>Real technique, built from the ground up</li><li>More power, less effort, more control</li><li>Feedback on your practice — within 48h</li></ul></div>
-                <div id="paypal-buttons-360" class="paypal-btn-container"></div>
+                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/4f0bb419-e996-4b70-a37f-13da87501a58?checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D360" class="plan-cta">Get Started →</a>
             </div>
             <div class="pricing-card featured">
                 <div class="badge" data-phrase-key="pricingBadge">Most Popular</div>
@@ -1129,7 +1126,7 @@
                 <div class="plan-price">$590</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan3Sub">Maximum gains in 1 month!</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan3Desc"><ul class='plan-bullets'><li>8 sessions + custom audio exercises</li><li>Personalized exercise program</li><li>For faster results. 2 sessions a week, 1 month.</li><li>Priority feedback between sessions — within 24h</li></ul></div>
-                <div id="paypal-buttons-590" class="paypal-btn-container"></div>
+                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/2ed6680d-d2f5-410c-b2d7-afd89a4195b5?checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D590" class="plan-cta">Get Started →</a>
             </div>
         </div>
         <p class="pricing-scarcity" data-phrase-key="pricingScarcity">
@@ -1210,7 +1207,7 @@
         <h2 data-phrase-key="bookingTitle">Book Your Session</h2>
         <p data-phrase-key="bookingDesc">Find out exactly what's holding your voice back.</p>
         <p data-phrase-key="bookingPayNote" style="font-size:0.9rem; opacity:0.65; margin-bottom:1.5rem;">Pay below — you'll pick your session time right after.</p>
-        <div id="paypal-buttons-40" class="paypal-btn-container" style="max-width:400px; margin:0 auto;"></div>
+        <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" class="plan-cta" style="display:inline-block;">Book Your Session →</a>
     </section>
 
     <footer id="contact">
@@ -1575,39 +1572,5 @@
 
     </script>
 
-    <!-- PayPal SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id=ATxJw_p4ynrvhcAzwIFVz9LatvKJUjPRU4-xVEtla5BjYXJFXjLDlF_Gbm3kv3-RLJDop4NJcsHltEDz&currency=USD&intent=capture&enable-funding=card" data-sdk-integration-source="button-factory"></script>
-    <script>
-        function renderPayPalButtons(containerId, amount, description) {
-            paypal.Buttons({
-                style: {
-                    layout: 'vertical',
-                    color: 'gold',
-                    shape: 'rect',
-                    label: 'pay'
-                },
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: { value: amount },
-                            description: description
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        window.location.href = '/thank-you-payment.html?plan=' + amount.split('.')[0];
-                    });
-                },
-                onError: function(err) {
-                    alert('Something went wrong with the payment. Please try again or contact me directly.');
-                }
-            }).render('#' + containerId);
-        }
-
-        renderPayPalButtons('paypal-buttons-40',  '40.00',  '1st Voicebuilding Session with Nando Vocal Coach');
-        renderPayPalButtons('paypal-buttons-360', '360.00', 'Vocal Fitness — 4 Sessions with Nando Vocal Coach');
-        renderPayPalButtons('paypal-buttons-590', '590.00', '1-Month Transformation — 8 Sessions with Nando Vocal Coach');
-    </script>
 </body>
 </html>
