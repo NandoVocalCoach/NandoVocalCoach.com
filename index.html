@@ -1598,7 +1598,7 @@
                 },
                 onApprove: function(data, actions) {
                     return actions.order.capture().then(function(details) {
-                        alert('Payment complete! Thank you, ' + details.payer.name.given_name + '. I\'ll be in touch shortly to schedule your sessions.');
+                        window.location.href = '/thank-you-payment.html?plan=' + amount.split('.')[0];
                     });
                 },
                 onError: function(err) {
