@@ -259,7 +259,77 @@
             border: none;
         }
         #video-control-area {
-            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1500;
+            background: rgba(0,0,0,0.65);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            box-sizing: border-box;
+        }
+        #vc-playpause {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+        #vc-progress {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            cursor: pointer;
+        }
+        #vc-progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FF5500;
+            cursor: pointer;
+        }
+        #vc-time {
+            color: #fff;
+            font-size: 0.75rem;
+            font-family: monospace;
+            flex-shrink: 0;
+            min-width: 36px;
+        }
+        #vc-mute {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+        #vc-volume {
+            width: 70px;
+            -webkit-appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        #vc-volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FF5500;
+            cursor: pointer;
         }
 
         /* Social proof strip */
@@ -917,13 +987,16 @@
     <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
     <section id="hero">
         <div id="ytplayer-wrap">
-            <iframe id="ytplayer"
-                src="https://www.youtube.com/embed/9lrKjHh9F1g?autoplay=1&mute=1&loop=1&playlist=9lrKjHh9F1g&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
-                allow="autoplay; encrypted-media"
-                allowfullscreen>
-            </iframe>
+            <div id="ytplayer"></div>
         </div>
         <div class="hero-dark-bg"></div>
+        <div id="video-control-area">
+            <button id="vc-playpause" title="Play/Pause">⏸</button>
+            <input id="vc-progress" type="range" min="0" max="1000" value="0" step="1">
+            <span id="vc-time">0:00</span>
+            <button id="vc-mute" title="Mute/Unmute">🔇</button>
+            <input id="vc-volume" type="range" min="0" max="100" value="0" step="1">
+        </div>
         <div class="hero-text">
             <h1 data-phrase-key="heroH1" style="color:#FF5500;font-size:5rem;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;">You can learn to sing.</h1>
             <p data-phrase-key="heroSub">Your first session ($40) will show you how.</p>
@@ -1280,6 +1353,96 @@
             observer.observe(section);
         });
 
+    </script>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        var ytPlayer;
+        var progressTimer;
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('ytplayer', {
+                videoId: '9lrKjHh9F1g',
+                playerVars: {
+                    autoplay: 1,
+                    mute: 1,
+                    loop: 1,
+                    playlist: '9lrKjHh9F1g',
+                    controls: 0,
+                    showinfo: 0,
+                    rel: 0,
+                    modestbranding: 1,
+                    playsinline: 1
+                },
+                events: {
+                    onReady: function(e) {
+                        e.target.playVideo();
+                        progressTimer = setInterval(updateProgress, 500);
+                    },
+                    onStateChange: function(e) {
+                        var btn = document.getElementById('vc-playpause');
+                        if (e.data === YT.PlayerState.PLAYING) {
+                            btn.textContent = '⏸';
+                        } else if (e.data === YT.PlayerState.PAUSED) {
+                            btn.textContent = '▶';
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateProgress() {
+            if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
+            var duration = ytPlayer.getDuration();
+            var current = ytPlayer.getCurrentTime();
+            if (duration > 0) {
+                document.getElementById('vc-progress').value = (current / duration) * 1000;
+                var m = Math.floor(current / 60);
+                var s = Math.floor(current % 60);
+                document.getElementById('vc-time').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+            }
+        }
+
+        document.getElementById('vc-playpause').addEventListener('click', function() {
+            if (!ytPlayer) return;
+            if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                ytPlayer.pauseVideo();
+            } else {
+                ytPlayer.playVideo();
+            }
+        });
+
+        document.getElementById('vc-progress').addEventListener('input', function() {
+            if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
+            ytPlayer.seekTo((this.value / 1000) * ytPlayer.getDuration(), true);
+        });
+
+        document.getElementById('vc-mute').addEventListener('click', function() {
+            if (!ytPlayer) return;
+            if (ytPlayer.isMuted()) {
+                ytPlayer.unMute();
+                ytPlayer.setVolume(parseInt(document.getElementById('vc-volume').value) || 50);
+                document.getElementById('vc-volume').value = ytPlayer.getVolume();
+                this.textContent = '🔊';
+            } else {
+                ytPlayer.mute();
+                this.textContent = '🔇';
+            }
+        });
+
+        document.getElementById('vc-volume').addEventListener('input', function() {
+            if (!ytPlayer) return;
+            var vol = parseInt(this.value);
+            ytPlayer.setVolume(vol);
+            if (vol === 0) {
+                ytPlayer.mute();
+                document.getElementById('vc-mute').textContent = '🔇';
+            } else {
+                ytPlayer.unMute();
+                document.getElementById('vc-mute').textContent = '🔊';
+            }
+        });
     </script>
 
 </body>
