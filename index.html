@@ -238,98 +238,8 @@
             max-width: 100%;
             width: 100%;
             padding: 0;
-            background: transparent;
+            background: #111;
         }
-        #hero-video-wrap {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 177.78vh;
-            height: 100%;
-            min-width: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        #hero-video-wrap video {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        #video-control-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1500;
-            background: rgba(0,0,0,0.65);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            box-sizing: border-box;
-        }
-        #vc-playpause {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 0 4px;
-            flex-shrink: 0;
-        }
-        #vc-progress {
-            flex: 1;
-            -webkit-appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: rgba(255,255,255,0.3);
-            outline: none;
-            cursor: pointer;
-        }
-        #vc-progress::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #FF5500;
-            cursor: pointer;
-        }
-        #vc-time {
-            color: #fff;
-            font-size: 0.75rem;
-            font-family: monospace;
-            flex-shrink: 0;
-            min-width: 36px;
-        }
-        #vc-mute {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        #vc-volume {
-            width: 70px;
-            -webkit-appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: rgba(255,255,255,0.3);
-            outline: none;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        #vc-volume::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #FF5500;
-            cursor: pointer;
-        }
-
         /* Social proof strip */
         #proof-strip {
             width: 100%;
@@ -902,19 +812,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Hero text overlay */
-        .hero-dark-bg {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.68);
-            z-index: 1;
-            pointer-events: none;
-            transition: background 0.4s ease;
-        }
-        #hero.video-focused .hero-dark-bg {
-            background: rgba(0,0,0,0.15);
-        }
         .hero-text {
             position: absolute;
             top: 50%;
@@ -983,21 +880,8 @@
         </nav>
     </header>
 
-    <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
+    <!-- Hero Section -->
     <section id="hero">
-        <div id="hero-video-wrap">
-            <video id="hero-video" autoplay muted loop playsinline>
-                <source src="hero.mp4" type="video/mp4">
-            </video>
-        </div>
-        <div class="hero-dark-bg"></div>
-        <div id="video-control-area">
-            <button id="vc-playpause" title="Play/Pause">⏸</button>
-            <input id="vc-progress" type="range" min="0" max="1000" value="0" step="1">
-            <span id="vc-time">0:00</span>
-            <button id="vc-mute" title="Mute/Unmute">🔇</button>
-            <input id="vc-volume" type="range" min="0" max="100" value="0" step="1">
-        </div>
         <div class="hero-text">
             <h1 data-phrase-key="heroH1" style="color:#FF5500;font-size:5rem;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;">You can learn to sing.</h1>
             <p data-phrase-key="heroSub">Your first session ($40) will show you how.</p>
@@ -1353,61 +1237,6 @@
 
     </script>
 
-    <script>
-        (function() {
-            var vid = document.getElementById('hero-video');
-            var progress = document.getElementById('vc-progress');
-            var timeEl = document.getElementById('vc-time');
-            var playBtn = document.getElementById('vc-playpause');
-            var muteBtn = document.getElementById('vc-mute');
-            var volSlider = document.getElementById('vc-volume');
-
-            // Update progress bar every 500ms
-            setInterval(function() {
-                if (!vid.duration) return;
-                progress.value = (vid.currentTime / vid.duration) * 1000;
-                var m = Math.floor(vid.currentTime / 60);
-                var s = Math.floor(vid.currentTime % 60);
-                timeEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-            }, 500);
-
-            function togglePlay() {
-                if (vid.paused) { vid.play(); playBtn.textContent = '⏸'; }
-                else { vid.pause(); playBtn.textContent = '▶'; }
-            }
-
-            playBtn.addEventListener('click', togglePlay);
-
-            // Click hero: toggle video-focused (lightens overlay) + play/pause
-            var hero = document.getElementById('hero');
-            hero.addEventListener('click', function(e) {
-                if (e.target.closest('#video-control-area')) return;
-                hero.classList.toggle('video-focused');
-                togglePlay();
-            });
-
-            progress.addEventListener('input', function() {
-                if (vid.duration) vid.currentTime = (this.value / 1000) * vid.duration;
-            });
-
-            muteBtn.addEventListener('click', function() {
-                vid.muted = !vid.muted;
-                if (vid.muted) {
-                    muteBtn.textContent = '🔇';
-                    volSlider.value = 0;
-                } else {
-                    muteBtn.textContent = '🔊';
-                    volSlider.value = vid.volume * 100;
-                }
-            });
-
-            volSlider.addEventListener('input', function() {
-                vid.volume = this.value / 100;
-                vid.muted = (this.value == 0);
-                muteBtn.textContent = (this.value == 0) ? '🔇' : '🔊';
-            });
-        })();
-    </script>
 
 </body>
 </html>
