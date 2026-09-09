@@ -240,6 +240,22 @@
             padding: 0;
             background: #111;
         }
+        #ytplayer-wrap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 177.78vh; /* 16:9 at full height */
+            height: 100%;
+            min-width: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #ytplayer-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
         #video-control-area {
             display: none;
         }
@@ -898,6 +914,13 @@
 
     <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
     <section id="hero">
+        <div id="ytplayer-wrap">
+            <iframe id="ytplayer"
+                src="https://www.youtube.com/embed/9lrKjHh9F1g?autoplay=1&mute=1&loop=1&playlist=9lrKjHh9F1g&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+            </iframe>
+        </div>
         <div class="hero-dark-bg"></div>
         <div class="hero-text">
             <h1 data-phrase-key="heroH1" style="color:#FF5500;font-size:5rem;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;">You can learn to sing.</h1>
