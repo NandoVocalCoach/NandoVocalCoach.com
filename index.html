@@ -907,9 +907,13 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.52);
+            background: rgba(0,0,0,0.68);
             z-index: 1;
             pointer-events: none;
+            transition: background 0.4s ease;
+        }
+        #hero.video-focused .hero-dark-bg {
+            background: rgba(0,0,0,0.15);
         }
         .hero-text {
             position: absolute;
@@ -929,16 +933,16 @@
             line-height: 1.0;
             margin-bottom: 0.6rem;
             color: #FF5500 !important;
-            text-shadow: 0 3px 24px rgba(0,0,0,0.8);
+            text-shadow: 0 0 30px rgba(0,0,0,1), 0 3px 8px rgba(0,0,0,1), 2px 2px 0 rgba(0,0,0,0.8);
             text-transform: uppercase;
             border-bottom: none;
             padding-bottom: 0;
         }
         .hero-text p {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-            font-weight: 400;
+            text-shadow: 0 2px 12px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.9);
+            font-weight: 600;
             font-style: italic;
             text-align: center;
         }
@@ -1374,10 +1378,11 @@
 
             playBtn.addEventListener('click', togglePlay);
 
-            // Click anywhere on hero to play/pause
-            document.getElementById('hero').addEventListener('click', function(e) {
-                // Don't fire if clicking the control bar itself
+            // Click hero: toggle video-focused (lightens overlay) + play/pause
+            var hero = document.getElementById('hero');
+            hero.addEventListener('click', function(e) {
                 if (e.target.closest('#video-control-area')) return;
+                hero.classList.toggle('video-focused');
                 togglePlay();
             });
 
