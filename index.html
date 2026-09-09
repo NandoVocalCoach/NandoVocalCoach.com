@@ -242,21 +242,22 @@
             isolation: isolate;
             will-change: transform;
         }
-        #ytplayer-wrap {
+        #hero-video-wrap {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 177.78vh; /* 16:9 at full height */
+            width: 177.78vh;
             height: 100%;
             min-width: 100%;
             pointer-events: none;
             z-index: 0;
         }
-        #ytplayer-wrap iframe {
+        #hero-video-wrap video {
             width: 100%;
             height: 100%;
-            border: none;
+            object-fit: cover;
+            display: block;
         }
         #video-control-area {
             position: absolute;
@@ -986,8 +987,10 @@
 
     <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
     <section id="hero">
-        <div id="ytplayer-wrap">
-            <div id="ytplayer"></div>
+        <div id="hero-video-wrap">
+            <video id="hero-video" autoplay muted loop playsinline>
+                <source src="hero.mp4" type="video/mp4">
+            </video>
         </div>
         <div class="hero-dark-bg"></div>
         <div id="video-control-area">
@@ -1355,94 +1358,50 @@
 
     </script>
 
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        var ytPlayer;
-        var progressTimer;
+        (function() {
+            var vid = document.getElementById('hero-video');
+            var progress = document.getElementById('vc-progress');
+            var timeEl = document.getElementById('vc-time');
+            var playBtn = document.getElementById('vc-playpause');
+            var muteBtn = document.getElementById('vc-mute');
+            var volSlider = document.getElementById('vc-volume');
 
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('ytplayer', {
-                videoId: '9lrKjHh9F1g',
-                playerVars: {
-                    autoplay: 1,
-                    mute: 1,
-                    loop: 1,
-                    playlist: '9lrKjHh9F1g',
-                    controls: 0,
-                    showinfo: 0,
-                    rel: 0,
-                    modestbranding: 1,
-                    playsinline: 1
-                },
-                events: {
-                    onReady: function(e) {
-                        e.target.playVideo();
-                        progressTimer = setInterval(updateProgress, 500);
-                    },
-                    onStateChange: function(e) {
-                        var btn = document.getElementById('vc-playpause');
-                        if (e.data === YT.PlayerState.PLAYING) {
-                            btn.textContent = '⏸';
-                        } else if (e.data === YT.PlayerState.PAUSED) {
-                            btn.textContent = '▶';
-                        }
-                    }
+            // Update progress bar every 500ms
+            setInterval(function() {
+                if (!vid.duration) return;
+                progress.value = (vid.currentTime / vid.duration) * 1000;
+                var m = Math.floor(vid.currentTime / 60);
+                var s = Math.floor(vid.currentTime % 60);
+                timeEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+            }, 500);
+
+            playBtn.addEventListener('click', function() {
+                if (vid.paused) { vid.play(); playBtn.textContent = '⏸'; }
+                else { vid.pause(); playBtn.textContent = '▶'; }
+            });
+
+            progress.addEventListener('input', function() {
+                if (vid.duration) vid.currentTime = (this.value / 1000) * vid.duration;
+            });
+
+            muteBtn.addEventListener('click', function() {
+                vid.muted = !vid.muted;
+                if (vid.muted) {
+                    muteBtn.textContent = '🔇';
+                    volSlider.value = 0;
+                } else {
+                    muteBtn.textContent = '🔊';
+                    volSlider.value = vid.volume * 100;
                 }
             });
-        }
 
-        function updateProgress() {
-            if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
-            var duration = ytPlayer.getDuration();
-            var current = ytPlayer.getCurrentTime();
-            if (duration > 0) {
-                document.getElementById('vc-progress').value = (current / duration) * 1000;
-                var m = Math.floor(current / 60);
-                var s = Math.floor(current % 60);
-                document.getElementById('vc-time').textContent = m + ':' + (s < 10 ? '0' : '') + s;
-            }
-        }
-
-        document.getElementById('vc-playpause').addEventListener('click', function() {
-            if (!ytPlayer) return;
-            if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                ytPlayer.pauseVideo();
-            } else {
-                ytPlayer.playVideo();
-            }
-        });
-
-        document.getElementById('vc-progress').addEventListener('input', function() {
-            if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
-            ytPlayer.seekTo((this.value / 1000) * ytPlayer.getDuration(), true);
-        });
-
-        document.getElementById('vc-mute').addEventListener('click', function() {
-            if (!ytPlayer) return;
-            if (ytPlayer.isMuted()) {
-                ytPlayer.unMute();
-                ytPlayer.setVolume(parseInt(document.getElementById('vc-volume').value) || 50);
-                document.getElementById('vc-volume').value = ytPlayer.getVolume();
-                this.textContent = '🔊';
-            } else {
-                ytPlayer.mute();
-                this.textContent = '🔇';
-            }
-        });
-
-        document.getElementById('vc-volume').addEventListener('input', function() {
-            if (!ytPlayer) return;
-            var vol = parseInt(this.value);
-            ytPlayer.setVolume(vol);
-            if (vol === 0) {
-                ytPlayer.mute();
-                document.getElementById('vc-mute').textContent = '🔇';
-            } else {
-                ytPlayer.unMute();
-                document.getElementById('vc-mute').textContent = '🔊';
-            }
-        });
+            volSlider.addEventListener('input', function() {
+                vid.volume = this.value / 100;
+                vid.muted = (this.value == 0);
+                muteBtn.textContent = (this.value == 0) ? '🔇' : '🔊';
+            });
+        })();
     </script>
 
 </body>
