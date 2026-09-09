@@ -1370,9 +1370,18 @@
                 timeEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
             }, 500);
 
-            playBtn.addEventListener('click', function() {
+            function togglePlay() {
                 if (vid.paused) { vid.play(); playBtn.textContent = '⏸'; }
                 else { vid.pause(); playBtn.textContent = '▶'; }
+            }
+
+            playBtn.addEventListener('click', togglePlay);
+
+            // Click anywhere on hero to play/pause
+            document.getElementById('hero').addEventListener('click', function(e) {
+                // Don't fire if clicking the control bar itself
+                if (e.target.closest('#video-control-area')) return;
+                togglePlay();
             });
 
             progress.addEventListener('input', function() {
