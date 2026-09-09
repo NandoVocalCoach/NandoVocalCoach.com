@@ -899,7 +899,7 @@
     <section id="hero">
         <div class="hero-dark-bg"></div>
         <div class="hero-text">
-            <h1 data-phrase-key="heroH1">You can learn to sing.</h1>
+            <h1 data-phrase-key="heroH1" style="color:#FF5500;font-size:7rem;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;">You can learn to sing.</h1>
             <p data-phrase-key="heroSub">I'll show you how in your first session.</p>
         </div>
     </section>
@@ -1233,14 +1233,9 @@
             updateTranslations(currentLanguage);
         });
 
-        if (localStorage.getItem('mode') === 'dark') {
-            document.body.classList.add('dark-mode');
-            modeToggle.innerText = '☀️';
-            logo.src = 'logodark.png';
-        } else {
-            modeToggle.innerText = '🌙';
-            logo.src = 'logolight.png';
-        }
+        document.body.classList.add('dark-mode');
+        logo.src = 'logodark.png';
+        if (modeToggle) modeToggle.style.display = 'none';
 
         modeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
