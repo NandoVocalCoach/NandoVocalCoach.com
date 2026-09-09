@@ -225,7 +225,7 @@
             color: var(--section-heading);
         }
 
-        /* Hero Section with YouTube Video, Progress Bar, and Custom Controls */
+        /* Hero Section */
         #hero {
             position: relative;
             height: 70vh;
@@ -235,168 +235,15 @@
             justify-content: center;
             color: var(--header-text);
             margin-top: 150px;
+            background: url('profile.JPG') center top / cover no-repeat;
         }
         body:not(.dark-mode) #hero {
             border-top: 2px solid #ccc;
             border-bottom: 2px solid #ccc;
         }
-        .video-wrapper {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-        #hero-video { width: 100%; height: 100%; }
-        .video-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            object-fit: cover;
-            pointer-events: none;
-        }
-        #hero-video-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 2;
-            cursor: pointer;
-        }
         #video-control-area {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            align-items: center;
-            padding-bottom: 10px;
+            display: none;
         }
-        #progress-container { width: 90%; }
-        #progress-bar {
-            width: 100%;
-            height: 8px;
-            -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
-            outline: none;
-        }
-        #progress-bar::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--section-heading);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        #progress-bar::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: var(--section-heading);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            appearance: none;
-        }
-
-        #progress-bar::-webkit-slider-thumb:hover,
-        #progress-bar::-moz-range-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        #progress-bar::-webkit-slider-runnable-track {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
-        }
-
-        #progress-bar::-moz-range-track {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
-        }
-        #video-controls {
-            width: 90%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-        }
-        #left-controls, #right-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        #left-controls button,
-        #right-controls button {
-            background: #fff;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 1.1rem;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        #left-controls button:hover,
-        #right-controls button:hover {
-            background-color: #eee;
-        }
-
-        #left-controls input[type=range] {
-            width: 120px;
-            height: 8px;
-            -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
-            outline: none;
-        }
-
-        #left-controls input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--section-heading);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        #left-controls input[type=range]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: var(--section-heading);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            appearance: none;
-        }
-
-        #left-controls input[type=range]::-webkit-slider-thumb:hover,
-        #left-controls input[type=range]::-moz-range-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        #left-controls input[type=range].boosted {
-             background: red;
-        }
-        #left-controls input[type=range]::-webkit-slider-runnable-track {
-            background: rgba(255,255,255,0.7);
-            border-radius: 4px;
-
-        }
-        #left-controls input[type=range]::-moz-range-track{
-            background: rgba(255,255,255,0.7);
-            border-radius: 4px;
-        }
-
         /* CTA & Floating Button */
         #cta-button, #sticky-cta {
             padding: 1rem 2rem;
@@ -963,7 +810,7 @@
         }
         .hero-text {
             position: absolute;
-            top: 42%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) translateZ(0);
             z-index: 5;
@@ -997,14 +844,6 @@
             .hero-text p { font-size: 1rem; }
         }
 
-            #left-controls button,
-            #right-controls button {
-                padding: 5px 8px;
-                font-size: 0.9rem;
-            }
-            #left-controls input[type=range] {
-                width: 80px;
-            }
             #about .profile-image img {
                 width: 150px; /* Even smaller image on very small phones */
             }
@@ -1038,33 +877,10 @@
 
     <!-- Hero Section with YouTube Video, Progress Bar, and Custom Controls -->
     <section id="hero">
-        <div class="video-wrapper">
-            <div id="hero-video"></div>
-        </div>
-        <!-- Dark overlay for text readability -->
         <div class="hero-dark-bg"></div>
-        <!-- Hero headline -->
         <div class="hero-text">
             <h1 data-phrase-key="heroH1">You can learn to sing.</h1>
             <p data-phrase-key="heroSub">I'll show you how in your first session.</p>
-        </div>
-        <!-- Transparent overlay to open the official YouTube video -->
-        <div id="hero-video-overlay" onclick="window.open('https://www.youtube.com/watch?v=_OCuHsXcyEI')" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:3; cursor:pointer;"></div>
-        <!-- Video Control Area with progress bar and controls -->
-        <div id="video-control-area" style="z-index:4;">
-            <div id="progress-container">
-                <input id="progress-bar" type="range" min="0" value="0">
-            </div>
-            <div id="video-controls">
-                <div id="left-controls">
-                    <button id="play-toggle">⏸</button>
-                    <button id="mute-toggle">🔇</button>
-                    <input id="volume-slider" type="range" min="0" max="150" value="100">
-                </div>
-                <div id="right-controls">
-                    <button id="open-youtube">↗</button>
-                </div>
-            </div>
         </div>
     </section>
     <!-- WhatsApp floating button -->
@@ -1222,104 +1038,9 @@
         </div>
     </footer>
 
-    <!-- Load YouTube IFrame API & TidyCal embed -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- TidyCal embed -->
     <script src="https://asset-tidycal.b-cdn.net/js/embed.js" async></script>
     <script>
-        // YouTube IFrame API integration for hero video with progress tracking
-        let player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('hero-video', {
-                videoId: '_OCuHsXcyEI',
-                playerVars: {
-                    autoplay: 1,
-                    mute: 1,
-                    controls: 0,
-                    loop: 1,
-                    playlist: '_OCuHsXcyEI',
-                    modestbranding: 1,
-                    showinfo: 0,
-                    rel: 0
-                },
-                events: { 'onReady': onPlayerReady }
-            });
-        }
-
-        function onPlayerReady(event) {
-            // Update progress bar every second
-            setInterval(updateProgressBar, 1000);
-        }
-
-        function updateProgressBar() {
-            const progressBar = document.getElementById('progress-bar');
-            if (player && typeof player.getDuration === 'function') {
-                const duration = player.getDuration();
-                const currentTime = player.getCurrentTime();
-                progressBar.max = duration;
-                progressBar.value = currentTime;
-            }
-        }
-
-        // Video Controls: Play/Pause, Mute/Unmute, Volume, Open in YouTube, and seek via progress
-        window.addEventListener('load', () => {
-            const playBtn = document.getElementById('play-toggle');
-            const muteBtn = document.getElementById('mute-toggle');
-            const volumeSlider = document.getElementById('volume-slider');
-            const openYT = document.getElementById('open-youtube');
-            const progressBar = document.getElementById('progress-bar');
-
-            playBtn.innerText = "⏸";
-            muteBtn.innerText = "🔇";
-
-            playBtn.addEventListener('click', () => {
-                const state = player.getPlayerState();
-                if (state === YT.PlayerState.PLAYING) {
-                    player.pauseVideo();
-                    playBtn.innerText = "▶";
-                } else {
-                    player.playVideo();
-                    playBtn.innerText = "⏸";
-                }
-            });
-
-            muteBtn.addEventListener('click', () => {
-                if (player.isMuted()) {
-                    player.unMute();
-                    muteBtn.innerText = "🔊";
-                } else {
-                    player.mute();
-                    muteBtn.innerText = "🔇";
-                }
-            });
-
-            volumeSlider.addEventListener('input', () => {
-                let volValue = parseInt(volumeSlider.value, 10);
-                let newVol = Math.min(volValue, 100);
-                player.setVolume(newVol);
-                if (volValue > 100) {
-                    volumeSlider.classList.add('boosted');
-                } else {
-                    volumeSlider.classList.remove('boosted');
-                }
-            });
-
-            openYT.addEventListener('click', () => {
-                window.open(`https://www.youtube.com/watch?v=${player.getVideoData().video_id}`, "_blank");
-            });
-
-            progressBar.addEventListener('input', () => {
-                const newTime = parseFloat(progressBar.value);
-                player.seekTo(newTime, true);
-            });
-
-            // Hover effect for the floating "Book a Session" button plays a subtle sound
-            const stickyBtn = document.getElementById('sticky-cta');
-            stickyBtn.addEventListener('mouseenter', () => {
-                const sound = document.getElementById('hover-sound');
-                sound.currentTime = 0;
-                sound.play();
-            });
-        });
 
         // Translation and toggle functionality with updated language toggle text:
         // When in English mode, the language toggle shows the Spanish option with "ESP".
