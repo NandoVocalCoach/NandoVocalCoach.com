@@ -720,14 +720,21 @@
         });
 
         window.addEventListener('popstate', () => {
+            // Remove LS overlay nodes from DOM
             if (lsModalNodes.length) {
                 lsModalNodes.forEach(el => el.remove());
                 lsModalNodes = [];
             } else {
-                // Fallback: find LS iframe and remove its container
                 const lsFrame = document.querySelector('iframe[src*="lemonsqueezy"]');
                 if (lsFrame) (lsFrame.parentElement || lsFrame).remove();
             }
+            // Fully reset LemonSqueezy state so buttons re-arm
+            delete window.LemonSqueezy;
+            const oldScript = document.querySelector('script[src*="lemon.js"]');
+            if (oldScript) oldScript.remove();
+            const s = document.createElement('script');
+            s.src = 'https://assets.lemonsqueezy.com/lemon.js';
+            document.body.appendChild(s);
         });
     </script>
 
