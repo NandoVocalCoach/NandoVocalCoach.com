@@ -518,7 +518,7 @@
                 <div class="plan-desc" data-phrase-key="pricingPlan1Desc"><ul class='plan-bullets'><li>One session — I listen, assess, identify</li><li>You leave knowing exactly what's happening</li><li>Clear path forward from session 1</li><li>Most students hear a shift before it ends</li></ul></div>
                 <div class="plan-guarantee" data-phrase-key="pricingGuarantee">Find a difference, or full refund.</div>
                 <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" class="plan-cta lemonsqueezy-button" data-phrase-key="pricingCTA">Book Your Session →</a>
-                <a href="#booking" class="plan-cta" data-phrase-key="pricingCTA">Book Your Session →</a>
+                <div id="paypal-buttons-40-pricing" class="paypal-btn-container"></div>
             </div>
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan2Name">Vocal Fitness</div>
@@ -836,6 +836,7 @@
             }).render('#' + containerId);
         }
         renderPayPalButtons('paypal-buttons-40',  '40.00',  '1st Voicebuilding Session — Nando Vocal Coach', '40');
+        renderPayPalButtons('paypal-buttons-40-pricing', '40.00', '1st Voicebuilding Session — Nando Vocal Coach', '40');
         renderPayPalButtons('paypal-buttons-360', '360.00', 'Vocal Fitness — 4 Sessions with Nando Vocal Coach', '360');
         renderPayPalButtons('paypal-buttons-590', '590.00', '1-Month Transformation — 8 Sessions with Nando Vocal Coach', '590');
     </script>
