@@ -313,15 +313,18 @@
             transition: background 0.2s;
         }
         .pricing-card .plan-cta:hover { background: var(--section-heading-darker); }
-        .payment-trust {
+        .trust-strip {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 28px;
             flex-wrap: wrap;
+            gap: 6px 14px;
+            margin-top: 24px;
+            font-size: 0.78rem;
+            color: var(--text-color);
+            opacity: 0.55;
         }
-        .payment-trust svg { display: block; }
+        .trust-strip .trust-lock { color: var(--section-heading); opacity: 1; margin-right: 4px; }
         .plan-guarantee {
             font-size: 0.78rem;
             font-weight: 700;
@@ -511,28 +514,10 @@
                 <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/2ed6680d-d2f5-410c-b2d7-afd89a4195b5?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D590" class="plan-cta lemonsqueezy-button">Get Started →</a>
             </div>
         </div>
-        <div class="payment-trust">
-            <!-- Visa -->
-            <svg width="46" height="28" viewBox="0 0 46 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Visa">
-                <rect width="46" height="28" rx="4" fill="#1A1F71"/>
-                <text x="23" y="20" font-family="Arial Black,Arial,sans-serif" font-size="13" font-weight="900" font-style="italic" fill="white" text-anchor="middle" letter-spacing="0.5">VISA</text>
-            </svg>
-            <!-- Mastercard -->
-            <svg width="46" height="28" viewBox="0 0 46 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mastercard">
-                <rect width="46" height="28" rx="4" fill="#1C1C1C"/>
-                <circle cx="18" cy="14" r="8" fill="#EB001B"/>
-                <circle cx="28" cy="14" r="8" fill="#FF5F00" opacity="0.9"/>
-            </svg>
-            <!-- Apple Pay -->
-            <svg width="56" height="28" viewBox="0 0 56 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Apple Pay">
-                <rect width="56" height="28" rx="4" fill="#000"/>
-                <text x="28" y="19" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="11" fill="white" text-anchor="middle" letter-spacing="0.2"> Pay</text>
-            </svg>
-            <!-- Google Pay -->
-            <svg width="56" height="28" viewBox="0 0 56 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Google Pay">
-                <rect width="56" height="28" rx="4" fill="#fff"/>
-                <text x="28" y="19" font-family="Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle"><tspan fill="#4285F4">G</tspan><tspan fill="#5F6368"> Pay</tspan></text>
-            </svg>
+        <div class="trust-strip">
+            <span><i class="fas fa-lock trust-lock"></i>Secure checkout</span>
+            <span>283 students</span>
+            <span>Full refund if no difference</span>
         </div>
     </section>
 
@@ -595,7 +580,7 @@
 
     <section id="booking">
         <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" class="booking-main-cta lemonsqueezy-button" data-phrase-key="bookingCTA">Book Your First Session · $40</a>
-        <p data-phrase-key="bookingGuarantee" style="font-size:0.85rem; opacity:0.6; margin-top:0.75rem;">Not satisfied? Full refund, no awkwardness.</p>
+        <p data-phrase-key="bookingGuarantee" style="font-size:0.82rem; opacity:0.55; margin-top:0.9rem;"><i class="fas fa-lock" style="color:var(--section-heading);margin-right:5px;opacity:1;"></i>Secure checkout &nbsp;·&nbsp; Not satisfied? Full refund, no awkwardness.</p>
     </section>
 
     <footer id="contact">
