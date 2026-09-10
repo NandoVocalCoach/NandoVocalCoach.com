@@ -180,29 +180,26 @@
             flex-shrink: 0; /* Prevent shrinking */
         }
         #mode-toggle, #language-toggle {
-            padding: 6px 12px; /* Adjusted padding for desktop buttons */
+            padding: 6px 12px;
             font-family: "Bebas Neue", sans-serif;
-            font-size: 16px; /* Adjusted font size for desktop buttons */
-            border: 2px solid black;
+            font-size: 16px;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
             background: var(--section-heading);
-            color: var(--header-text);
+            color: #fff;
             transition: transform 0.2s ease, background-color 0.3s;
         }
         #mode-toggle:hover, #language-toggle:hover {
             transform: scale(1.1);
             background-color: var(--section-heading-darker);
         }
-        body.dark-mode #mode-toggle, body.dark-mode #language-toggle { border-color: white; }
         #language-toggle img {
-            width: 20px;
+            width: 18px;
             vertical-align: middle;
-            margin-right: 5px;
+            margin-right: 4px;
             border-radius: 50%;
-            border: 2px solid black;
         }
-        body.dark-mode #language-toggle img { border-color: white; }
         nav {
             margin-top: 20px;
             width: 100%; /* Take full width for navigation */
@@ -229,6 +226,8 @@
         #hero {
             margin: 80px 0 0 0; /* desktop header offset */
             width: 100%;
+            max-width: none; /* override section max-width:1100px — hero must be full-width */
+            padding: 0;      /* override section padding:64px 32px */
             background: #000;
             display: flex;
             flex-direction: column;
@@ -268,10 +267,10 @@
         }
         @media (max-width: 768px) {
             #hero { margin-top: 58px; }
-            .hero-intro { padding: 1.5rem 1.5rem 1rem; }
-            .hero-intro h1 { font-size: 3rem; }
-            .hero-intro p { font-size: 0.95rem; }
-            .hero-video-wrap { padding: 0 0 1.5rem; }
+            .hero-intro { padding: 1.2rem 1.5rem 0.8rem; }
+            .hero-intro h1 { font-size: 1.8rem; } /* single line on 375px+ screens */
+            .hero-intro p { font-size: 0.9rem; }
+            .hero-video-wrap { padding: 0; }
             .hero-video-wrap video { border-radius: 0; }
         }
         /* Social proof strip */
@@ -299,11 +298,11 @@
             font-family: "Bebas Neue", sans-serif;
             font-size: 1.5rem;
             background: var(--section-heading);
-            border: 2px solid black;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s ease;
-            color: black;
+            color: #fff;
         }
         #cta-button:hover, #sticky-cta:hover {
             background: var(--section-heading-darker);
@@ -352,7 +351,6 @@
             #whatsapp-fab { padding: 14px; border-radius: 50%; }
         }
         body.dark-mode #cta-button, body.dark-mode #sticky-cta {
-            border-color: white;
             color: white;
         }
 
