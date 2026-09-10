@@ -435,8 +435,6 @@
     </style>
 </head>
 <body>
-    <audio id="hover-sound" src="hover-sound.mp3" preload="auto"></audio>
-
     <header>
         <div class="logo">
             <img id="logo" src="logolight.png" alt="Nando Vocal Coach Logo">
@@ -689,12 +687,6 @@
             stickyCta.style.display = entry.isIntersecting ? 'none' : '';
         }, { threshold: 0.1 });
         footerObserver.observe(document.getElementById('contact'));
-
-        document.getElementById('sticky-cta').addEventListener('mouseenter', () => {
-            const sound = document.getElementById('hover-sound');
-            sound.currentTime = 0;
-            sound.play();
-        });
 
         // Back button closes LemonSqueezy modal instead of leaving the page.
         // MutationObserver captures whatever nodes LS injects into <body> on click,
