@@ -695,6 +695,16 @@
             sound.currentTime = 0;
             sound.play();
         });
+
+        // Back button closes LemonSqueezy modal instead of leaving the page
+        document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(() => history.pushState({ lsModal: true }, ''), 400);
+            });
+        });
+        window.addEventListener('popstate', () => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+        });
     </script>
 
     <script src="https://assets.lemonsqueezy.com/lemon.js"></script>
