@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -20,7 +20,6 @@
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1823893192119219&ev=PageView&noscript=1"
     /></noscript>
-    <!-- End Meta Pixel Code -->
 
     <!-- SEO -->
     <meta name="description" content="Online vocal coaching for singers of all levels. Learn to sing, build power, find your range — first session only $40. Top Rated on Fiverr, 283 reviews, 5.0 average.">
@@ -42,17 +41,10 @@
     <meta name="twitter:description" content="Online vocal coaching for singers of all levels. First session $40. Top Rated on Fiverr, 283 reviews, 5.0 average.">
     <meta name="twitter:image" content="https://nandovocalcoach.com/profile.JPG">
 
-    <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
-    </script> -->
     <title>Nando Vocal Coach | Learn to Sing Online</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -71,7 +63,7 @@
         "@type": "OfferCatalog",
         "name": "Vocal Coaching Services",
         "itemListElement": [
-          { "@type": "Offer", "name": "1st Voicebuilding Session (first session)", "price": "40", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "1st Voicebuilding Session", "price": "40", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "340", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "1-Month Transformation (8 sessions)", "price": "590", "priceCurrency": "USD" }
         ]
@@ -79,39 +71,28 @@
     }
     </script>
 
-    <!-- Font Awesome for social icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Global anchor offset for fixed header */
         html { scroll-padding-top: 80px; }
 
-        /* Root variables for theming */
+        /* CSS vars — light mode fallback if JS fails, dark mode always applied by JS */
         :root {
             --bg-color: #fff;
             --text-color: #333;
             --header-bg: rgba(224,224,224,0.5);
-            --header-text: #333;
-            --nav-text: #000;
-            --section-heading: #FF5500; /* Vibrant Orange - Consistent Branding */
-            --section-heading-darker: #e64500; /* Slightly darker shade for hover effects */
-            --services-bg: #f9f9f9;
+            --section-heading: #FF5500;
+            --section-heading-darker: #e64500;
             --pricing-bg: #f5f5f5;
             --footer-bg: #FF5500;
             --footer-text: #000;
             --footer-link: #000;
             --header-border-color: #FF5500;
         }
-
-        /* Dark mode variables */
         .dark-mode {
             --bg-color: #000;
             --text-color: #fff;
             --header-bg: rgba(26,26,26,0.5);
-            --header-text: #fff;
-            --nav-text: #fff;
             --section-heading: #FF5500;
             --section-heading-darker: #e64500;
-            --services-bg: #222;
             --pricing-bg: #222;
             --footer-bg: #FF5500;
             --footer-text: #000;
@@ -119,27 +100,22 @@
             --header-border-color: #FF5500;
         }
 
-        /* Universal box-sizing for consistent layout */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Body styles */
         body {
             font-family: "Montserrat", sans-serif;
-            font-size: 130%; /* Base font size for desktop */
+            font-size: 130%;
             line-height: 1.6;
             background: var(--bg-color);
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
             text-align: center;
         }
-
-        /* Link default styles */
         a { text-decoration: none; color: inherit; }
 
-        /* Header – fixed with logo and toggles */
+        /* Header */
         header {
             background: var(--header-bg);
-            color: var(--header-text);
             padding: 0.5rem 0;
             position: fixed;
             top: 0;
@@ -148,38 +124,14 @@
             z-index: 1000;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            display: flex; /* Use flexbox for header content */
-            flex-direction: row; /* Default to row for desktop */
-            align-items: center;
-            justify-content: space-between; /* Distribute items */
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-        }
-
-        .logo {
-            position: relative; /* Changed from absolute for better flow */
-            margin-left: 20px; /* Keep left margin */
-            flex-shrink: 0; /* Prevent shrinking */
-        }
-        .logo img {
-            max-width: 280px;
-            transition: max-width 0.3s;
-        }
-        #header-tagline {
-            font-style: italic;
-            font-size: 1.5rem; /* Responsive font size */
-            font-weight: bold;
-            text-align: center;
-            flex-grow: 1; /* Allow tagline to grow */
-            padding: 0 10px; /* Add some padding */
-        }
-        .toggle-container {
-            position: relative; /* Changed from absolute for better flow */
-            margin-right: 40px; /* Keep right margin */
             display: flex;
-            gap: 10px;
-            flex-shrink: 0; /* Prevent shrinking */
+            align-items: center;
+            justify-content: space-between;
         }
-        #mode-toggle, #language-toggle {
+        .logo { margin-left: 20px; flex-shrink: 0; }
+        .logo img { max-width: 280px; }
+        .toggle-container { margin-right: 40px; display: flex; flex-shrink: 0; }
+        #language-toggle {
             padding: 6px 12px;
             font-family: "Bebas Neue", sans-serif;
             font-size: 16px;
@@ -190,97 +142,40 @@
             color: #fff;
             transition: transform 0.2s ease, background-color 0.3s;
         }
-        #mode-toggle:hover, #language-toggle:hover {
-            transform: scale(1.1);
-            background-color: var(--section-heading-darker);
-        }
-        #language-toggle img {
-            width: 18px;
-            vertical-align: middle;
-            margin-right: 4px;
-            border-radius: 50%;
-        }
-        nav {
-            margin-top: 20px;
-            width: 100%; /* Take full width for navigation */
-            text-align: center;
-            padding-bottom: 5px;
-        }
-        nav a {
-            font-family: "Bebas Neue", sans-serif;
-            color: var(--nav-text);
-            margin: 0 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 2.2rem; /* Increased by ~30% for desktop (was 1.7rem) */
-            transition: color 0.3s;
-            display: inline-block;
-        }
-        nav a:hover {
-            text-decoration: underline;
-            text-decoration-color: var(--section-heading);
-            color: var(--section-heading);
-        }
+        #language-toggle:hover { transform: scale(1.1); background-color: var(--section-heading-darker); }
+        #language-toggle img { width: 18px; vertical-align: middle; margin-right: 4px; border-radius: 50%; }
 
-        /* Hero Section */
+        /* Hero */
         #hero {
-            margin: 80px 0 0 0; /* desktop header offset */
+            margin: 80px 0 0 0;
             width: 100%;
-            max-width: none; /* override section max-width:1100px — hero must be full-width */
-            padding: 0;      /* override section padding:64px 32px */
+            max-width: none;
+            padding: 0;
             background: #000;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        .hero-intro {
-            padding: 2.5rem 2rem 1.5rem;
-            text-align: center;
-            color: #fff;
-            width: 100%;
-        }
+        .hero-intro { padding: 2.5rem 2rem 1.5rem; text-align: center; color: #fff; width: 100%; }
         .hero-intro h1 {
             font-family: "Bebas Neue", sans-serif;
             font-size: 4.5rem;
-            line-height: 1.0;
+            line-height: 1;
             color: #FF5500;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
-            border-bottom: none;
-            padding-bottom: 0;
         }
-        .hero-intro p {
-            font-size: 1.2rem;
-            color: #ccc;
-            font-weight: 500;
-        }
-        .hero-video-wrap {
-            width: 100%;
-            max-width: 960px;
-            padding: 0 1.5rem 2.5rem;
-        }
-        .hero-video-wrap video {
-            width: 100%;
-            border-radius: 8px;
-            display: block;
-            background: #000;
-        }
-        @media (max-width: 768px) {
-            #hero { margin-top: 58px; }
-            .hero-intro { padding: 1.2rem 1.5rem 0.8rem; }
-            .hero-intro h1 { font-size: 1.8rem; } /* single line on 375px+ screens */
-            .hero-intro p { font-size: 0.9rem; }
-            .hero-video-wrap { padding: 0; }
-            .hero-video-wrap video { border-radius: 0; }
-        }
+        .hero-intro p { font-size: 1.2rem; color: #ccc; font-weight: 500; }
+        .hero-video-wrap { width: 100%; max-width: 960px; padding: 0 1.5rem 2.5rem; }
+        .hero-video-wrap video { width: 100%; border-radius: 8px; display: block; background: #000; }
+
         /* Social proof strip */
         #proof-strip {
             width: 100%;
             background: #000;
             color: #ccc;
-            font-family: "Montserrat", sans-serif;
             font-size: 1rem;
-            padding: 1rem 1rem;
+            padding: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -292,8 +187,13 @@
         .proof-stars { color: #FF5500; font-size: 1.2rem; letter-spacing: 3px; }
         .proof-stat strong { color: #fff; }
         .proof-divider { color: #444; }
-        /* CTA & Floating Button */
-        #cta-button, #sticky-cta {
+
+        /* Sticky CTA */
+        #sticky-cta {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1100;
             padding: 1rem 2rem;
             font-family: "Bebas Neue", sans-serif;
             font-size: 1.5rem;
@@ -301,22 +201,12 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s ease;
             color: #fff;
+            transition: background 0.3s, transform 0.2s ease;
         }
-        #cta-button:hover, #sticky-cta:hover {
-            background: var(--section-heading-darker);
-            transform: scale(1.05);
-        }
+        #sticky-cta:hover { background: var(--section-heading-darker); transform: scale(1.05); }
 
-        #sticky-cta {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            z-index: 1100;
-        }
-
-        /* WhatsApp floating button */
+        /* WhatsApp FAB */
         #whatsapp-fab {
             position: fixed;
             left: 20px;
@@ -329,7 +219,6 @@
             color: #fff;
             border-radius: 50px;
             padding: 12px 20px 12px 16px;
-            text-decoration: none;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 0.9rem;
@@ -337,22 +226,8 @@
             transition: transform 0.2s, box-shadow 0.2s;
             white-space: nowrap;
         }
-        #whatsapp-fab:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 22px rgba(0,0,0,0.35);
-        }
-        #whatsapp-fab svg {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
-        }
-        @media (max-width: 480px) {
-            #whatsapp-fab span.wa-label { display: none; }
-            #whatsapp-fab { padding: 14px; border-radius: 50%; }
-        }
-        body.dark-mode #cta-button, body.dark-mode #sticky-cta {
-            color: white;
-        }
+        #whatsapp-fab:hover { transform: scale(1.05); box-shadow: 0 6px 22px rgba(0,0,0,0.35); }
+        #whatsapp-fab svg { flex-shrink: 0; width: 24px; height: 24px; }
 
         /* Sections */
         section {
@@ -372,79 +247,25 @@
             text-align: center;
         }
 
-        /* About Section */
-        #about .about-container {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            gap: 20px;
-            justify-content: center;
-        }
-        #about .profile-image {
-            flex-shrink: 0;
-            overflow: visible;
-        }
-        #about .profile-image img {
-            width: 240px; /* Fixed width for desktop */
-            height: auto; /* Maintain aspect ratio */
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: block;
-            margin: 0 auto;
-        }
+        /* About */
+        #about .about-container { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; justify-content: center; }
+        #about .profile-image { flex-shrink: 0; }
+        #about .profile-image img { width: 240px; height: auto; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: block; margin: 0 auto; }
         #about .about-details { flex: 1; text-align: left; }
-        #about .about-details h2{
-            text-align: left;
-        }
-        #about .about-text p {
-            margin-bottom: 1.6rem;
-            line-height: 1.85;
-        }
+        #about .about-details h2 { text-align: left; }
+        #about .about-text p { margin-bottom: 1.6rem; line-height: 1.85; }
         #about .about-text p:last-child { margin-bottom: 0; }
 
         /* Plan bullets */
-        .plan-bullets {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: left;
-        }
-        .plan-bullets li {
-            padding: 0.4rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            line-height: 1.5;
-        }
-        .plan-bullets li:last-child {
-            border-bottom: none;
-        }
-        .plan-bullets li::before {
-            content: "→ ";
-            color: #FF5500;
-            font-weight: bold;
-        }
+        .plan-bullets { list-style: none; padding: 0; margin: 0; text-align: left; }
+        .plan-bullets li { padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); line-height: 1.5; }
+        .plan-bullets li:last-child { border-bottom: none; }
+        .plan-bullets li::before { content: "→ "; color: #FF5500; font-weight: bold; }
 
-        /* Services & Pricing */
-        #services {
-            background: var(--services-bg);
-            padding: 32px;
-            border-radius: 5px;
-        }
-        #pricing {
-            background: var(--pricing-bg);
-            padding: 48px 32px;
-            text-align: center;
-            border-radius: 5px;
-        }
-        #pricing h2 {
-            margin-bottom: 2rem;
-        }
-        .pricing-cards {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: stretch;
-            flex-wrap: wrap;
-        }
+        /* Pricing */
+        #pricing { background: var(--pricing-bg); padding: 48px 32px; text-align: center; border-radius: 5px; }
+        #pricing h2 { margin-bottom: 2rem; }
+        .pricing-cards { display: flex; gap: 1.5rem; justify-content: center; align-items: stretch; flex-wrap: wrap; }
         .pricing-card {
             background: var(--bg-color);
             border: 2px solid rgba(128,128,128,0.2);
@@ -458,10 +279,7 @@
             gap: 0.75rem;
             text-align: left;
         }
-        .pricing-card.featured {
-            border-color: var(--section-heading);
-            position: relative;
-        }
+        .pricing-card.featured { border-color: var(--section-heading); position: relative; }
         .pricing-card .badge {
             position: absolute;
             top: -14px;
@@ -477,35 +295,11 @@
             border-radius: 20px;
             white-space: nowrap;
         }
-        .pricing-card .plan-name {
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 0.05em;
-            color: var(--text-color);
-        }
-        .pricing-card .plan-price {
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 3rem;
-            line-height: 1;
-            color: var(--section-heading);
-        }
-        .plan-price-strike {
-            font-size: 1.6rem;
-            text-decoration: line-through;
-            opacity: 0.45;
-            color: var(--text-color);
-        }
-        .pricing-card .plan-sub {
-            font-size: 0.8rem;
-            opacity: 0.6;
-            margin-top: -0.5rem;
-        }
-        .pricing-card .plan-desc {
-            font-size: 0.9rem;
-            line-height: 1.55;
-            opacity: 0.85;
-            flex: 1;
-        }
+        .pricing-card .plan-name { font-family: "Bebas Neue", sans-serif; font-size: 1.4rem; letter-spacing: 0.05em; color: var(--text-color); }
+        .pricing-card .plan-price { font-family: "Bebas Neue", sans-serif; font-size: 3rem; line-height: 1; color: var(--section-heading); }
+        .plan-price-strike { font-size: 1.6rem; text-decoration: line-through; opacity: 0.45; color: var(--text-color); }
+        .pricing-card .plan-sub { font-size: 0.8rem; opacity: 0.6; margin-top: -0.5rem; }
+        .pricing-card .plan-desc { font-size: 0.9rem; line-height: 1.55; opacity: 0.85; flex: 1; }
         .pricing-card .plan-cta {
             display: inline-block;
             margin-top: 0.5rem;
@@ -514,24 +308,11 @@
             color: #fff;
             font-weight: 700;
             font-size: 0.85rem;
-            text-decoration: none;
             border-radius: 6px;
             text-align: center;
             transition: background 0.2s;
         }
-        .pricing-card .plan-cta:hover {
-            background: var(--section-heading-darker);
-        }
-        .pricing-scarcity {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-        .pricing-single-session {
-            margin-top: 0.75rem;
-            font-size: 0.85rem;
-            opacity: 0.6;
-        }
+        .pricing-card .plan-cta:hover { background: var(--section-heading-darker); }
         .plan-guarantee {
             font-size: 0.78rem;
             font-weight: 700;
@@ -542,56 +323,14 @@
             text-align: center;
             margin-top: 0.25rem;
         }
-        #guarantee {
-            background: var(--pricing-bg);
-            padding: 48px 32px;
-            text-align: center;
-            border-radius: 5px;
-        }
-        .guarantee-box {
-            border: 2px solid var(--section-heading);
-            border-radius: 8px;
-            padding: 2rem 2.5rem;
-            max-width: 680px;
-            margin: 0 auto;
-        }
-        .guarantee-box .guarantee-title {
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 1.9rem;
-            color: var(--section-heading);
-            margin-bottom: 0.75rem;
-        }
-        .guarantee-box p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
 
         /* Testimonials */
-        #testimonials {
-            position: relative;
-            overflow: hidden;
-            padding: 32px;
-            max-width: 1100px;
-            margin: 80px auto;
-            text-align: center;
-        }
+        #testimonials { position: relative; overflow: hidden; padding: 32px; max-width: 1100px; margin: 60px auto; text-align: center; }
         #testimonials-anchor { display: block; height: 100px; margin-top: -100px; visibility: hidden; }
-        #testimonials h2 {
-            color: var(--section-heading);
-            font-size: 2.2rem;
-            border-bottom: 2px solid var(--section-heading);
-            padding-bottom: 5px;
-            margin-bottom: 1rem;
-        }
-        .testimonial-carousel {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            margin-bottom: 20px;
-            width: 100%;
-        }
+        #testimonials h2 { color: var(--section-heading); font-size: 2.2rem; border-bottom: 2px solid var(--section-heading); padding-bottom: 5px; margin-bottom: 1rem; }
+        .testimonial-carousel { display: flex; transition: transform 0.5s ease-in-out; margin-bottom: 20px; width: 100%; }
         .testimonial-item {
-            flex: 0 0 100%; /* Always show one testimonial at a time */
+            flex: 0 0 100%;
             padding: 0 16px;
             opacity: 0;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
@@ -602,16 +341,12 @@
             align-items: center;
             text-align: center;
         }
-
-        .testimonial-item.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .testimonial-item.active { opacity: 1; visibility: visible; }
         .testimonial-item blockquote {
             font-style: italic;
             border-left: 4px solid var(--section-heading);
             padding-left: 16px;
-            padding-right: 52px; /* room for carousel arrows */
+            padding-right: 52px;
             margin-bottom: 8px;
             white-space: pre-wrap;
             font-size: 1.1rem;
@@ -620,13 +355,7 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .review-stars {
-            color: var(--section-heading);
-            font-size: 1.5rem;
-            line-height: 1;
-            display: block;
-            margin-top: 10px;
-        }
+        .review-stars { color: var(--section-heading); font-size: 1.5rem; line-height: 1; display: block; margin-top: 10px; }
         .carousel-nav {
             position: absolute;
             top: 50%;
@@ -640,30 +369,12 @@
             border-radius: 4px;
             transition: background-color 0.3s, transform 0.2s ease;
         }
-        .carousel-nav:hover {
-            background-color: var(--section-heading-darker);
-            transform: scale(1.1);
-        }
+        .carousel-nav:hover { background-color: var(--section-heading-darker); transform: scale(1.1); }
         #carousel-left { left: 10px; }
         #carousel-right { right: 10px; }
-        .fiverr-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .fiverr-link a {
-            color: var(--section-heading);
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-        .fiverr-link a:hover {
-            color: var(--section-heading-darker);
-        }
 
-        /* Booking & Footer */
-        #booking {
-            text-align: center;
-            padding: 40px 24px;
-        }
+        /* Booking */
+        #booking { text-align: center; padding: 40px 24px; }
         .booking-main-cta {
             display: block;
             width: 100%;
@@ -676,197 +387,54 @@
             font-size: 1.8rem;
             letter-spacing: 0.06em;
             border-radius: 8px;
-            text-decoration: none;
             text-align: center;
             transition: background 0.2s, transform 0.2s;
         }
-        .booking-main-cta:hover {
-            background: #e64500;
-            transform: scale(1.03);
-        }
-        @media (max-width: 480px) {
-            .booking-main-cta { font-size: 1.4rem; padding: 1rem 1.5rem; }
-        }
-        .calendly-inline-widget {
-            margin: 0 auto;
-            width: 90%;
-            max-width: 800px;
-            height: 650px;
-        }
-        footer {
-            background: var(--footer-bg);
-            color: var(--footer-text);
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: 50px;
-        }
-        footer .social a {
-            margin: 0 15px;
-            color: var(--footer-link);
-            font-size: 1.5rem;
-            transition: color 0.3s;
-        }
-        footer .social a:hover {
-            color: var(--text-color);
-        }
+        .booking-main-cta:hover { background: #e64500; transform: scale(1.03); }
 
-        /* Responsive adjustments for screens up to 768px (tablets and large phones) */
+        /* Footer */
+        footer { background: var(--footer-bg); color: var(--footer-text); text-align: center; padding: 1rem 0; margin-top: 50px; }
+        footer .social a { margin: 0 15px; color: var(--footer-link); font-size: 1.5rem; transition: color 0.3s; }
+        footer .social a:hover { color: var(--text-color); }
+
+        /* 768px */
         @media (max-width: 768px) {
-            body {
-                font-size: 110%;
-            }
-            header {
-                flex-direction: row; /* logo left, toggle right — one compact row */
-                padding: 8px 16px;
-                height: auto;
-                align-items: center;
-                justify-content: space-between;
-            }
-            .logo {
-                margin: 0;
-            }
-            .logo img {
-                max-width: 130px;
-            }
-            .toggle-container {
-                margin: 0;
-            }
-            #mode-toggle, #language-toggle {
-                padding: 5px 10px;
-                font-size: 14px;
-            }
-            nav {
-                display: none; /* nav removed — sticky CTA handles it */
-            }
-
-            #language-toggle {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-            #language-toggle img {
-                width: 16px;
-            }
-
-            /* Sticky CTA button */
-            #sticky-cta {
-                font-size: 1.1rem;
-                padding: 10px 20px;
-                right: 10px;
-                bottom: 10px;
-            }
-
-            /* General section margins — was 100px, causing giant black voids */
-            section {
-                margin: 24px auto;
-                padding: 20px;
-            }
-
-            /* About section adjustments for mobile */
-            #about .about-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            #about .profile-image img {
-                width: 180px;
-                margin-bottom: 15px;
-            }
-            #about .about-details {
-                text-align: center;
-            }
-            #about .about-details h2 {
-                text-align: center;
-            }
-
-            /* Calendly widget height for mobile */
-            .calendly-inline-widget {
-                height: 600px;
-            }
+            body { font-size: 110%; }
+            header { padding: 8px 16px; }
+            .logo { margin: 0; }
+            .logo img { max-width: 130px; }
+            .toggle-container { margin: 0; }
+            #language-toggle { font-size: 12px; padding: 4px 8px; }
+            #language-toggle img { width: 16px; }
+            #hero { margin-top: 58px; }
+            .hero-intro { padding: 1.2rem 1.5rem 0.8rem; }
+            .hero-intro h1 { font-size: 1.8rem; }
+            .hero-intro p { font-size: 0.9rem; }
+            .hero-video-wrap { padding: 0; }
+            .hero-video-wrap video { border-radius: 0; }
+            #sticky-cta { font-size: 1.1rem; padding: 10px 20px; right: 10px; bottom: 10px; }
+            section { margin: 24px auto; padding: 20px; }
+            #testimonials { margin: 24px auto; }
+            #about .about-container { flex-direction: column; align-items: center; }
+            #about .profile-image img { width: 180px; margin-bottom: 15px; }
+            #about .about-details { text-align: center; }
+            #about .about-details h2 { text-align: center; }
         }
 
-        /* Responsive adjustments for screens up to 480px (smaller phones) */
+        /* 480px */
         @media (max-width: 480px) {
-            body {
-                font-size: 100%;
-            }
-            .logo img {
-                max-width: 110px;
-            }
-            #sticky-cta {
-                font-size: 0.9rem;
-                padding: 8px 16px;
-            }
-            section {
-                margin: 16px auto;
-                padding: 15px;
-            }
-            .calendly-inline-widget {
-                height: 550px;
-            }
-
-        /* Lead Magnet Section */
-        #lead-magnet {
-            background: var(--services-bg);
-            text-align: center;
-            border-radius: 5px;
-            padding: 40px 32px;
-        }
-        #lead-magnet h2 { margin-bottom: 0.5rem; }
-        #lead-magnet .lm-subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-color);
-            opacity: 0.8;
-        }
-        .lm-form {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 0.75rem;
-        }
-        .lm-form input[type="email"] {
-            padding: 12px 18px;
-            font-family: "Montserrat", sans-serif;
-            font-size: 1rem;
-            border: 2px solid var(--section-heading);
-            border-radius: 4px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            width: 300px;
-            max-width: 100%;
-            outline: none;
-        }
-        .lm-form button {
-            padding: 12px 28px;
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 1.4rem;
-            background: var(--section-heading);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-        }
-        .lm-form button:hover {
-            background: var(--section-heading-darker);
-            transform: scale(1.04);
-        }
-        .lm-note {
-            font-size: 0.85rem;
-            opacity: 0.6;
-            margin-top: 0.5rem;
-        }
-
-        .hero-accent { color: var(--section-heading); }
-
-            #about .profile-image img {
-                width: 150px; /* Even smaller image on very small phones */
-            }
+            body { font-size: 100%; }
+            .logo img { max-width: 110px; }
+            #sticky-cta { font-size: 0.9rem; padding: 8px 16px; }
+            section { margin: 16px auto; padding: 15px; }
+            .booking-main-cta { font-size: 1.4rem; padding: 1rem 1.5rem; }
+            #whatsapp-fab span.wa-label { display: none; }
+            #whatsapp-fab { padding: 14px; border-radius: 50%; }
+            #about .profile-image img { width: 150px; }
         }
     </style>
 </head>
 <body>
-    <!-- Audio element for hover sound on the floating button -->
     <audio id="hover-sound" src="hover-sound.mp3" preload="auto"></audio>
 
     <header>
@@ -874,12 +442,10 @@
             <img id="logo" src="logolight.png" alt="Nando Vocal Coach Logo">
         </div>
         <div class="toggle-container">
-            <button id="mode-toggle">🌙</button>
             <button id="language-toggle"></button>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section id="hero">
         <div class="hero-intro">
             <h1 data-phrase-key="heroH1">You can learn to sing.</h1>
@@ -892,7 +458,6 @@
         </div>
     </section>
 
-    <!-- Social proof strip -->
     <div id="proof-strip">
         <span class="proof-stars">★★★★★</span>
         <span class="proof-stat"><strong>283 reviews</strong> · 5.0 average</span>
@@ -900,7 +465,6 @@
         <span class="proof-badge">Top Rated on Fiverr</span>
     </div>
 
-    <!-- WhatsApp floating button -->
     <a id="whatsapp-fab" href="https://wa.me/573008630815" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
         <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -946,20 +510,12 @@
                 <img src="profile.JPG" alt="Nando Portrait">
             </div>
             <div class="about-details">
-                <h2 class="about-title" data-phrase-key="aboutTitle">About Me</h2>
+                <h2 data-phrase-key="aboutTitle">About Me</h2>
                 <div class="about-text">
-                    <p data-phrase-key="aboutIntro">
-                        I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.
-                    </p>
-                    <p data-phrase-key="aboutAdditional">
-                        Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.
-                    </p>
-                    <p data-phrase-key="aboutPart3">
-                        So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong>
-                    </p>
-                    <p data-phrase-key="aboutPart4">
-                        Twelve years later, I specialize in exactly the student conventional teachers give up on. My voice still isn't fully recovered. But every exercise I give you, <strong>I've tested from the inside</strong>. If you've been told you don't have the talent, I know that feeling. And I know it's wrong.
-                    </p>
+                    <p data-phrase-key="aboutIntro">I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.</p>
+                    <p data-phrase-key="aboutAdditional">Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.</p>
+                    <p data-phrase-key="aboutPart3">So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong></p>
+                    <p data-phrase-key="aboutPart4">Twelve years later, I specialize in exactly the student conventional teachers give up on. My voice still isn't fully recovered. But every exercise I give you, <strong>I've tested from the inside</strong>. If you've been told you don't have the talent, I know that feeling. And I know it's wrong.</p>
                 </div>
             </div>
         </div>
@@ -969,38 +525,38 @@
         <span id="testimonials-anchor"></span>
         <h2 data-phrase-key="testimonialsTitle">What students say</h2>
         <div style="position:relative;">
-        <div class="testimonial-carousel">
-            <div class="testimonial-item active">
-                <blockquote>"Nando is in a league of his own. I've worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn't just help me sing again — he helped me understand the root of my vocal tension with precision, empathy, and a customized plan." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Paul</span></blockquote>
-                <span class="review-stars">★★★★★</span>
+            <div class="testimonial-carousel">
+                <div class="testimonial-item active">
+                    <blockquote>"Nando is in a league of his own. I've worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn't just help me sing again — he helped me understand the root of my vocal tension with precision, empathy, and a customized plan." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Paul</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Colby</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Patrick</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"The progress I've made in four sessions with Nando is incredible. His support motivated me to concentrate and incorporate exercises naturally." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Vannia</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Miguel</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"Nando changed my life." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Jonathan</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="testimonial-item">
+                    <blockquote>"Beyond happy — thank you so much for your patience!" <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Crystal</span></blockquote>
+                    <span class="review-stars">★★★★★</span>
+                </div>
             </div>
-            <div class="testimonial-item">
-                <blockquote>"Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Colby</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-            <div class="testimonial-item">
-                <blockquote>"I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Patrick</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-            <div class="testimonial-item">
-                <blockquote>"The progress I've made in four sessions with Nando is incredible. His support motivated me to concentrate and incorporate exercises naturally." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Vannia</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-            <div class="testimonial-item">
-                <blockquote>"Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Miguel</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-            <div class="testimonial-item">
-                <blockquote>"Nando changed my life." <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Jonathan</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-            <div class="testimonial-item">
-                <blockquote>"Beyond happy — thank you so much for your patience!" <span style="display:block;margin-top:0.75rem;font-style:normal;font-weight:700;opacity:0.8;">— Crystal</span></blockquote>
-                <span class="review-stars">★★★★★</span>
-            </div>
-        </div>
-        <button class="carousel-nav" id="carousel-left">◀</button>
-        <button class="carousel-nav" id="carousel-right">▶</button>
+            <button class="carousel-nav" id="carousel-left">◀</button>
+            <button class="carousel-nav" id="carousel-right">▶</button>
         </div>
         <img src="fiverr_edited.png" alt="Nando on Fiverr — 5.0 · 283 reviews · Top Rated" style="max-width:450px; width:90%; border-radius:12px; margin:2rem auto 0; display:block;">
     </section>
@@ -1011,9 +567,7 @@
     </section>
 
     <footer id="contact">
-         <p>
-            Connect with me:
-        </p>
+        <p>Connect with me:</p>
         <div class="social">
             <a href="https://www.facebook.com/nandovocalcoach" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
             <a href="https://www.instagram.com/nandovocalcoach/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -1024,36 +578,16 @@
     </footer>
 
     <script>
-
-        // Translation and toggle functionality with updated language toggle text:
-        // When in English mode, the language toggle shows the Spanish option with "ESP".
-        // When in Spanish mode, it shows the English option with "ENG".
         const translations = {
             en: {
-                headerTagline: "For the voice that fights itself.",
                 heroH1: "You can learn to sing.",
                 heroSub: "Your first session ($40) will show you how.",
-                home: "Home",
-                aboutNav: "About Me",
-                aboutTitle: "About Me",
-                servicesNav: "Service", /* Changed to singular */
-                pricingNav: "Pricing",
-                testimonialsNav: "Reviews",
-                bookingNav: "Book Your Session",
-                contactNav: "Contact",
-                heroHeading: "Unlock Your True Voice",
-                heroSubheading: "Transform your singing with innovative techniques and expert guidance.",
                 ctaButton: "Book Your First Session · $40",
+                aboutTitle: "About Me",
                 aboutIntro: "I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.",
                 aboutAdditional: "Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.",
                 aboutPart3: "So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong>",
                 aboutPart4: "Twelve years later, I specialize in exactly the student conventional teachers give up on. My voice still isn't fully recovered. But every exercise I give you, <strong>I've tested from the inside</strong>. If you've been told you don't have the talent, I know that feeling. And I know it's wrong.",
-                servicesTitle: "Service", /* Changed to singular */
-                servicesDescription: "Your throat tightens on the high notes. Your range stops at the same wall every time. You push harder and it gets worse. You rest and it comes back, but not quite the same. That isn't a talent problem. It's a physical pattern with a name, and it responds to a specific approach. If that's you, you're exactly where you need to be.",
-                servicesYouWill: "You will:",
-                service1: "Finally understand what's actually happening in your voice — and why it hasn't worked before",
-                service2: "Sing without strain, tension, or the lock that stops you on high notes",
-                service3: "Reach notes you've been told aren't possible for you",
                 pricingTitle: "Invest In Your Voice",
                 pricingBadge: "Most Popular",
                 pricingPlan1Name: "1st Voicebuilding Session",
@@ -1066,55 +600,20 @@
                 pricingPlan3Sub: "Maximum gains in 1 month!",
                 pricingPlan3Desc: "<ul class='plan-bullets'><li>8 sessions + custom audio exercises</li><li>Personalized exercise program</li><li>For faster results. 2 sessions a week, 1 month.</li><li>Priority feedback between sessions — within 24h</li></ul>",
                 pricingCTA: "Book Your Session →",
-                pricingCTA2: "Get Started →",
-                pricingCTA3: "Get Started →",
-                pricingScarcity: "I work with a limited number of students each month to keep coaching quality high. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Check availability →</a>",
-                testimonialsTitle: "Trusted by 283 students",
-                testimonial0: "Nando is in a league of his own. I’ve worked with exceptional vocal coaches before, but Nando brings something rare: true mastery paired with genuine care. He didn’t just help me sing again—he helped me understand the root of my vocal tension with precision, empathy, and a customized plan. His expertise in Vocal Hyperfunction and SOVT work is incredibly advanced, and he crafted a full routine that addressed everything from physical mobility to emotional connection. – Paul",
-                testimonial1: "Nando is a great vocal coach. He focuses on what you need, he cares about your progress, and gives quick and detailed feedback between sessions. – Colby",
-                testimonial2: "I couldn't ask for a better vocal coach. I came in with zero understanding of vocal techniques. I have noticed considerable improvements in my voice and singing techniques. – Patrick",
-                testimonial3: "The progress I've made in four sessions with Nando is incredible. I was laid-back as a student, but his support motivated me to concentrate and incorporate exercises naturally. – Vannia",
-                testimonial4: "I've worked with Nando and my voice improved notably. – Joseph",
-                testimonial5: "Working with Nando has been exceptional! He exceeded my expectations with his detail and creativity. – Miguel",
-                testimonial6: "Nando is very patient and a great communicator. – Ben",
-                testimonial7: "I take solo singing classes with Nando and even gifted a duet class to relatives—they loved it! – Colby",
-                testimonial8: "Nando changed my life. – Jonathan",
-                testimonial9: "Beyond happy—thank you so much for your patience! – Crystal",
-                bookingCTA: "Book Your $40 Trial →",
-                bookingGuarantee: "Not satisfied? Full refund, no awkwardness.",
                 pricingGuarantee: "Find a difference, or full refund.",
-                guaranteeTitle: "The First Session Guarantee",
-                guaranteeBody: "Find a difference in your voice before the session ends — or you get a full refund. 270+ sessions. Never once triggered.",
-                lmTitle: "Free: The Tension-Release Vocal Warm-Up",
-                lmSubtitle: "3 exercises, 10 minutes. The same warm-up foundation I use with every student. Yours free.",
-                lmNote: "No spam. Unsubscribe anytime.",
-                lmSuccess: "Check your inbox! The PDF is on its way."
+                testimonialsTitle: "Trusted by 283 students",
+                bookingCTA: "Book Your First Session · $40",
+                bookingGuarantee: "Not satisfied? Full refund, no awkwardness."
             },
             es: {
-                headerTagline: "Para la voz que se pelea consigo misma.",
                 heroH1: "Puedes aprender a cantar.",
                 heroSub: "Tu primera sesión ($40) te mostrará cómo.",
-                home: "Inicio",
-                aboutNav: "Sobre mí",
-                aboutTitle: "Sobre mí",
-                servicesNav: "Servicio", /* Changed to singular */
-                pricingNav: "Precios",
-                testimonialsNav: "Testimonios",
-                bookingNav: "Reserva tu sesión",
-                contactNav: "Contacto",
-                heroHeading: "Descubre tu verdadera voz",
-                heroSubheading: "Transforma tu canto con técnicas innovadoras y asesoría experta.",
                 ctaButton: "Reserva tu primera sesión · $40",
+                aboutTitle: "Sobre mí",
                 aboutIntro: "Estaba en quinto semestre del conservatorio cuando un médico me dijo que <strong>dejara de cantar</strong>.",
                 aboutAdditional: "Tres años de entrenamiento me habían dejado con fatiga vocal: cuerdas inflamadas, un cuerpo apretando donde debería estar libre. Me mudé de ciudad a estudiar dirección de coros. El maestro que encontré allí, un cantante de ópera cubano que llevaba décadas en los escenarios, me observó luchar y me dijo que yo no tenía el talento, que dañaría otras voces si seguía. No era maldad de su parte. Para él, el canto nunca había sido difícil. Simplemente no sabía qué hacer con <strong>una voz que se peleaba consigo misma</strong>.",
                 aboutPart3: "Así que me obsesioné. Fonoaudiólogos, investigación en vocología, cada ejercicio probado en mí mismo antes de dárselo a un estudiante. Lo que seguía encontrando, caso tras caso: hiperfunción vocal. Dos grupos musculares opuestos contrayéndose al mismo tiempo, en cada fonación. La voz no es débil. Se pelea consigo misma. <strong>Y entre más fuerza haces, más se traba.</strong>",
                 aboutPart4: "Doce años después, me especializo exactamente en el estudiante que los maestros convencionales abandonan. Mi voz todavía no se ha recuperado del todo. Pero cada ejercicio que te doy, <strong>lo he probado desde adentro</strong>. Si te han dicho que no tienes el talento, yo conozco ese sentimiento. Y sé que está equivocado.",
-                servicesTitle: "Servicio", /* Changed to singular */
-                servicesDescription: "Se te aprieta la garganta en las notas altas. Tu rango se corta siempre en el mismo punto. Empujas más fuerte y empeora. Descansas, vuelve, pero no del todo igual. Eso no es falta de talento. Es un patrón físico con nombre, y responde a un enfoque específico. Si eso eres tú, estás exactamente donde necesitas estar.",
-                servicesYouWill: "Vas a:",
-                service1: "Entender por fin qué está pasando realmente en tu voz, y por qué no ha funcionado antes",
-                service2: "Cantar sin tensión, esfuerzo ni el bloqueo que te detiene en las notas altas",
-                service3: "Alcanzar notas que te han dicho que están fuera de tu alcance",
                 pricingTitle: "Invierte en Tu Voz",
                 pricingBadge: "Más Popular",
                 pricingPlan1Name: "1ª Sesión Voicebuilding",
@@ -1127,38 +626,17 @@
                 pricingPlan3Sub: "¡Máximas ganancias en 1 mes!",
                 pricingPlan3Desc: "<ul class='plan-bullets'><li>8 sesiones + ejercicios de audio personalizados</li><li>Programa de ejercicios personalizado</li><li>Para resultados más rápidos. 2 sesiones por semana, 1 mes.</li><li>Feedback prioritario entre sesiones — respuesta en 24h</li></ul>",
                 pricingCTA: "Reserva tu sesión →",
-                pricingCTA2: "Comenzar →",
-                pricingCTA3: "Comenzar →",
-                pricingScarcity: "Trabajo con un número limitado de estudiantes cada mes para mantener la calidad del coaching. <a href=\"#booking\" style=\"color: var(--section-heading); font-weight: bold;\">Ver disponibilidad →</a>",
-                testimonialsTitle: "283 estudiantes confían en mí",
-                testimonial0: "Nando está en otra liga. He trabajado con entrenadores vocales excelentes, pero Nando aporta algo único: verdadera maestría combinada con un compromiso genuino. No solo me ayudó a volver a cantar, sino a entender el origen de mi tensión vocal con precisión, empatía y un plan personalizado. Su experiencia en el manejo de la hiperfunción vocal y las técnicas SOVT es realmente avanzada, y creó una rutina completa que abarcó desde la movilidad física hasta la conexión emocional. – Paul",
-                testimonial1: "Nando es un excelente coach vocal. Se concentra en lo que realmente necesitas, se preocupa por tu progreso, y te brinda retroalimentación rápida y detallada entre sesiones. – Colby",
-                testimonial2: "No podría pedir un mejor coach vocal. Llegué sin saber nada de técnica vocal y, gracias a él, he notado mejoras considerables en mi voz y en mi forma de cantar. – Patrick",
-                testimonial3: "El progreso que he logrado en cuatro sesiones con Nando es increíble. Yo era bastante relajado como estudiante, pero su apoyo me motivó a concentrarme y a incorporar ejercicios de forma natural. – Vannia",
-                testimonial4: "Trabajé con Nando y mi voz mejoró notablemente. – Joseph",
-                testimonial5: "¡Trabajar con Nando fue excepcional! Superó mis expectativas con su detalle y creatividad. – Miguel",
-                testimonial6: "Nando es muy paciente y un gran comunicador. – Ben",
-                testimonial7: "Tomo clases de canto en solitario con Nando e incluso obsequié una clase de dúo a mis familiares; ¡les encantó! – Colby",
-                testimonial8: "Nando cambió mi vida. – Jonathan",
-                testimonial9: "Estoy más que feliz: ¡muchas gracias por tu paciencia! – Crystal",
-                bookingCTA: "Reserva tu prueba por $40 →",
-                bookingGuarantee: "¿No quedaste satisfecho? Reembolso completo, sin dramas.",
                 pricingGuarantee: "Encuentra la diferencia, o reembolso completo.",
-                guaranteeTitle: "La Garantía de Primera Sesión",
-                guaranteeBody: "Encuentra una diferencia real antes de que termine la sesión, o te devuelvo el dinero. Más de 270 sesiones. Nunca se ha activado.",
-                lmTitle: "Gratis: El Calentamiento Vocal para Liberar Tensión",
-                lmSubtitle: "3 ejercicios, 10 minutos. La misma base de calentamiento que uso con cada estudiante. Gratis.",
-                lmNote: "Sin spam. Cancela cuando quieras.",
-                lmSuccess: "Revisa tu bandeja de entrada. El PDF ya está en camino."
+                testimonialsTitle: "283 estudiantes confían en mí",
+                bookingCTA: "Reserva tu prueba por $40 →",
+                bookingGuarantee: "¿No quedaste satisfecho? Reembolso completo, sin dramas."
             }
         };
 
         let currentLanguage = localStorage.getItem('language') || 'en';
-        const modeToggle = document.getElementById('mode-toggle'),
-              languageToggle = document.getElementById('language-toggle'),
-              logo = document.getElementById('logo');
+        const languageToggle = document.getElementById('language-toggle');
+        const logo = document.getElementById('logo');
 
-        // When in English mode, show Spanish option with "ESP"; when in Spanish, show English option with "ENG".
         function updateLanguageToggle() {
             languageToggle.innerHTML = currentLanguage === 'en'
                 ? '<img src="spain-flag.png" alt="Spain Flag"> ESP'
@@ -1169,9 +647,6 @@
             document.querySelectorAll('[data-phrase-key]').forEach(el => {
                 const key = el.getAttribute('data-phrase-key');
                 if (translations[lang][key]) el.innerHTML = translations[lang][key];
-            });
-            document.querySelectorAll('.testimonial-item blockquote').forEach(bq => {
-                bq.innerHTML = bq.innerHTML.replace(/(–)/, '<br><span class="review-stars">★★★★★</span><br><br>$1');
             });
         }
 
@@ -1187,87 +662,39 @@
 
         document.body.classList.add('dark-mode');
         logo.src = 'logodark.png';
-        if (modeToggle) modeToggle.style.display = 'none';
-
-        modeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                modeToggle.innerText = '☀️';
-                logo.src = 'logodark.png';
-                localStorage.setItem('mode', 'dark');
-            } else {
-                modeToggle.innerText = '🌙';
-                logo.src = 'logolight.png';
-                localStorage.setItem('mode', 'light');
-            }
-        });
 
         const carousel = document.querySelector('.testimonial-carousel');
         const items = document.querySelectorAll('.testimonial-item');
         let currentPage = 0;
         const totalItems = items.length;
 
-        if (items.length > 0) {
-            items[0].classList.add('active');
-        }
-
         function showPage(page) {
             currentPage = (page + totalItems) % totalItems;
-
-            items.forEach((item, index) => {
-                item.classList.remove('active');
-                if (index === currentPage) {
-                    item.classList.add('active');
-                }
-            });
+            items.forEach((item, i) => item.classList.toggle('active', i === currentPage));
             carousel.style.transform = `translateX(-${currentPage * 100}%)`;
         }
 
-        document.getElementById('carousel-left').addEventListener('click', () => {
-            showPage(currentPage - 1);
-        });
-        document.getElementById('carousel-right').addEventListener('click', () => {
-            showPage(currentPage + 1);
-        });
+        document.getElementById('carousel-left').addEventListener('click', () => showPage(currentPage - 1));
+        document.getElementById('carousel-right').addEventListener('click', () => showPage(currentPage + 1));
+        showPage(0);
 
-        showPage(currentPage);
+        const stickyCta = document.getElementById('sticky-cta');
 
-        document.getElementById('cta-button') && document.getElementById('cta-button').addEventListener('click', () => {
-            document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-        });
-
-        document.getElementById('sticky-cta').addEventListener('click', () => {
+        stickyCta.addEventListener('click', () => {
             document.getElementById('ls-trial-trigger').click();
         });
 
-        const stickyBtn = document.getElementById('sticky-cta');
-        stickyBtn.addEventListener('mouseenter', () => {
+        // Hide sticky CTA when footer is visible so it doesn't cover the email
+        const footerObserver = new IntersectionObserver(([entry]) => {
+            stickyCta.style.display = entry.isIntersecting ? 'none' : '';
+        }, { threshold: 0.1 });
+        footerObserver.observe(document.getElementById('contact'));
+
+        document.getElementById('sticky-cta').addEventListener('mouseenter', () => {
             const sound = document.getElementById('hover-sound');
             sound.currentTime = 0;
             sound.play();
         });
-    </script>
-     <script>
-        function handleIntersection(entries, observer) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }
-
-        const observer = new IntersectionObserver(handleIntersection, {
-            rootMargin: '0px',
-            threshold: 0.1
-        });
-
-        const sections = document.querySelectorAll('section');
-
-        sections.forEach(section => {
-            observer.observe(section);
-        });
-
     </script>
 
     <script src="https://assets.lemonsqueezy.com/lemon.js"></script>
