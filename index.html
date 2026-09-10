@@ -764,29 +764,39 @@
         attachLSClickHandlers();
 
         window.addEventListener('popstate', () => {
-            // Remove LS overlay nodes from DOM
-            if (lsModalNodes.length) {
-                lsModalNodes.forEach(el => el.remove());
-                lsModalNodes = [];
-            } else {
-                const lsFrame = document.querySelector('iframe[src*="lemonsqueezy"]');
-                if (lsFrame) (lsFrame.parentElement || lsFrame).remove();
-            }
-            // Clone-replace every LS button: wipes LS's per-element internal state
-            // (stored in closures/WeakMap keyed to the element) and removes old handlers.
+            // 1. Remove tracked overlay nodes
+            lsModalNodes.forEach(el => { try { el.remove(); } catch(e) {} });
+            lsModalNodes = [];
+
+            // 2. Broad cleanup: any LS iframe not captured by observer
+            document.querySelectorAll('iframe[src*="lemonsqueezy"]').forEach(iframe => {
+                let el = iframe;
+                while (el.parentElement && el.parentElement !== document.body) el = el.parentElement;
+                try { el.remove(); } catch(e) {}
+            });
+
+            // 3. Restore scroll-lock LS applies to <body>/<html>
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.documentElement.style.overflow = '';
+
+            // 4. Clone-replace buttons to strip any LS per-element state + old handlers
             document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
                 const clone = btn.cloneNode(true);
                 btn.parentNode.replaceChild(clone, btn);
             });
-            // Re-attach our handlers to the fresh clones
+
+            // 5. Re-attach our tracking handlers to the fresh clones
             attachLSClickHandlers();
-            // Re-inject lemon.js so it re-scans the DOM and re-arms the fresh buttons
-            delete window.LemonSqueezy;
-            const oldScript = document.querySelector('script[src*="lemon.js"]');
-            if (oldScript) oldScript.remove();
-            const s = document.createElement('script');
-            s.src = 'https://assets.lemonsqueezy.com/lemon.js';
-            document.body.appendChild(s);
+
+            // 6. Tell LS to re-arm buttons via its public API (no re-injection needed)
+            if (window.LemonSqueezy) {
+                if (typeof window.LemonSqueezy.Refresh === 'function') {
+                    window.LemonSqueezy.Refresh();
+                } else if (typeof window.LemonSqueezy.Setup === 'function') {
+                    window.LemonSqueezy.Setup();
+                }
+            }
         });
     </script>
 
