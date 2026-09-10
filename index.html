@@ -696,14 +696,38 @@
             sound.play();
         });
 
-        // Back button closes LemonSqueezy modal instead of leaving the page
+        // Back button closes LemonSqueezy modal instead of leaving the page.
+        // MutationObserver captures whatever nodes LS injects into <body> on click,
+        // then hides them on popstate — no dependency on LS internal class names.
+        let lsModalNodes = [];
+        const lsWatcher = new MutationObserver((mutations) => {
+            for (const mut of mutations) {
+                mut.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) lsModalNodes.push(node);
+                });
+            }
+        });
+
         document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
             btn.addEventListener('click', () => {
-                setTimeout(() => history.pushState({ lsModal: true }, ''), 400);
+                lsModalNodes = [];
+                lsWatcher.observe(document.body, { childList: true });
+                setTimeout(() => {
+                    lsWatcher.disconnect();
+                    if (lsModalNodes.length) history.pushState({ lsModal: true }, '');
+                }, 800);
             });
         });
+
         window.addEventListener('popstate', () => {
-            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+            if (lsModalNodes.length) {
+                lsModalNodes.forEach(el => el.style.display = 'none');
+                lsModalNodes = [];
+            } else {
+                // Fallback: find LS iframe and hide its container
+                const lsFrame = document.querySelector('iframe[src*="lemonsqueezy"]');
+                if (lsFrame) (lsFrame.parentElement || lsFrame).style.display = 'none';
+            }
         });
     </script>
 
