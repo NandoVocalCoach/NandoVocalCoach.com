@@ -227,18 +227,52 @@
 
         /* Hero Section */
         #hero {
-            position: relative;
-            height: auto;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            margin: 100px 0 0 0;
-            max-width: 100%;
+            margin: 80px 0 0 0; /* desktop header offset */
             width: 100%;
-            padding: 5rem 2rem;
-            background: #111;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-intro {
+            padding: 2.5rem 2rem 1.5rem;
+            text-align: center;
+            color: #fff;
+            width: 100%;
+        }
+        .hero-intro h1 {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 4.5rem;
+            line-height: 1.0;
+            color: #FF5500;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .hero-intro p {
+            font-size: 1.2rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+        .hero-video-wrap {
+            width: 100%;
+            max-width: 960px;
+            padding: 0 1.5rem 2.5rem;
+        }
+        .hero-video-wrap video {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
+            background: #000;
+        }
+        @media (max-width: 768px) {
+            #hero { margin-top: 58px; }
+            .hero-intro { padding: 1.5rem 1.5rem 1rem; }
+            .hero-intro h1 { font-size: 3rem; }
+            .hero-intro p { font-size: 0.95rem; }
+            .hero-video-wrap { padding: 0 0 1.5rem; }
+            .hero-video-wrap video { border-radius: 0; }
         }
         /* Social proof strip */
         #proof-strip {
@@ -707,11 +741,6 @@
                 display: none; /* nav removed — sticky CTA handles it */
             }
 
-            /* Hero: compact on mobile so pricing reaches screen faster */
-            #hero {
-                margin-top: 58px;
-                padding: 3rem 1.5rem;
-            }
             #language-toggle {
                 font-size: 12px;
                 padding: 4px 8px;
@@ -830,42 +859,7 @@
             margin-top: 0.5rem;
         }
 
-        .hero-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            text-align: center;
-            color: #fff;
-            width: 90%;
-            max-width: 900px;
-            pointer-events: none;
-        }
-        .hero-text h1 {
-            font-family: "Bebas Neue", sans-serif;
-            font-size: 7rem;
-            line-height: 1.0;
-            margin-bottom: 0.6rem;
-            color: #FF5500 !important;
-            text-shadow: 0 0 30px rgba(0,0,0,1), 0 3px 8px rgba(0,0,0,1), 2px 2px 0 rgba(0,0,0,0.8);
-            text-transform: uppercase;
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .hero-text p {
-            font-size: 2.2rem;
-            color: #fff;
-            text-shadow: 0 2px 12px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.9);
-            font-weight: 600;
-            font-style: italic;
-            text-align: center;
-        }
         .hero-accent { color: var(--section-heading); }
-        @media (max-width: 768px) {
-            .hero-text h1 { font-size: 4rem; }
-            .hero-text p { font-size: 1rem; }
-        }
 
             #about .profile-image img {
                 width: 150px; /* Even smaller image on very small phones */
@@ -889,9 +883,14 @@
 
     <!-- Hero Section -->
     <section id="hero">
-        <div class="hero-text">
-            <h1 data-phrase-key="heroH1" style="color:#FF5500;font-size:5rem;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;">You can learn to sing.</h1>
+        <div class="hero-intro">
+            <h1 data-phrase-key="heroH1">You can learn to sing.</h1>
             <p data-phrase-key="heroSub">Your first session ($40) will show you how.</p>
+        </div>
+        <div class="hero-video-wrap">
+            <video controls preload="metadata" playsinline>
+                <source src="gig.mp4" type="video/mp4">
+            </video>
         </div>
     </section>
 
