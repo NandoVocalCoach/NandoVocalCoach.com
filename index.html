@@ -72,7 +72,7 @@
         "name": "Vocal Coaching Services",
         "itemListElement": [
           { "@type": "Offer", "name": "1st Voicebuilding Session (first session)", "price": "40", "priceCurrency": "USD" },
-          { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "360", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "340", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "1-Month Transformation (8 sessions)", "price": "590", "priceCurrency": "USD" }
         ]
       }
@@ -579,6 +579,7 @@
             font-style: italic;
             border-left: 4px solid var(--section-heading);
             padding-left: 16px;
+            padding-right: 52px; /* room for carousel arrows */
             margin-bottom: 8px;
             white-space: pre-wrap;
             font-size: 1.1rem;
@@ -629,7 +630,30 @@
         /* Booking & Footer */
         #booking {
             text-align: center;
-            padding-top: 20px;
+            padding: 40px 24px;
+        }
+        .booking-main-cta {
+            display: block;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            background: #FF5500;
+            color: #fff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.06em;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .booking-main-cta:hover {
+            background: #e64500;
+            transform: scale(1.03);
+        }
+        @media (max-width: 480px) {
+            .booking-main-cta { font-size: 1.4rem; padding: 1rem 1.5rem; }
         }
         .calendly-inline-widget {
             margin: 0 auto;
@@ -657,72 +681,73 @@
         /* Responsive adjustments for screens up to 768px (tablets and large phones) */
         @media (max-width: 768px) {
             body {
-                font-size: 110%; /* Slightly smaller base font for tablets */
+                font-size: 110%;
             }
             header {
-                flex-direction: column; /* Stack header items vertically */
-                padding: 10px 0; /* Adjust padding */
-                height: auto; /* Allow height to adjust based on content */
-                align-items: center; /* Center items horizontally when stacked */
+                flex-direction: row; /* logo left, toggle right — one compact row */
+                padding: 8px 16px;
+                height: auto;
+                align-items: center;
+                justify-content: space-between;
             }
             .logo {
-                margin: 0 auto 5px auto; /* Center logo and add bottom margin */
+                margin: 0;
             }
             .logo img {
-                max-width: 180px; /* Smaller logo on tablets/larger phones */
-            }
-            #header-tagline {
-                font-size: 1.1rem; /* Smaller tagline */
-                margin-bottom: 10px; /* Add space below tagline */
+                max-width: 130px;
             }
             .toggle-container {
-                margin: 10px auto; /* Center toggles */
-                width: auto; /* Allow content to dictate width */
+                margin: 0;
             }
             #mode-toggle, #language-toggle {
-                padding: 5px 10px; /* Further reduced padding for mobile buttons */
-                font-size: 14px; /* Further reduced font size for mobile buttons */
+                padding: 5px 10px;
+                font-size: 14px;
             }
             nav {
-                margin-top: 10px;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                padding-bottom: 0;
+                display: none; /* nav removed — sticky CTA handles it */
             }
-            nav a {
-                font-size: 0.9rem; /* Smaller nav links for tablets */
-                margin: 5px 8px;
+
+            /* Hero: compact on mobile so pricing reaches screen faster */
+            #hero {
+                margin-top: 58px;
+                padding: 3rem 1.5rem;
+            }
+            #language-toggle {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+            #language-toggle img {
+                width: 16px;
             }
 
             /* Sticky CTA button */
             #sticky-cta {
-                font-size: 1.1rem; /* Smaller sticky CTA */
+                font-size: 1.1rem;
                 padding: 10px 20px;
                 right: 10px;
                 bottom: 10px;
             }
 
-            /* General section margins */
+            /* General section margins — was 100px, causing giant black voids */
             section {
-                margin: 100px auto;
+                margin: 24px auto;
                 padding: 20px;
             }
 
             /* About section adjustments for mobile */
             #about .about-container {
-                flex-direction: column; /* Stack image and text vertically */
-                align-items: center; /* Center items when stacked */
+                flex-direction: column;
+                align-items: center;
             }
             #about .profile-image img {
-                width: 180px; /* Smaller image on mobile */
-                margin-bottom: 15px; /* Add space below image */
+                width: 180px;
+                margin-bottom: 15px;
             }
             #about .about-details {
-                text-align: center; /* Center text content */
+                text-align: center;
             }
-            #about .about-details h2{
-                text-align: center; /* Center heading when text is centered */
+            #about .about-details h2 {
+                text-align: center;
             }
 
             /* Calendly widget height for mobile */
@@ -734,24 +759,17 @@
         /* Responsive adjustments for screens up to 480px (smaller phones) */
         @media (max-width: 480px) {
             body {
-                font-size: 100%; /* Even smaller base font for phones */
+                font-size: 100%;
             }
             .logo img {
-                max-width: 100px; /* Even smaller logo on phones */
-            }
-            #header-tagline {
-                font-size: 0.8rem; /* Even smaller tagline */
-            }
-            nav a {
-                font-size: 0.75rem; /* Even smaller nav links */
-                margin: 3px 5px;
+                max-width: 110px;
             }
             #sticky-cta {
-                font-size: 0.9rem; /* Smallest sticky CTA */
+                font-size: 0.9rem;
                 padding: 8px 16px;
             }
             section {
-                margin: 80px auto;
+                margin: 16px auto;
                 padding: 15px;
             }
             .calendly-inline-widget {
@@ -909,10 +927,10 @@
             </div>
             <div class="pricing-card">
                 <div class="plan-name" data-phrase-key="pricingPlan2Name">Vocal Fitness</div>
-                <div class="plan-price">$360</div>
+                <div class="plan-price">$340</div>
                 <div class="plan-sub" data-phrase-key="pricingPlan2Sub">Get your voice in shape.</div>
                 <div class="plan-desc" data-phrase-key="pricingPlan2Desc"><ul class='plan-bullets'><li>4 sessions + custom audio exercises</li><li>Real technique, built from the ground up</li><li>More power, less effort, more control</li><li>Feedback on your practice — within 48h</li></ul></div>
-                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/4f0bb419-e996-4b70-a37f-13da87501a58?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D360" class="plan-cta lemonsqueezy-button">Get Started →</a>
+                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/4f0bb419-e996-4b70-a37f-13da87501a58?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D340" class="plan-cta lemonsqueezy-button">Get Started →</a>
             </div>
             <div class="pricing-card featured">
                 <div class="badge" data-phrase-key="pricingBadge">Most Popular</div>
@@ -990,8 +1008,8 @@
         <img src="fiverr_edited.png" alt="Nando on Fiverr — 5.0 · 283 reviews · Top Rated" style="max-width:450px; width:90%; border-radius:12px; margin:2rem auto 0; display:block;">
     </section>
 
-    <section id="booking" style="text-align:center; background:#111; border-radius:8px; margin-top:80px; max-width:560px;">
-<a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" class="lemonsqueezy-button" style="display:inline-block; padding:1.4rem 3.5rem; background:#FF5500; color:#fff; font-family:'Bebas Neue',sans-serif; font-size:2.2rem; border-radius:4px; text-decoration:none; border:2px solid #fff;" data-phrase-key="bookingCTA">Book Your $40 Trial →</a>
+    <section id="booking">
+        <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" class="booking-main-cta lemonsqueezy-button" data-phrase-key="bookingCTA">Book Your First Session · $40</a>
         <p data-phrase-key="bookingGuarantee" style="font-size:0.85rem; opacity:0.6; margin-top:0.75rem;">Not satisfied? Full refund, no awkwardness.</p>
     </section>
 
