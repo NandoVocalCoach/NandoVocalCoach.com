@@ -737,8 +737,8 @@
         footerObserver.observe(document.getElementById('contact'));
 
         // Back button closes LemonSqueezy modal instead of leaving the page.
-        // MutationObserver captures whatever nodes LS injects into <body> on click,
-        // then hides them on popstate — no dependency on LS internal class names.
+        // On popstate: remove LS overlay, clone-replace buttons (strips LS internal
+        // per-element state + old handlers), re-attach our handlers, re-inject lemon.js.
         let lsModalNodes = [];
         const lsWatcher = new MutationObserver((mutations) => {
             for (const mut of mutations) {
@@ -748,16 +748,20 @@
             }
         });
 
-        document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                lsModalNodes = [];
-                lsWatcher.observe(document.body, { childList: true });
-                setTimeout(() => {
-                    lsWatcher.disconnect();
-                    if (lsModalNodes.length) history.pushState({ lsModal: true }, '');
-                }, 800);
+        function attachLSClickHandlers() {
+            document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    lsModalNodes = [];
+                    lsWatcher.observe(document.body, { childList: true });
+                    setTimeout(() => {
+                        lsWatcher.disconnect();
+                        if (lsModalNodes.length) history.pushState({ lsModal: true }, '');
+                    }, 800);
+                });
             });
-        });
+        }
+
+        attachLSClickHandlers();
 
         window.addEventListener('popstate', () => {
             // Remove LS overlay nodes from DOM
@@ -768,7 +772,15 @@
                 const lsFrame = document.querySelector('iframe[src*="lemonsqueezy"]');
                 if (lsFrame) (lsFrame.parentElement || lsFrame).remove();
             }
-            // Fully reset LemonSqueezy state so buttons re-arm
+            // Clone-replace every LS button: wipes LS's per-element internal state
+            // (stored in closures/WeakMap keyed to the element) and removes old handlers.
+            document.querySelectorAll('.lemonsqueezy-button').forEach(btn => {
+                const clone = btn.cloneNode(true);
+                btn.parentNode.replaceChild(clone, btn);
+            });
+            // Re-attach our handlers to the fresh clones
+            attachLSClickHandlers();
+            // Re-inject lemon.js so it re-scans the DOM and re-arms the fresh buttons
             delete window.LemonSqueezy;
             const oldScript = document.querySelector('script[src*="lemon.js"]');
             if (oldScript) oldScript.remove();
