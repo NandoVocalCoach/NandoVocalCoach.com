@@ -721,12 +721,12 @@
 
         window.addEventListener('popstate', () => {
             if (lsModalNodes.length) {
-                lsModalNodes.forEach(el => el.style.display = 'none');
+                lsModalNodes.forEach(el => el.remove());
                 lsModalNodes = [];
             } else {
-                // Fallback: find LS iframe and hide its container
+                // Fallback: find LS iframe and remove its container
                 const lsFrame = document.querySelector('iframe[src*="lemonsqueezy"]');
-                if (lsFrame) (lsFrame.parentElement || lsFrame).style.display = 'none';
+                if (lsFrame) (lsFrame.parentElement || lsFrame).remove();
             }
         });
     </script>
