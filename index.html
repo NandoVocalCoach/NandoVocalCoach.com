@@ -826,8 +826,19 @@
                     });
                 },
                 onApprove: function(data, actions) {
-                    return actions.order.capture().then(function() {
-                        window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan;
+                    return actions.order.capture().then(function(details) {
+                        var email = (details.payer && details.payer.email_address) || '';
+                        var name  = (details.payer && details.payer.name)
+                            ? (details.payer.name.given_name + ' ' + details.payer.name.surname).trim()
+                            : '';
+                        // Fire booking email server-side; redirect regardless of outcome
+                        fetch('https://api.nandovocalcoach.com/session/pay', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ email: email, name: name, plan: plan })
+                        }).finally(function() {
+                            window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan;
+                        });
                     });
                 },
                 onError: function(err) {
