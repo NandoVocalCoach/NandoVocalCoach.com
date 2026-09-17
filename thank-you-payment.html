@@ -130,17 +130,26 @@
             </a>
         </div>
 
-        <p class="email-note">
-            <strong>Also check your email</strong> — you'll find your payment receipt and this booking link there too,
-            so you can come back whenever you're ready to schedule your next session.
-        </p>
+        <div id="email-link-box" style="margin-bottom:2rem;">
+            <p style="font-size:0.95rem; color:#aaa; margin-bottom:0.75rem;">Want this link in your inbox?</p>
+            <form id="email-link-form" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+                <input type="email" id="email-link-input" placeholder="your@email.com" required
+                    style="padding:0.7rem 1rem; border-radius:6px; border:1px solid #444; background:#1a1a1a;
+                           color:#fff; font-size:0.95rem; flex:1; min-width:200px; max-width:300px;" />
+                <button type="submit"
+                    style="padding:0.7rem 1.4rem; background:#FF5500; color:#fff; border:none;
+                           border-radius:6px; font-weight:700; font-size:0.95rem; cursor:pointer; white-space:nowrap;">
+                    Send it →
+                </button>
+            </form>
+            <p id="email-link-msg" style="margin-top:0.6rem; font-size:0.9rem; display:none;"></p>
+        </div>
 
         <a class="back" href="https://nandovocalcoach.com">← Back to site</a>
     </div>
 
     <script async src="https://asset-tidycal.b-cdn.net/js/embed.js"></script>
     <script>
-        // Show session count based on URL param: ?plan=360 or ?plan=590
         var params = new URLSearchParams(window.location.search);
         var plan = params.get('plan');
         var el = document.getElementById('sessions-count');
@@ -151,6 +160,40 @@
         } else if (plan === '40') {
             el.textContent = 'Your first session is ready to schedule.';
         }
+
+        document.getElementById('email-link-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = document.getElementById('email-link-input').value.trim();
+            var msg   = document.getElementById('email-link-msg');
+            var btn   = this.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            fetch('https://api.nandovocalcoach.com/send-booking-link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ email: email, plan: plan || '40' })
+            }).then(function(r) {
+                return r.json();
+            }).then(function(data) {
+                if (data.ok) {
+                    msg.textContent = 'Sent! Check your inbox (and spam just in case).';
+                    msg.style.color = '#4caf50';
+                    document.getElementById('email-link-box').querySelector('form').style.display = 'none';
+                } else {
+                    msg.textContent = 'Something went wrong. Email me at nando@nandovocalcoach.com.';
+                    msg.style.color = '#ff5555';
+                    btn.disabled = false;
+                    btn.textContent = 'Send it →';
+                }
+                msg.style.display = 'block';
+            }).catch(function() {
+                msg.textContent = 'Could not connect. Email me at nando@nandovocalcoach.com.';
+                msg.style.color = '#ff5555';
+                msg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Send it →';
+            });
+        });
     </script>
 </body>
 </html>
