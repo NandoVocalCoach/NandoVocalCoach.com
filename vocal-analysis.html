@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Get a free Vocal Analysis. Record 4 short guided steps right in your browser, receive a full report — your pattern, pitch graph, and a clear direction. From Nando Vocal Coach.">
-  <link rel="canonical" href="https://nandovocalcoach.com/diagnose">
+  <link rel="canonical" href="https://nandovocalcoach.com/vocal-analysis">
   <title>Free Vocal Analysis | Nando Vocal Coach</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -478,7 +478,7 @@
     <h2>Get Your Free Vocal Analysis</h2>
     <p id="submitIntro">Fill in your name and email, then submit. PDF arrives in your inbox shortly after.</p>
 
-    <form id="diagnosisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
+    <form id="vocalAnalysisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
       <div style="margin-bottom: 14px;">
         <input type="text" id="nameField" name="name" placeholder="Your name" required
           style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
@@ -548,7 +548,7 @@
   <!-- Social proof -->
   <div class="proof">
     <div class="proof-stars">★★★★★</div>
-    <p>"I've been singing for 10 years. In one session Nando showed me something no one had ever identified. The diagnosis was the turning point."</p>
+    <p>"I've been singing for 10 years. In one session Nando showed me something no one had ever identified. The Vocal Analysis was the turning point."</p>
     <cite>— Verified Fiverr client · 270+ reviews, 5.0 average</cite>
   </div>
 
@@ -1038,7 +1038,7 @@
   if (startBtn) startBtn.addEventListener('click', runPitchTest);
 
   // ── Final submit — direct multipart POST, no Tally involved ──
-  const diagForm = document.getElementById('diagnosisForm');
+  const diagForm = document.getElementById('vocalAnalysisForm');
   if (diagForm) {
     diagForm.addEventListener('submit', async (e) => {
       e.preventDefault();

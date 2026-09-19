@@ -119,11 +119,11 @@
         <p class="book-sub">Use this link to schedule each of your sessions — it won't charge you again.<br>Come back to it each time you're ready to book the next one.</p>
 
         <div class="tidycal-wrap">
-            <div class="tidycal-embed" data-path="nando-vocal-coach/voicebuilding-session"></div>
+            <div class="tidycal-embed" id="tidycal-embed"></div>
         </div>
 
         <div class="tidycal-mobile-fallback" style="margin-bottom:2rem;">
-            <a href="https://tidycal.com/nando-vocal-coach/voicebuilding-session"
+            <a id="tidycal-mobile-link" href="#"
                target="_blank"
                style="display:inline-block; background:#FF5500; color:#fff; font-weight:700; font-size:1.1rem; padding:1rem 2.5rem; border-radius:8px; text-decoration:none;">
                 Schedule Your Session →
@@ -148,6 +148,16 @@
         <a class="back" href="https://nandovocalcoach.com">← Back to site</a>
     </div>
 
+    <script>
+        (function() {
+            var plan = new URLSearchParams(window.location.search).get('plan');
+            var path = 'nando-vocal-coach/voicebuildingsession';
+            var embed = document.getElementById('tidycal-embed');
+            if (embed) embed.setAttribute('data-path', path);
+            var mobileLink = document.getElementById('tidycal-mobile-link');
+            if (mobileLink) mobileLink.href = 'https://tidycal.com/' + path;
+        })();
+    </script>
     <script async src="https://asset-tidycal.b-cdn.net/js/embed.js"></script>
     <script>
         var params = new URLSearchParams(window.location.search);
