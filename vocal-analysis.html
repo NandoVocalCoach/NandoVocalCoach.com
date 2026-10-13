@@ -319,7 +319,7 @@
   <div class="hero">
     <div class="hero-label">FREE · NO STRINGS</div>
     <h1>Find out <span>exactly</span> what's<br>holding your voice back.</h1>
-    <p>4 short guided steps, right here in your browser — hear an example, record, done. Get a full Vocal Analysis — your pattern, a pitch graph, and a clear direction. In your inbox in minutes.</p>
+    <p>4 short guided steps, right here in your browser — hear an example, record, done. Get a full Vocal Analysis — your pattern, a pitch graph, and a clear direction. In your inbox in ~10 minutes.</p>
     <div class="pill-row">
       <span class="pill"><strong>6 min</strong>, all in-browser</span>
       <span class="pill"><strong>Free</strong> forever</span>
@@ -447,28 +447,28 @@
     <div class="section-title">The <span>Patterns</span> We Detect</div>
     <div class="patterns">
       <div class="pattern-card">
-        <h4>The Clencher</h4>
-        <p>Neck tension grips on higher notes. The most common pattern in untrained singers.</p>
+        <h4>Vocal Tension</h4>
+        <p>The muscles around the larynx are working harder than they need to. Very common — and very fixable.</p>
       </div>
       <div class="pattern-card">
-        <h4>The Floater</h4>
-        <p>Real range — but navigating around the bridge instead of crossing it.</p>
+        <h4>Register Avoidance</h4>
+        <p>Real range exists — but the voice is navigating around the bridge instead of crossing it.</p>
       </div>
       <div class="pattern-card">
-        <h4>Chest-Locked</h4>
-        <p>Singing entirely in chest voice. The top half of your voice is unused.</p>
+        <h4>Chest Voice Ceiling</h4>
+        <p>Singing entirely in chest voice. The upper register is there — it just hasn't been trained yet.</p>
       </div>
       <div class="pattern-card">
-        <h4>Breathy</h4>
-        <p>Folds not fully closing. Limits projection, dynamics, and endurance.</p>
+        <h4>Airy Voice</h4>
+        <p>Air escaping on every note. Limits projection, dynamics, and endurance.</p>
       </div>
       <div class="pattern-card">
-        <h4>Pitch Instability</h4>
+        <h4>Pitch Drift</h4>
         <p>Pitch moves around on sustained notes — a coordination issue, not an ear problem.</p>
       </div>
       <div class="pattern-card">
-        <h4>Developing</h4>
-        <p>Solid foundation. The next level is about refinement and consistency.</p>
+        <h4>Solid Foundation</h4>
+        <p>Strong base. The next level is about refinement, consistency, and upper-range expansion.</p>
       </div>
     </div>
   </div>
@@ -538,6 +538,11 @@
           </div>
         </div>
       </div>
+      <div style="margin-bottom: 20px;">
+        <textarea id="vocalDifficultyField" name="vocal_difficulty" placeholder="What happens in your voice when it goes wrong? Describe the feeling — not just 'I go off-key.' (optional)" rows="3"
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;"></textarea>
+        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;">You don't need to be a good singer. You need to be an honest one. The analysis works on what's actually happening — not on how polished you sound.</p>
+      </div>
       <button type="submit" id="submitBtn" class="rec-btn" style="width:100%; padding: 14px; font-size: 1.1rem;" disabled>
         Complete the 4 steps above first
       </button>
@@ -562,7 +567,7 @@
     </div>
     <div class="faq">
       <div class="faq-q">How long until I get my Vocal Analysis?</div>
-      <div class="faq-a">Automated analysis runs within minutes of your submission. You should have the PDF in your inbox within 24 hours — usually much faster.</div>
+      <div class="faq-a">The analysis runs automatically after you submit. It takes about 10 minutes — real audio analysis, not a quiz. You'll get the PDF in your inbox once it's done.</div>
     </div>
     <div class="faq">
       <div class="faq-q">What if my recording quality isn't great?</div>
@@ -1052,6 +1057,7 @@
       formData.append('email', document.getElementById('emailField').value.trim());
       formData.append('song', document.getElementById('songField').value.trim());
       formData.append('self_report', document.getElementById('selfReportField').value.trim());
+      formData.append('vocal_difficulty', document.getElementById('vocalDifficultyField').value.trim());
       const vtdScores = {
         tightness: +document.getElementById('vtd_tightness').value,
         dryness: +document.getElementById('vtd_dryness').value,
@@ -1081,9 +1087,20 @@
           try { message = (await resp.json()).message; } catch (_) {}
           throw new Error(message || `Server responded ${resp.status}`);
         }
-        submitStatus.textContent = '✓ Submitted! Check your inbox shortly.';
-        submitBtn.textContent = 'Submitted ✓';
         if (micStream) micStream.getTracks().forEach((track) => track.stop());
+
+        // Replace the entire form section with a waiting panel
+        const formSection = document.getElementById('form');
+        const submittedEmail = document.getElementById('emailField').value.trim();
+        formSection.innerHTML = `
+          <div style="padding: 10px 0;">
+            <div style="font-size: 2.2rem; margin-bottom: 16px;">🎙</div>
+            <h2 style="margin-bottom: 12px;">We're analyzing your voice.</h2>
+            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 8px;">This takes about <strong style="color:white;">10 minutes</strong> — real audio analysis, not a quiz.</p>
+            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">Check your inbox at <strong style="color:white;">${submittedEmail}</strong> — your PDF will be there shortly.</p>
+            <p style="font-size: 0.82rem; color: #6B7280;">Can't find it? Check your spam folder, or email <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>.</p>
+          </div>
+        `;
       } catch (err) {
         submitStatus.textContent = err.message && err.message !== 'Failed to fetch'
           ? err.message
