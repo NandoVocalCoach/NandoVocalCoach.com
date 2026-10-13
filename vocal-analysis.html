@@ -919,22 +919,84 @@
     return TRIAD_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
   }
 
-  function scheduleTone(ctx, hz, durationSec, startTime) {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = hz;
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+  // vowel = 'oo'|'ah' → formant synthesis; null → plain sine (for beep click)
+  function scheduleTone(ctx, hz, durationSec, startTime, vowel) {
+    const fade = Math.min(0.05, durationSec * 0.15);
 
-    const fade = 0.02;
-    gain.gain.setValueAtTime(0, startTime);
-    gain.gain.linearRampToValueAtTime(0.5, startTime + fade);
-    gain.gain.setValueAtTime(0.5, startTime + durationSec - fade);
-    gain.gain.linearRampToValueAtTime(0, startTime + durationSec);
+    if (!vowel) {
+      // Plain sine — used for the short click beep only
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = hz;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.5, startTime + fade);
+      gain.gain.setValueAtTime(0.5, startTime + durationSec - fade);
+      gain.gain.linearRampToValueAtTime(0, startTime + durationSec);
+      osc.start(startTime);
+      osc.stop(startTime + durationSec);
+      return;
+    }
 
-    osc.start(startTime);
-    osc.stop(startTime + durationSec);
+    const preset = VOWEL_FORMANTS[vowel];
+    const source = ctx.createOscillator();
+    source.type = 'sawtooth';
+    source.frequency.setValueAtTime(hz, startTime);
+
+    // Light vibrato (only for tones long enough to need it)
+    if (durationSec > 0.4) {
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 5.5;
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = hz * 0.008;
+      lfo.connect(lfoGain);
+      lfoGain.connect(source.frequency);
+      lfo.start(startTime);
+      lfo.stop(startTime + durationSec);
+    }
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, startTime);
+    masterGain.gain.linearRampToValueAtTime(0.5, startTime + fade);
+    masterGain.gain.setValueAtTime(0.5, startTime + durationSec - fade);
+    masterGain.gain.linearRampToValueAtTime(0, startTime + durationSec);
+    masterGain.connect(ctx.destination);
+
+    preset.f.forEach((freq, i) => {
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = freq;
+      bp.Q.value = preset.q[i];
+      const g = ctx.createGain();
+      g.gain.value = preset.gain[i];
+      source.connect(bp);
+      bp.connect(g);
+      g.connect(masterGain);
+    });
+
+    // Breath noise for realism
+    const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * durationSec), ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 4000;
+    noiseFilter.Q.value = 0.7;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.02;
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+
+    source.start(startTime);
+    source.stop(startTime + durationSec);
+    noiseSource.start(startTime);
+    noiseSource.stop(startTime + durationSec);
   }
 
   function recordFixedClip(stream, durationSec) {
@@ -1027,7 +1089,7 @@
     let statusCursorSec = LEAD_IN_SEC;
 
     NOTES.forEach((hz, i) => {
-      scheduleTone(ctx, hz, TONE_SEC, t);
+      scheduleTone(ctx, hz, TONE_SEC, t, 'oo');
       setTimeout(() => {
         statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen… note ${i + 1}/${NOTES.length}</div>`;
       }, statusCursorSec * 1000);
