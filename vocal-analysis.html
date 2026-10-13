@@ -375,7 +375,8 @@
           <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Just hold it, no technique needed.</p>
 
           <div class="rec-widget-box">
-            <button id="sustainedAhExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
+            <button id="sustainedAhExampleBtnA" class="rec-btn rec-btn-outline" type="button">▶ Example A (lower voice)</button>
+            <button id="sustainedAhExampleBtnB" class="rec-btn rec-btn-outline" type="button">▶ Example B (higher voice)</button>
             <button id="sustainedAhStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
             <button id="sustainedAhStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
             <div id="sustainedAhStatus" class="rec-status"></div>
@@ -876,12 +877,21 @@
     });
   }
 
-  const sustainedAhExampleBtn = document.getElementById('sustainedAhExampleBtn');
-  if (sustainedAhExampleBtn) {
-    sustainedAhExampleBtn.addEventListener('click', async () => {
-      sustainedAhExampleBtn.disabled = true;
-      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 196.0 });
-      sustainedAhExampleBtn.disabled = false;
+  const sustainedAhExampleBtnA = document.getElementById('sustainedAhExampleBtnA');
+  if (sustainedAhExampleBtnA) {
+    sustainedAhExampleBtnA.addEventListener('click', async () => {
+      sustainedAhExampleBtnA.disabled = true;
+      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 196.0 }); // G3, lower voice range
+      sustainedAhExampleBtnA.disabled = false;
+    });
+  }
+
+  const sustainedAhExampleBtnB = document.getElementById('sustainedAhExampleBtnB');
+  if (sustainedAhExampleBtnB) {
+    sustainedAhExampleBtnB.addEventListener('click', async () => {
+      sustainedAhExampleBtnB.disabled = true;
+      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 392.0 }); // G4, higher voice range
+      sustainedAhExampleBtnB.disabled = false;
     });
   }
 
