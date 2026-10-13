@@ -889,7 +889,7 @@
   // the guide track to this person's own range (measured, not asked — see
   // detect_speech_root_hz() server-side), then the existing 4-note
   // call-and-response sequence runs at that root instead of a fixed one.
-  const SPEECH_CHECK_SEC = 3;
+  const SPEECH_CHECK_SEC = 5;
   const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches server's DIAGNOSTIC_ROOT_HZ
   const TRIAD_SEMITONES = [0, 4, 7, 12]; // matches server's "triad" scale (build_sequence)
   const TONE_SEC = 1.5;
@@ -975,9 +975,25 @@
     }
     if (ctx.state === 'suspended') await ctx.resume();
 
-    statusEl.textContent = "Say a sentence naturally — like your name and where you're from…";
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    statusEl.textContent = `Recording… (${SPEECH_CHECK_SEC}s)`;
+    statusEl.innerHTML = `
+      <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: #FF5500; margin-bottom: 6px; letter-spacing: 0.05em;">STEP 1 OF 2 — VOICE CHECK</div>
+        <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Read this sentence aloud, at the volume you'd normally speak:</div>
+        <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
+        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">4</strong>…</div>
+      </div>`;
+
+    for (let i = 4; i >= 1; i--) {
+      const el = document.getElementById('speechCountNum');
+      if (el) el.textContent = i;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    const countdownBox = statusEl.querySelector('div');
+    if (countdownBox) countdownBox.style.borderColor = '#22c55e';
+    const countdownLabel = document.getElementById('speechCountdown');
+    if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">🎤 Recording now — read the sentence above</strong>';
+
     const speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
 
     statusEl.textContent = 'Analyzing your voice…';
