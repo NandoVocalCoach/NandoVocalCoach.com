@@ -393,6 +393,20 @@
         #carousel-left { left: 10px; }
         #carousel-right { right: 10px; }
 
+        /* FAQ */
+        #faq { padding: 48px 32px; max-width: 760px; margin: 0 auto; }
+        #faq h2 { text-align: center; margin-bottom: 32px; }
+        .faq-item { border-bottom: 1px solid #374151; padding: 18px 0; }
+        .faq-q {
+            cursor: pointer; font-weight: 700; font-size: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--text, #F3F4F6); user-select: none;
+        }
+        .faq-q::after { content: "+"; color: #FF5500; font-size: 1.2rem; flex-shrink: 0; margin-left: 12px; }
+        .faq-q.open::after { content: "−"; }
+        .faq-a { display: none; font-size: 0.92rem; color: #9CA3AF; margin-top: 10px; line-height: 1.7; }
+        .faq-a.open { display: block; }
+
         /* Booking */
         #checkout { text-align: center; padding: 36px 24px 48px; background: #0d0d0d; border-top: 2px solid #FF5500; }
         .booking-main-cta {
@@ -535,6 +549,30 @@
         </div>
     </section>
 
+    <section id="faq">
+        <h2 data-phrase-key="faqTitle">Questions</h2>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ1">I've tried vocal coaches before and nothing helped. Why would this be different?</div>
+            <div class="faq-a" data-phrase-key="faqA1">Most lessons work on technique without identifying the root pattern. Before anything else, I run a Vocal Analysis — a diagnostic that tells me specifically what your voice is doing. The fix starts from there, not from a generic exercise library.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ2">I'm a complete beginner. Is this for me?</div>
+            <div class="faq-a" data-phrase-key="faqA2">Yes. Most of my students have never had a lesson. The Voicebuilding Method starts at the foundation: breathing, phonation, then everything else. No experience required, just a voice and a willingness to use it.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ3">How does the first session actually work?</div>
+            <div class="faq-a" data-phrase-key="faqA3">We start with a short warm-up and some diagnostic exercises to hear your voice live. From there I identify the first priority and we work it directly — no theory lectures, just exercises you can feel working. By the end you'll have a clear picture of where your voice is and what to do next.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ4">Do I need any special equipment for online sessions?</div>
+            <div class="faq-a" data-phrase-key="faqA4">A laptop or phone with a decent microphone is enough. No recording setup, no studio gear. If you can hear yourself on a Zoom call, you're set.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ5">How quickly will I notice a difference?</div>
+            <div class="faq-a" data-phrase-key="faqA5">Most students notice something in the first session — not a transformation, but a signal. A note that felt stuck that suddenly releases. A phrase that feels lighter. That's the direction. The bigger changes compound over weeks of consistent practice.</div>
+        </div>
+    </section>
+
     <section id="about">
         <div class="about-container">
             <div class="profile-image">
@@ -653,7 +691,18 @@
                 trustSecure: '<i class="fas fa-lock trust-lock"></i>Secure checkout',
                 trustStudents: "280+ students",
                 trustLanguages: "Sessions in English &amp; Spanish",
-                footerConnect: "Connect with me:"
+                footerConnect: "Connect with me:",
+                faqTitle: "Questions",
+                faqQ1: "I've tried vocal coaches before and nothing helped. Why would this be different?",
+                faqA1: "Most lessons work on technique without identifying the root pattern. Before anything else, I run a Vocal Analysis — a diagnostic that tells me specifically what your voice is doing. The fix starts from there, not from a generic exercise library.",
+                faqQ2: "I'm a complete beginner. Is this for me?",
+                faqA2: "Yes. Most of my students have never had a lesson. The Voicebuilding Method starts at the foundation: breathing, phonation, then everything else. No experience required, just a voice and a willingness to use it.",
+                faqQ3: "How does the first session actually work?",
+                faqA3: "We start with a short warm-up and some diagnostic exercises to hear your voice live. From there I identify the first priority and we work it directly — no theory lectures, just exercises you can feel working. By the end you'll have a clear picture of where your voice is and what to do next.",
+                faqQ4: "Do I need any special equipment for online sessions?",
+                faqA4: "A laptop or phone with a decent microphone is enough. No recording setup, no studio gear. If you can hear yourself on a Zoom call, you're set.",
+                faqQ5: "How quickly will I notice a difference?",
+                faqA5: "Most students notice something in the first session — not a transformation, but a signal. A note that felt stuck that suddenly releases. A phrase that feels lighter. That's the direction. The bigger changes compound over weeks of consistent practice."
             },
             es: {
                 heroH1: "Puedes aprender a cantar.",
@@ -688,7 +737,18 @@
                 trustSecure: '<i class="fas fa-lock trust-lock"></i>Pago seguro',
                 trustStudents: "280+ estudiantes",
                 trustLanguages: "Sesiones en inglés y español",
-                footerConnect: "Conéctate conmigo:"
+                footerConnect: "Conéctate conmigo:",
+                faqTitle: "Preguntas frecuentes",
+                faqQ1: "Ya probé con profesores de canto y no funcionó. ¿Por qué sería diferente?",
+                faqA1: "La mayoría de las clases trabajan técnica sin identificar el patrón de raíz. Antes de cualquier cosa, hago un Análisis Vocal — un diagnóstico que me dice específicamente qué está haciendo tu voz. La solución parte de ahí, no de una biblioteca de ejercicios genéricos.",
+                faqQ2: "Soy principiante absoluto. ¿Esto es para mí?",
+                faqA2: "Sí. La mayoría de mis estudiantes nunca han tomado una clase. El Método Voicebuilding empieza desde la base: respiración, fonación, y luego todo lo demás. No se necesita experiencia, solo una voz y ganas de usarla.",
+                faqQ3: "¿Cómo funciona la primera sesión?",
+                faqA3: "Empezamos con un calentamiento corto y algunos ejercicios de diagnóstico para escuchar tu voz en vivo. Desde ahí identifico la primera prioridad y trabajamos directamente — sin teoría, solo ejercicios que puedes sentir funcionar. Al final tendrás un panorama claro de dónde está tu voz y qué hacer a continuación.",
+                faqQ4: "¿Necesito algún equipo especial para las sesiones online?",
+                faqA4: "Con un laptop o celular con micrófono estás bien. No necesitas equipo de grabación ni estudio. Si puedes escucharte en una llamada de Zoom, estás listo.",
+                faqQ5: "¿Qué tan rápido voy a notar una diferencia?",
+                faqA5: "La mayoría de estudiantes notan algo en la primera sesión — no una transformación, sino una señal. Una nota que estaba atascada y de repente se libera. Una frase que se siente más liviana. Esa es la dirección. Los cambios más grandes se acumulan con semanas de práctica constante."
             }
         };
 
@@ -851,6 +911,15 @@
         renderPayPalButtons('paypal-buttons-40',  '40.00',  '1st Voicebuilding Session — Nando Vocal Coach', '40');
         renderPayPalButtons('paypal-buttons-360', '360.00', 'Vocal Fitness — 4 Sessions with Nando Vocal Coach', '360');
         renderPayPalButtons('paypal-buttons-590', '590.00', '1-Month Transformation — 8 Sessions with Nando Vocal Coach', '590');
+    </script>
+
+    <script>
+        document.querySelectorAll('#faq .faq-q').forEach(q => {
+            q.addEventListener('click', () => {
+                q.classList.toggle('open');
+                q.nextElementSibling.classList.toggle('open');
+            });
+        });
     </script>
 </body>
 </html>
