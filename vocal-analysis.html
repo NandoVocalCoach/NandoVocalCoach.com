@@ -350,7 +350,7 @@
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Pitch match</h3>
-          <p>Headphones on. First, you'll read one sentence aloud so we can calibrate to your range. Then you'll hear 4 notes, sing each one back after the click.</p>
+          <p>Headphones on. First, you'll read one sentence aloud so we can calibrate to your range. Then you'll hear 8 notes — sing each one back after the click. Then a short 5-note melody — listen once, sing it back in one breath.</p>
 
           <div class="rec-widget-box">
             <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
@@ -636,9 +636,10 @@
 </script>
 
 <!-- Guided in-browser recording, all 4 steps + direct submit -->
-<!-- Step 4 timing constants MUST match build_guide_track() defaults in pitch_test.py
-     (GUIDE_TONE_SEC, GUIDE_PRE_SING_PAUSE_SEC, GO_BEEP_HZ/SEC, GUIDE_SING_SEC,
-     GUIDE_POST_SING_PAUSE_SEC), the server regenerates the same manifest from
+<!-- Step 4 timing constants MUST match build_assessment_track() in pitch_test.py
+     (ASSESSMENT_TONE_SEC, ASSESSMENT_PRE_SING_PAUSE_SEC, GO_BEEP_HZ/SEC,
+     ASSESSMENT_SING_SEC, ASSESSMENT_POST_SING_PAUSE_SEC, PHRASE_* constants),
+     the server regenerates the same manifest from
      that function rather than trusting one sent by the browser, so client and
      server must independently derive identical note timings. -->
 <script>
@@ -907,19 +908,29 @@
     });
   }
 
-  // ── Step 1, pitch match. First a short natural-speech clip personalizes
-  // the guide track to this person's own range (measured, not asked, see
-  // detect_speech_root_hz() server-side), then the existing 4-note
-  // call-and-response sequence runs at that root instead of a fixed one.
+  // ── Step 1, pitch match. Speech clip personalizes the track to the person's
+  // own range, then an 8-note diatonic scale + 5-note connected phrase runs
+  // at that root. Timing constants MUST match build_assessment_track() in
+  // pitch_test.py — server regenerates the same manifest from root_hz alone.
   const SPEECH_CHECK_SEC = 8;
-  const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches server's DIAGNOSTIC_ROOT_HZ
-  const TRIAD_SEMITONES = [0, 4, 7, 12]; // matches server's "triad" scale (build_sequence)
-  const TONE_SEC = 1.5;
-  const PRE_PAUSE_SEC = 0.8;   // was 0.3, must match GUIDE_PRE_SING_PAUSE_SEC in pitch_test.py
+  const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches DIAGNOSTIC_ROOT_HZ
+
+  // Scale task — 8-note diatonic major (matches ASSESSMENT_SCALE = "major")
+  const SCALE_SEMITONES = [0, 2, 4, 5, 7, 9, 11, 12];
+  const TONE_SEC = 1.5;          // ASSESSMENT_TONE_SEC
+  const PRE_PAUSE_SEC = 0.6;     // ASSESSMENT_PRE_SING_PAUSE_SEC
   const BEEP_HZ = 880;
-  const BEEP_SEC = 0.07;       // was 0.15, very short click, not a pitch, must match GO_BEEP_SEC
-  const SING_SEC = 4.0;        // was 2.5, must match GUIDE_SING_SEC in pitch_test.py
-  const POST_PAUSE_SEC = 1.5;  // was 0.5, must match GUIDE_POST_SING_PAUSE_SEC in pitch_test.py
+  const BEEP_SEC = 0.07;         // GO_BEEP_SEC
+  const SING_SEC = 2.5;          // ASSESSMENT_SING_SEC
+  const POST_PAUSE_SEC = 0.8;    // ASSESSMENT_POST_SING_PAUSE_SEC
+
+  // Phrase task — 5-note connected melody (do-re-mi-fa-sol)
+  const PHRASE_SEMITONES = [0, 2, 4, 5, 7]; // PHRASE_SEMITONES
+  const PHRASE_REF_NOTE_SEC = 1.2;           // PHRASE_REF_NOTE_SEC
+  const PHRASE_NOTE_WINDOW_SEC = 1.6;        // PHRASE_NOTE_WINDOW_SEC
+  const PHRASE_SING_TOTAL_SEC = PHRASE_SEMITONES.length * PHRASE_NOTE_WINDOW_SEC + 1.0; // 9.0s
+  const INTER_SECTION_PAUSE_SEC = 2.0;       // PHRASE_INTER_SECTION_PAUSE_SEC
+
   const LEAD_IN_SEC = 0.3; // head start before first tone, avoids scheduling right at ctx "now"
 
   const startBtn   = document.getElementById('pitchStartBtn');
@@ -927,8 +938,8 @@
   const resultEl   = document.getElementById('pitchResult');
   const previewEl  = document.getElementById('pitchPreview');
 
-  function buildTriadHz(rootHz) {
-    return TRIAD_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
+  function buildScaleHz(rootHz) {
+    return SCALE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
   }
 
   // vowel = 'oo'|'ah' → formant synthesis; null → plain sine (for beep click)
@@ -1064,10 +1075,10 @@
         <div style="font-size: 0.8rem; font-weight: 700; color: #FF5500; margin-bottom: 6px; letter-spacing: 0.05em;">STEP 1 OF 2, VOICE CHECK</div>
         <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Read this sentence aloud, at the volume you'd normally speak:</div>
         <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
-        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">7</strong>…</div>
+        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">5</strong>…</div>
       </div>`;
 
-    for (let i = 7; i >= 1; i--) {
+    for (let i = 5; i >= 1; i--) {
       const el = document.getElementById('speechCountNum');
       if (el) el.textContent = i;
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -1087,7 +1098,7 @@
     statusEl.textContent = 'Starting pitch test in your range…';
     await new Promise((resolve) => setTimeout(resolve, 700));
 
-    const NOTES = buildTriadHz(rootHz);
+    const NOTES = buildScaleHz(rootHz);
 
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
@@ -1121,6 +1132,42 @@
       t += POST_PAUSE_SEC;
       statusCursorSec += POST_PAUSE_SEC;
     });
+
+    // ── Phrase task ──
+    // Inter-section pause + "get ready" message
+    setTimeout(() => {
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Almost done — get ready for the melody phrase…</div>`;
+    }, statusCursorSec * 1000);
+    t += INTER_SECTION_PAUSE_SEC;
+    statusCursorSec += INTER_SECTION_PAUSE_SEC;
+
+    // Schedule all 5 phrase tones continuously (legato — no gaps between notes)
+    const phraseHzList = PHRASE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
+    phraseHzList.forEach((phraseHz) => {
+      scheduleTone(ctx, phraseHz, PHRASE_REF_NOTE_SEC, t, 'oo');
+      t += PHRASE_REF_NOTE_SEC;
+    });
+    setTimeout(() => {
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen to the melody… (5 notes)</div>`;
+    }, statusCursorSec * 1000);
+    statusCursorSec += PHRASE_SEMITONES.length * PHRASE_REF_NOTE_SEC;
+
+    // Pre-sing pause + click beep
+    t += PRE_PAUSE_SEC;
+    statusCursorSec += PRE_PAUSE_SEC;
+    scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
+    t += BEEP_SEC;
+    statusCursorSec += BEEP_SEC;
+
+    // 9-second sing window — user sings all 5 notes in one breath
+    setTimeout(() => {
+      statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">🎤 SING THE MELODY — all 5 notes, one breath</div>`;
+    }, statusCursorSec * 1000);
+    t += PHRASE_SING_TOTAL_SEC;
+    statusCursorSec += PHRASE_SING_TOTAL_SEC;
+
+    t += POST_PAUSE_SEC;
+    statusCursorSec += POST_PAUSE_SEC;
 
     const totalMs = statusCursorSec * 1000;
 
