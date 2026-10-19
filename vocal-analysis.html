@@ -673,7 +673,6 @@
     const missing = [];
     if (!recordings.glide) missing.push('glide');
     if (!recordings.sustained_ah) missing.push('sustained "ah"');
-    if (!recordings.song_clip) missing.push('song clip');
 
     if (missing.length === 0) {
       submitBtn.disabled = false;
@@ -924,8 +923,8 @@
   const SING_SEC = 2.5;          // ASSESSMENT_SING_SEC
   const POST_PAUSE_SEC = 0.8;    // ASSESSMENT_POST_SING_PAUSE_SEC
 
-  // Phrase task — 5-note connected melody (do-re-mi-fa-sol)
-  const PHRASE_SEMITONES = [0, 2, 4, 5, 7]; // PHRASE_SEMITONES
+  // Phrase task — 1-2-1 then 1-2-3-2-1 (easier pattern first)
+  const PHRASE_SEMITONES = [0, 2, 0, 0, 2, 4, 2, 0]; // PHRASE_SEMITONES
   const PHRASE_REF_NOTE_SEC = 1.2;           // PHRASE_REF_NOTE_SEC
   const PHRASE_NOTE_WINDOW_SEC = 1.6;        // PHRASE_NOTE_WINDOW_SEC
   const PHRASE_SING_TOTAL_SEC = PHRASE_SEMITONES.length * PHRASE_NOTE_WINDOW_SEC + 1.0; // 9.0s
@@ -1098,8 +1097,6 @@
     statusEl.textContent = 'Starting pitch test in your range…';
     await new Promise((resolve) => setTimeout(resolve, 700));
 
-    const NOTES = buildScaleHz(rootHz);
-
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
     const chunks = [];
@@ -1111,35 +1108,12 @@
     let t = ctx.currentTime + LEAD_IN_SEC;
     let statusCursorSec = LEAD_IN_SEC;
 
-    NOTES.forEach((hz, i) => {
-      scheduleTone(ctx, hz, TONE_SEC, t, 'oo');
-      setTimeout(() => {
-        statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen… note ${i + 1}/${NOTES.length}</div>`;
-      }, statusCursorSec * 1000);
-      t += TONE_SEC + PRE_PAUSE_SEC;
-      statusCursorSec += TONE_SEC + PRE_PAUSE_SEC;
-
-      scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
-      t += BEEP_SEC;
-      statusCursorSec += BEEP_SEC;
-
-      setTimeout(() => {
-        statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">🎤 SING IT NOW, Note ${i + 1}/${NOTES.length}</div>`;
-      }, statusCursorSec * 1000);
-      t += SING_SEC;
-      statusCursorSec += SING_SEC;
-
-      t += POST_PAUSE_SEC;
-      statusCursorSec += POST_PAUSE_SEC;
-    });
-
     // ── Phrase task ──
-    // Inter-section pause + "get ready" message
     setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Almost done — get ready for the melody phrase…</div>`;
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">👂 Listen to the phrase…</div>`;
     }, statusCursorSec * 1000);
-    t += INTER_SECTION_PAUSE_SEC;
-    statusCursorSec += INTER_SECTION_PAUSE_SEC;
+    t += INTER_SECTION_PAUSE_SEC * 0.5;
+    statusCursorSec += INTER_SECTION_PAUSE_SEC * 0.5;
 
     // Schedule all 5 phrase tones continuously (legato — no gaps between notes)
     const phraseHzList = PHRASE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
@@ -1148,7 +1122,7 @@
       t += PHRASE_REF_NOTE_SEC;
     });
     setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen to the melody… (5 notes)</div>`;
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen to the phrase…</div>`;
     }, statusCursorSec * 1000);
     statusCursorSec += PHRASE_SEMITONES.length * PHRASE_REF_NOTE_SEC;
 
@@ -1161,7 +1135,7 @@
 
     // 9-second sing window — user sings all 5 notes in one breath
     setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">🎤 SING THE MELODY — all 5 notes, one breath</div>`;
+      statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">🎤 SING IT BACK — same phrase</div>`;
     }, statusCursorSec * 1000);
     t += PHRASE_SING_TOTAL_SEC;
     statusCursorSec += PHRASE_SING_TOTAL_SEC;
