@@ -350,7 +350,7 @@
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Pitch match</h3>
-          <p>Headphones on. First, you'll read one sentence aloud so we can calibrate to your range. Then you'll hear 8 notes — sing each one back after the click. Then a short 5-note melody — listen once, sing it back in one breath.</p>
+          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear 4 notes, one at a time — listen to each one, then sing it back when you see the green cue. That's it.</p>
 
           <div class="rec-widget-box">
             <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
@@ -463,10 +463,6 @@
       <div class="pattern-card">
         <h4>Vocal Tension</h4>
         <p>The muscles around the larynx are working harder than they need to. Very common, and very fixable.</p>
-      </div>
-      <div class="pattern-card">
-        <h4>Register Avoidance</h4>
-        <p>Real range exists, but the voice is navigating around the bridge instead of crossing it.</p>
       </div>
       <div class="pattern-card">
         <h4>Chest Voice Ceiling</h4>
@@ -908,27 +904,21 @@
   }
 
   // ── Step 1, pitch match. Speech clip personalizes the track to the person's
-  // own range, then an 8-note diatonic scale + 5-note connected phrase runs
-  // at that root. Timing constants MUST match build_assessment_track() in
-  // pitch_test.py — server regenerates the same manifest from root_hz alone.
+  // own range, then a 4-note triad call-response runs at that root.
+  // Timing constants MUST match build_guide_track() in pitch_test.py —
+  // server regenerates the same manifest from root_hz alone.
   const SPEECH_CHECK_SEC = 8;
   const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches DIAGNOSTIC_ROOT_HZ
 
-  // Scale task — 8-note diatonic major (matches ASSESSMENT_SCALE = "major")
-  const SCALE_SEMITONES = [0, 2, 4, 5, 7, 9, 11, 12];
-  const TONE_SEC = 1.5;          // ASSESSMENT_TONE_SEC
-  const PRE_PAUSE_SEC = 0.6;     // ASSESSMENT_PRE_SING_PAUSE_SEC
+  // Guide track — 4-note triad: root, major 3rd, perfect 5th, octave
+  // Matches DIAGNOSTIC_SCALE = "triad" in pitch_test.py
+  const SCALE_SEMITONES = [0, 4, 7, 12];
+  const TONE_SEC = 1.5;          // GUIDE_TONE_SEC
+  const PRE_PAUSE_SEC = 0.8;     // GUIDE_PRE_SING_PAUSE_SEC
   const BEEP_HZ = 880;
   const BEEP_SEC = 0.07;         // GO_BEEP_SEC
-  const SING_SEC = 2.5;          // ASSESSMENT_SING_SEC
-  const POST_PAUSE_SEC = 0.8;    // ASSESSMENT_POST_SING_PAUSE_SEC
-
-  // Phrase task — 1-2-1 then 1-2-3-2-1 (easier pattern first)
-  const PHRASE_SEMITONES = [0, 2, 0, 0, 2, 4, 2, 0]; // PHRASE_SEMITONES
-  const PHRASE_REF_NOTE_SEC = 1.2;           // PHRASE_REF_NOTE_SEC
-  const PHRASE_NOTE_WINDOW_SEC = 1.6;        // PHRASE_NOTE_WINDOW_SEC
-  const PHRASE_SING_TOTAL_SEC = PHRASE_SEMITONES.length * PHRASE_NOTE_WINDOW_SEC + 1.0; // 9.0s
-  const INTER_SECTION_PAUSE_SEC = 2.0;       // PHRASE_INTER_SECTION_PAUSE_SEC
+  const SING_SEC = 4.0;          // GUIDE_SING_SEC
+  const POST_PAUSE_SEC = 1.5;    // GUIDE_POST_SING_PAUSE_SEC
 
   const LEAD_IN_SEC = 0.3; // head start before first tone, avoids scheduling right at ctx "now"
 
@@ -1050,12 +1040,8 @@
     startBtn.disabled = true;
     resultEl.style.display = 'none';
 
-    // Create the AudioContext synchronously at the very start of the click
-    // handler (before any await) and keep it alive for the whole function ,
-    // once resumed here, it stays usable for tone playback later even after
-    // the speech-check + detect-pitch round trip that follows, which some
-    // browsers wouldn't allow if the context were created fresh after that
-    // gap (autoplay policy).
+    // Create AudioContext synchronously in click handler (before any await)
+    // so it stays alive through the speech-check + detect-pitch round trip.
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     statusEl.textContent = 'Requesting microphone…';
@@ -1063,21 +1049,21 @@
     try {
       stream = await getMicStream();
     } catch (err) {
-      statusEl.textContent = "Couldn't access your microphone, check browser permissions, or try a different browser.";
+      statusEl.textContent = "Couldn't access your microphone. Check browser permissions, or try a different browser.";
       startBtn.disabled = false;
       return;
     }
     if (ctx.state === 'suspended') await ctx.resume();
 
+    // ── Speech check: detect user's range ──
     statusEl.innerHTML = `
       <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
-        <div style="font-size: 0.8rem; font-weight: 700; color: #FF5500; margin-bottom: 6px; letter-spacing: 0.05em;">STEP 1 OF 2, VOICE CHECK</div>
         <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Read this sentence aloud, at the volume you'd normally speak:</div>
         <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
-        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">5</strong>…</div>
+        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">3</strong>…</div>
       </div>`;
 
-    for (let i = 5; i >= 1; i--) {
+    for (let i = 3; i >= 1; i--) {
       const el = document.getElementById('speechCountNum');
       if (el) el.textContent = i;
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -1086,16 +1072,23 @@
     const countdownBox = statusEl.querySelector('div');
     if (countdownBox) countdownBox.style.borderColor = '#22c55e';
     const countdownLabel = document.getElementById('speechCountdown');
-    if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">🎤 Recording now, read the sentence above</strong>';
+    if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
     const speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
 
-    statusEl.textContent = 'Analyzing your voice…';
+    statusEl.textContent = 'Finding your range…';
     const rootHz = await detectRootHz(speechBlob);
     recordings.pitch_root_hz = rootHz;
 
-    statusEl.textContent = 'Starting pitch test in your range…';
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    // ── Note-by-note call-response ──
+    // 4 notes: root, major 3rd, perfect 5th, octave.
+    // Each note: hear reference tone → beep → sing it back → pause.
+    // Timing matches build_guide_track() in pitch_test.py exactly.
+    const scaleHz = SCALE_SEMITONES.map(s => rootHz * Math.pow(2, s / 12));
+    const totalNotes = scaleHz.length;
+
+    statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Get ready — 4 notes, one at a time. Listen, then sing it back.</div>`;
+    await new Promise(r => setTimeout(r, 2500));
 
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
@@ -1108,46 +1101,51 @@
     let t = ctx.currentTime + LEAD_IN_SEC;
     let statusCursorSec = LEAD_IN_SEC;
 
-    // ── Phrase task ──
-    setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">👂 Listen to the phrase…</div>`;
-    }, statusCursorSec * 1000);
-    t += INTER_SECTION_PAUSE_SEC * 0.5;
-    statusCursorSec += INTER_SECTION_PAUSE_SEC * 0.5;
+    for (let i = 0; i < totalNotes; i++) {
+      const hz = scaleHz[i];
+      const noteNum = i + 1;
 
-    // Schedule all 5 phrase tones continuously (legato — no gaps between notes)
-    const phraseHzList = PHRASE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
-    phraseHzList.forEach((phraseHz) => {
-      scheduleTone(ctx, phraseHz, PHRASE_REF_NOTE_SEC, t, 'oo');
-      t += PHRASE_REF_NOTE_SEC;
-    });
-    setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:10px 16px; border-radius:8px; text-align:center;">👂 Listen to the phrase…</div>`;
-    }, statusCursorSec * 1000);
-    statusCursorSec += PHRASE_SEMITONES.length * PHRASE_REF_NOTE_SEC;
+      // Show "Listen..." status when reference tone starts
+      const listenAtSec = statusCursorSec;
+      setTimeout(() => {
+        statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
+          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Note ${noteNum} of ${totalNotes}</div>
+          Listen…</div>`;
+      }, listenAtSec * 1000);
 
-    // Pre-sing pause + click beep
-    t += PRE_PAUSE_SEC;
-    statusCursorSec += PRE_PAUSE_SEC;
-    scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
-    t += BEEP_SEC;
-    statusCursorSec += BEEP_SEC;
+      // Reference tone
+      scheduleTone(ctx, hz, TONE_SEC, t, 'oo');
+      t += TONE_SEC;
+      statusCursorSec += TONE_SEC;
 
-    // 9-second sing window — user sings all 5 notes in one breath
-    setTimeout(() => {
-      statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">🎤 SING IT BACK — same phrase</div>`;
-    }, statusCursorSec * 1000);
-    t += PHRASE_SING_TOTAL_SEC;
-    statusCursorSec += PHRASE_SING_TOTAL_SEC;
+      // Pre-sing pause
+      t += PRE_PAUSE_SEC;
+      statusCursorSec += PRE_PAUSE_SEC;
 
-    t += POST_PAUSE_SEC;
-    statusCursorSec += POST_PAUSE_SEC;
+      // Go beep
+      scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
+      t += BEEP_SEC;
+      statusCursorSec += BEEP_SEC;
+
+      // Show "Sing it back" when sing window starts
+      const singAtSec = statusCursorSec;
+      setTimeout(() => {
+        statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">
+          <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Note ${noteNum} of ${totalNotes}</div>
+          Sing it back</div>`;
+      }, singAtSec * 1000);
+
+      // Sing window
+      t += SING_SEC;
+      statusCursorSec += SING_SEC;
+
+      // Post-sing pause
+      t += POST_PAUSE_SEC;
+      statusCursorSec += POST_PAUSE_SEC;
+    }
 
     const totalMs = statusCursorSec * 1000;
-
-    setTimeout(() => {
-      recorder.stop();
-    }, totalMs + 300);
+    setTimeout(() => { recorder.stop(); }, totalMs + 300);
 
     await stopped;
 
@@ -1157,7 +1155,7 @@
 
     statusEl.textContent = '';
     resultEl.style.display = 'block';
-    startBtn.textContent = '🔁 Retake';
+    startBtn.textContent = 'Retake';
     startBtn.disabled = false;
   }
 
@@ -1219,7 +1217,15 @@
             <div style="font-size: 2.2rem; margin-bottom: 16px;">🎙</div>
             <h2 style="margin-bottom: 12px;">We're analyzing your voice.</h2>
             <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 8px;">Real audio analysis, not a quiz. Your PDF will be ready in <strong style="color:white;">10-15 minutes</strong>.</p>
-            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">Check your inbox at <strong style="color:white;">${submittedEmail}</strong>, your PDF will be there shortly.</p>
+            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">Check your inbox at <strong style="color:white;">${submittedEmail}</strong> — your results and personalized exercise link will be there.</p>
+            <div style="background: rgba(255,85,0,0.1); border: 1px solid rgba(255,85,0,0.25); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+              <p style="color: white; font-weight: 700; margin: 0 0 6px; font-size: 1rem;">Don't want to wait?</p>
+              <p style="color: #9CA3AF; font-size: 0.88rem; margin: 0 0 14px;">Exercise 1 is free. Your personalized program will be in the email.</p>
+              <a href="https://api.nandovocalcoach.com/dev/exercise"
+                 style="background: #FF5500; color: white; padding: 11px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-block;">
+                Start Exercise 1 →
+              </a>
+            </div>
             <p style="font-size: 0.82rem; color: #6B7280;">Can't find it? Check your spam folder, or email <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>.</p>
           </div>
         `;
