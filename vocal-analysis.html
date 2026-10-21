@@ -835,7 +835,7 @@
   }
 
   function playVowelExample({ vowel, duration, sustainedHz, glideFrom, glideTo }) {
-    stopExample();  // kill any previous playback
+    // Caller (wireExampleBtn) already calls stopExample() before this
     return new Promise((resolve) => {
       _exampleResolve = resolve;
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -927,6 +927,12 @@
 
   // Guide track — 4-note triad: root, major 3rd, perfect 5th, octave
   // Matches DIAGNOSTIC_SCALE = "triad" in pitch_test.py
+  // Formant presets for voice-like synthesis
+  const VOWEL_FORMANTS = {
+    oo: { f: [310, 870, 2250],  q: [12, 14, 16], gain: [1.0, 0.32, 0.15] },
+    ah: { f: [730, 1090, 2440], q: [12, 14, 16], gain: [1.0, 0.50, 0.30] },
+  };
+
   const SCALE_SEMITONES = [0, 4, 7, 12];
   const TONE_SEC = 1.5;          // GUIDE_TONE_SEC
   const PRE_PAUSE_SEC = 0.8;     // GUIDE_PRE_SING_PAUSE_SEC
