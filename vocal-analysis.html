@@ -671,6 +671,7 @@
     }
 
     async function start() {
+      stopExample();  // kill any playing example tone immediately
       startBtn.disabled = true;
       resultEl.style.display = 'none';
       statusEl.textContent = 'Requesting microphone…';
@@ -812,13 +813,36 @@
     addPartial(hz * 3, 0.10);
   }
 
+  // ── Example playback with stop/cancel support ──
+  let _exampleCtx = null;
+  let _exampleResolve = null;
+  let _exampleTimeout = null;
+  let _exampleBtn = null;   // button that started current playback
+
+  function stopExample() {
+    if (_exampleCtx) {
+      try { _exampleCtx.close(); } catch (_) {}
+      _exampleCtx = null;
+    }
+    if (_exampleTimeout) { clearTimeout(_exampleTimeout); _exampleTimeout = null; }
+    if (_exampleResolve) { _exampleResolve(); _exampleResolve = null; }
+    // Restore all example buttons
+    document.querySelectorAll('.example-play-btn').forEach(b => {
+      b.textContent = b.dataset.label;
+      b.dataset.playing = '';
+    });
+    _exampleBtn = null;
+  }
+
   function playVowelExample({ vowel, duration, sustainedHz, glideFrom, glideTo }) {
+    stopExample();  // kill any previous playback
     return new Promise((resolve) => {
+      _exampleResolve = resolve;
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      _exampleCtx = ctx;
       const now = ctx.currentTime + 0.05;
 
       if (glideFrom != null) {
-        // Glide: formant-filtered sawtooth with frequency ramp + vibrato
         const preset = VOWEL_FORMANTS[vowel || 'oo'];
         const fade = Math.min(0.05, duration * 0.15);
 
@@ -851,43 +875,48 @@
         });
 
         source.start(now); source.stop(now + duration);
-        setTimeout(resolve, duration * 1000 + 100);
-        setTimeout(() => ctx.close(), duration * 1000 + 200);
       } else {
-        // Sustained note: use formant scheduleTone
         scheduleTone(ctx, sustainedHz, duration, now, vowel || 'ah');
-        setTimeout(resolve, duration * 1000 + 100);
-        setTimeout(() => ctx.close(), duration * 1000 + 200);
       }
+
+      _exampleTimeout = setTimeout(() => {
+        _exampleCtx = null; _exampleResolve = null; _exampleTimeout = null;
+        try { ctx.close(); } catch (_) {}
+        if (_exampleBtn) {
+          _exampleBtn.textContent = _exampleBtn.dataset.label;
+          _exampleBtn.dataset.playing = '';
+          _exampleBtn = null;
+        }
+        resolve();
+      }, duration * 1000 + 100);
     });
   }
 
-  const glideExampleBtn = document.getElementById('glideExampleBtn');
-  if (glideExampleBtn) {
-    glideExampleBtn.addEventListener('click', async () => {
-      glideExampleBtn.disabled = true;
-      await playVowelExample({ vowel: 'oo', duration: 6, glideFrom: 196.0, glideTo: 392.0 });
-      glideExampleBtn.disabled = false;
+  function wireExampleBtn(btn, opts) {
+    if (!btn) return;
+    btn.classList.add('example-play-btn');
+    btn.dataset.label = btn.textContent;
+    btn.addEventListener('click', async () => {
+      if (btn.dataset.playing === 'true') {
+        stopExample();
+        return;
+      }
+      stopExample();  // stop any other example
+      btn.textContent = '⏹ Stop';
+      btn.dataset.playing = 'true';
+      _exampleBtn = btn;
+      await playVowelExample(opts);
+      btn.textContent = btn.dataset.label;
+      btn.dataset.playing = '';
     });
   }
 
-  const sustainedAhExampleBtnA = document.getElementById('sustainedAhExampleBtnA');
-  if (sustainedAhExampleBtnA) {
-    sustainedAhExampleBtnA.addEventListener('click', async () => {
-      sustainedAhExampleBtnA.disabled = true;
-      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 196.0 }); // G3, lower voice range
-      sustainedAhExampleBtnA.disabled = false;
-    });
-  }
-
-  const sustainedAhExampleBtnB = document.getElementById('sustainedAhExampleBtnB');
-  if (sustainedAhExampleBtnB) {
-    sustainedAhExampleBtnB.addEventListener('click', async () => {
-      sustainedAhExampleBtnB.disabled = true;
-      await playVowelExample({ vowel: 'ah', duration: 3, sustainedHz: 392.0 }); // G4, higher voice range
-      sustainedAhExampleBtnB.disabled = false;
-    });
-  }
+  wireExampleBtn(document.getElementById('glideExampleBtn'),
+    { vowel: 'oo', duration: 6, glideFrom: 196.0, glideTo: 392.0 });
+  wireExampleBtn(document.getElementById('sustainedAhExampleBtnA'),
+    { vowel: 'ah', duration: 3, sustainedHz: 196.0 });  // G3
+  wireExampleBtn(document.getElementById('sustainedAhExampleBtnB'),
+    { vowel: 'ah', duration: 3, sustainedHz: 392.0 });  // G4
 
   // ── Step 1, pitch match. Speech clip personalizes the track to the person's
   // own range, then a 4-note triad call-response runs at that root.
@@ -1023,6 +1052,7 @@
   }
 
   async function runPitchTest() {
+    stopExample();  // kill any playing example
     startBtn.disabled = true;
     resultEl.style.display = 'none';
 
