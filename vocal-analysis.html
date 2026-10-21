@@ -223,6 +223,15 @@
     .rec-done-msg { font-weight: 700; color: var(--text); margin-bottom: 6px; }
     .rec-hint { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
     .step-complete { border-color: #FF5500; }
+    .step-locked {
+      opacity: 0.35;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .step-locked.unlocked {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     /* ── What you get ── */
     .gets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 48px; }
@@ -346,25 +355,9 @@
     <div class="section-title">What to <span>Send</span></div>
     <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">Everything happens right here. Hear an example, record, done. Nothing to upload.</p>
     <div class="steps">
-      <div class="step" id="stepPitch">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h3>Pitch match</h3>
-          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear 4 notes, one at a time — listen to each one, then sing it back when you see the green cue. That's it.</p>
 
-          <div class="rec-widget-box">
-            <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
-            <div id="pitchStatus" class="rec-status"></div>
-            <div id="pitchResult" style="display:none;">
-              <p class="rec-done-msg">✓ Recording captured</p>
-              <audio id="pitchPreview" controls style="width:100%; margin: 10px 0;"></audio>
-              <p class="rec-hint">Included automatically when you submit below.</p>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="step" id="stepGlide">
-        <div class="step-num">2</div>
+        <div class="step-num">1</div>
         <div class="step-body">
           <h3>Glide: low to high to low</h3>
           <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping.</p>
@@ -381,8 +374,9 @@
           </div>
         </div>
       </div>
-      <div class="step" id="stepSustained">
-        <div class="step-num">3</div>
+
+      <div class="step step-locked" id="stepSustained">
+        <div class="step-num">2</div>
         <div class="step-body">
           <h3>Sustained "ah"</h3>
           <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Just hold it, no technique needed.</p>
@@ -400,12 +394,12 @@
           </div>
         </div>
       </div>
-      <div class="step" id="stepSong">
-        <div class="step-num">4</div>
+
+      <div class="step step-locked" id="stepSong">
+        <div class="step-num">3</div>
         <div class="step-body">
-          <h3>A bit of a song</h3>
-          <p>Any song, the part where you struggle most works best. Up to a minute.</p>
-          <p style="font-size: 0.82rem; color: var(--muted);">Using a backing track? Headphones only, not speakers.</p>
+          <h3>A bit of a song <span style="font-size:0.75rem; font-weight:500; color:var(--muted); font-family:'Montserrat',sans-serif;">(optional)</span></h3>
+          <p>Any song, the part where you struggle most. Up to a minute. Skip this if you don't have one ready.</p>
 
           <div class="rec-widget-box">
             <button id="songClipStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
@@ -415,7 +409,7 @@
               <p class="rec-done-msg">✓ Recording captured</p>
               <audio id="songClipPreview" controls style="width:100%; margin: 10px 0;"></audio>
             </div>
-            <p class="rec-hint">Prefer to send an existing recording instead? <label for="songClipUpload" style="color:#FF5500; cursor:pointer; font-weight:700;">Upload a file</label>.
+            <p class="rec-hint">Have a recording already? <label for="songClipUpload" style="color:#FF5500; cursor:pointer; font-weight:700;">Upload a file</label>.
               <input type="file" id="songClipUpload" accept="audio/*,video/*" style="display:none;">
             </p>
           </div>
@@ -426,6 +420,24 @@
           </div>
         </div>
       </div>
+
+      <div class="step step-locked" id="stepPitch">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Pitch match <span style="font-size:0.75rem; font-weight:500; color:var(--muted); font-family:'Montserrat',sans-serif;">(optional)</span></h3>
+          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear 4 notes, one at a time — listen to each one, then sing it back when you see the green cue.</p>
+
+          <div class="rec-widget-box">
+            <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
+            <div id="pitchStatus" class="rec-status"></div>
+            <div id="pitchResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="pitchPreview" controls style="width:100%; margin: 10px 0;"></audio>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -446,7 +458,7 @@
       <div class="get">
         <div class="get-icon">🔍</div>
         <h4>Your Pattern</h4>
-        <p>Named and explained. Clencher, Floater, Chest-Locked, what it means for your voice and why it happens.</p>
+        <p>Named and explained — Vocal Tension, Chest Lock, Airy Voice, and more. What it means and why it happens.</p>
       </div>
       <div class="get">
         <div class="get-icon">🎯</div>
@@ -508,50 +520,14 @@
         <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;">This helps the analysis account for an off day, so it doesn't read a bad night's sleep as a technique problem.</p>
       </div>
       <div style="margin-bottom: 20px;">
-        <p style="font-size: 0.85rem; color: white; margin: 0 0 3px; font-weight: 600;">Vocal Tract Discomfort (optional)</p>
-        <p style="font-size: 0.78rem; color: var(--muted); margin: 0 0 10px;">Rate each 0 (none) to 6 (severe), helps tell a physical symptom apart from a technique issue.</p>
-        <div id="vtdScale" style="display:flex; flex-direction:column; gap:8px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_tightness" style="flex:1; color:white; font-size:0.85rem;">Tightness</label>
-            <input type="range" id="vtd_tightness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_dryness" style="flex:1; color:white; font-size:0.85rem;">Dryness</label>
-            <input type="range" id="vtd_dryness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_burning" style="flex:1; color:white; font-size:0.85rem;">Burning</label>
-            <input type="range" id="vtd_burning" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_soreness" style="flex:1; color:white; font-size:0.85rem;">Soreness</label>
-            <input type="range" id="vtd_soreness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_itchiness" style="flex:1; color:white; font-size:0.85rem;">Itchiness</label>
-            <input type="range" id="vtd_itchiness" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_sensitive" style="flex:1; color:white; font-size:0.85rem;">Sensitive throat</label>
-            <input type="range" id="vtd_sensitive" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_irritation" style="flex:1; color:white; font-size:0.85rem;">Irritation</label>
-            <input type="range" id="vtd_irritation" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <label for="vtd_globus" style="flex:1; color:white; font-size:0.85rem;">Lump in throat</label>
-            <input type="range" id="vtd_globus" min="0" max="6" value="0" step="1" style="flex:2;" oninput="this.nextElementSibling.textContent=this.value">
-            <span style="color:white; font-size:0.85rem; width:1em; text-align:right;">0</span>
-          </div>
-        </div>
+        <label for="throatFeelSelect" style="display:block; font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;">How does your throat feel today? (optional)</label>
+        <select id="throatFeelSelect" style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; background:white; color:#1F2937;">
+          <option value="0">Normal — nothing unusual</option>
+          <option value="2">A little tight or dry</option>
+          <option value="4">Noticeably uncomfortable</option>
+          <option value="6">Sore or strained</option>
+        </select>
+        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;">Helps the analysis tell an off day apart from a technique pattern.</p>
       </div>
       <button type="submit" id="submitBtn" class="rec-btn" style="width:100%; padding: 14px; font-size: 1.1rem;" disabled>
         Complete the 4 steps above first
@@ -684,7 +660,7 @@
   // (a glide runs until the singer runs out of range, a song clip is
   // whatever length feels right), unlike step 4, which is driven by a
   // fixed cued sequence.
-  function setupRecordStep({ key, startBtn, stopBtn, statusEl, resultEl, previewEl, maxSec }) {
+  function setupRecordStep({ key, startBtn, stopBtn, statusEl, resultEl, previewEl, maxSec, onComplete }) {
     let recorder = null;
     let chunks = [];
     let timerInterval = null;
@@ -743,10 +719,20 @@
       startBtn.disabled = false;
 
       updateSubmitState();
+      if (onComplete) onComplete();
     }
 
     startBtn.addEventListener('click', start);
     stopBtn.addEventListener('click', stop);
+  }
+
+  function unlockStep(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('unlocked');
+      // Smooth scroll so the new step comes into view
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
   }
 
   setupRecordStep({
@@ -757,6 +743,7 @@
     resultEl: document.getElementById('glideResult'),
     previewEl: document.getElementById('glidePreview'),
     maxSec: 20,
+    onComplete: () => unlockStep('stepSustained'),
   });
   setupRecordStep({
     key: 'sustained_ah',
@@ -766,6 +753,7 @@
     resultEl: document.getElementById('sustainedAhResult'),
     previewEl: document.getElementById('sustainedAhPreview'),
     maxSec: 8,
+    onComplete: () => { unlockStep('stepSong'); unlockStep('stepPitch'); },
   });
   setupRecordStep({
     key: 'song_clip',
@@ -790,89 +778,77 @@
       document.getElementById('songClipStatus').textContent = '';
       document.getElementById('songClipResult').style.display = 'block';
       updateSubmitState();
+      unlockStep('stepPitch');
     });
   }
 
-  // ── Synthesized vowel examples for steps 1-2, a "virtual vocal
-  // instrument" (formant-filtered sawtooth, not a plain tone and not a
-  // real recorded voice): 3 parallel bandpass filters tuned to a vowel's
-  // formants, plus light vibrato and a touch of filtered noise so it
-  // reads as voice-like.
-  const VOWEL_FORMANTS = {
-    ah: { f: [700, 1220, 2600], gain: [1.0, 0.6, 0.3], q: [10, 12, 14] },
-    oo: { f: [300, 870, 2240],  gain: [1.0, 0.5, 0.25], q: [12, 14, 16] },
-  };
+  // ── Tone synthesis for examples and pitch test.
+  // Sine + light 2nd/3rd harmonic (matches server's generate_tone()).
+  // Clean and easy to match — no buzzy sawtooth formant filtering.
+  function _scheduleToneRaw(ctx, hz, startTime, duration) {
+    const fade = Math.min(0.04, duration * 0.1);
 
-  function playVowelExample({ vowel, duration, sustainedHz, glideFrom, glideTo }) {
+    function addPartial(freq, gainVal) {
+      const osc = ctx.createOscillator();
+      const g   = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      g.gain.value = gainVal;
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+      return osc;
+    }
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, startTime);
+    masterGain.gain.linearRampToValueAtTime(0.55, startTime + fade);
+    masterGain.gain.setValueAtTime(0.55, startTime + duration - fade);
+    masterGain.gain.linearRampToValueAtTime(0, startTime + duration);
+    masterGain.connect(ctx.destination);
+
+    addPartial(hz,     1.00);
+    addPartial(hz * 2, 0.25);
+    addPartial(hz * 3, 0.10);
+  }
+
+  function playVowelExample({ duration, sustainedHz, glideFrom, glideTo }) {
     return new Promise((resolve) => {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const preset = VOWEL_FORMANTS[vowel];
-      const source = ctx.createOscillator();
-      source.type = 'sawtooth';
-
       const now = ctx.currentTime + 0.05;
+      const fade = Math.min(0.04, duration * 0.1);
 
+      // For glides, use a single oscillator with frequency ramping
       if (glideFrom != null) {
-        source.frequency.setValueAtTime(glideFrom, now);
-        source.frequency.linearRampToValueAtTime(glideTo, now + duration / 2);
-        source.frequency.linearRampToValueAtTime(glideFrom, now + duration);
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0, now);
+        masterGain.gain.linearRampToValueAtTime(0.55, now + fade);
+        masterGain.gain.setValueAtTime(0.55, now + duration - fade);
+        masterGain.gain.linearRampToValueAtTime(0, now + duration);
+        masterGain.connect(ctx.destination);
+
+        [[1.00, 1], [0.25, 2], [0.10, 3]].forEach(([gainVal, mult]) => {
+          const osc = ctx.createOscillator();
+          const g   = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(glideFrom * mult, now);
+          osc.frequency.linearRampToValueAtTime(glideTo * mult, now + duration / 2);
+          osc.frequency.linearRampToValueAtTime(glideFrom * mult, now + duration);
+          g.gain.value = gainVal;
+          osc.connect(g);
+          g.connect(masterGain);
+          osc.start(now);
+          osc.stop(now + duration);
+        });
+
+        setTimeout(resolve, duration * 1000 + 100);
+        setTimeout(() => ctx.close(), duration * 1000 + 200);
       } else {
-        source.frequency.setValueAtTime(sustainedHz, now);
-        const lfo = ctx.createOscillator();
-        lfo.type = 'sine';
-        lfo.frequency.value = 5.5;
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = sustainedHz * 0.008; // light vibrato depth
-        lfo.connect(lfoGain);
-        lfoGain.connect(source.frequency);
-        lfo.start(now);
-        lfo.stop(now + duration);
+        _scheduleToneRaw(ctx, sustainedHz, now, duration);
+        setTimeout(resolve, duration * 1000 + 100);
+        setTimeout(() => ctx.close(), duration * 1000 + 200);
       }
-
-      const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0, now);
-      masterGain.gain.linearRampToValueAtTime(0.5, now + 0.08);
-      masterGain.gain.setValueAtTime(0.5, now + duration - 0.15);
-      masterGain.gain.linearRampToValueAtTime(0, now + duration);
-      masterGain.connect(ctx.destination);
-
-      preset.f.forEach((freq, i) => {
-        const bp = ctx.createBiquadFilter();
-        bp.type = 'bandpass';
-        bp.frequency.value = freq;
-        bp.Q.value = preset.q[i];
-        const g = ctx.createGain();
-        g.gain.value = preset.gain[i];
-        source.connect(bp);
-        bp.connect(g);
-        g.connect(masterGain);
-      });
-
-      // Light breath noise for realism
-      const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
-      const data = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-      const noiseSource = ctx.createBufferSource();
-      noiseSource.buffer = noiseBuffer;
-      const noiseFilter = ctx.createBiquadFilter();
-      noiseFilter.type = 'bandpass';
-      noiseFilter.frequency.value = 4000;
-      noiseFilter.Q.value = 0.7;
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.02;
-      noiseSource.connect(noiseFilter);
-      noiseFilter.connect(noiseGain);
-      noiseGain.connect(masterGain);
-
-      source.start(now);
-      source.stop(now + duration);
-      noiseSource.start(now);
-      noiseSource.stop(now + duration);
-
-      source.onended = () => {
-        ctx.close();
-        resolve();
-      };
     });
   }
 
@@ -931,8 +907,12 @@
     return SCALE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
   }
 
-  // vowel = 'oo'|'ah' → formant synthesis; null → plain sine (for beep click)
+  // vowel param kept for API compatibility but ignored — all tones use clean sine+harmonics
   function scheduleTone(ctx, hz, durationSec, startTime, vowel) {
+    _scheduleToneRaw(ctx, hz, startTime, durationSec);
+  }
+
+  function _scheduleTone_UNUSED_formant(ctx, hz, durationSec, startTime, vowel) {
     const fade = Math.min(0.05, durationSec * 0.15);
 
     if (!vowel) {
@@ -1177,17 +1157,20 @@
       formData.append('song', document.getElementById('songField').value.trim());
       formData.append('self_report', document.getElementById('selfReportField').value.trim());
       formData.append('vocal_difficulty', document.getElementById('vocalDifficultyField').value.trim());
-      const vtdScores = {
-        tightness: +document.getElementById('vtd_tightness').value,
-        dryness: +document.getElementById('vtd_dryness').value,
-        burning: +document.getElementById('vtd_burning').value,
-        soreness: +document.getElementById('vtd_soreness').value,
-        itchiness: +document.getElementById('vtd_itchiness').value,
-        sensitive_throat: +document.getElementById('vtd_sensitive').value,
-        irritation: +document.getElementById('vtd_irritation').value,
-        globus: +document.getElementById('vtd_globus').value,
-      };
-      if (Object.values(vtdScores).some(v => v > 0)) {
+      // Map single dropdown to vtd_scores (spread the selected level across
+      // representative symptoms so the server receives the expected format)
+      const throatLevel = +document.getElementById('throatFeelSelect').value;
+      if (throatLevel > 0) {
+        const vtdScores = {
+          tightness:        throatLevel,
+          dryness:          throatLevel,
+          burning:          Math.max(0, throatLevel - 2),
+          soreness:         Math.max(0, throatLevel - 1),
+          itchiness:        Math.max(0, throatLevel - 2),
+          sensitive_throat: Math.max(0, throatLevel - 1),
+          irritation:       throatLevel,
+          globus:           Math.max(0, throatLevel - 2),
+        };
         formData.append('vtd_scores', JSON.stringify(vtdScores));
       }
       if (recordings.glide)        formData.append('glide', recordings.glide, 'glide.webm');
