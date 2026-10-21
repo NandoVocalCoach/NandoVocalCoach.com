@@ -912,11 +912,11 @@
   }
 
   wireExampleBtn(document.getElementById('glideExampleBtn'),
-    { vowel: 'oo', duration: 6, glideFrom: 196.0, glideTo: 392.0 });
+    { vowel: 'oo', duration: 6, glideFrom: 146.8, glideTo: 392.0 });  // D3 → G4
   wireExampleBtn(document.getElementById('sustainedAhExampleBtnA'),
-    { vowel: 'ah', duration: 3, sustainedHz: 196.0 });  // G3
+    { vowel: 'ah', duration: 3, sustainedHz: 146.8 });  // D3, lower voice
   wireExampleBtn(document.getElementById('sustainedAhExampleBtnB'),
-    { vowel: 'ah', duration: 3, sustainedHz: 392.0 });  // G4
+    { vowel: 'ah', duration: 3, sustainedHz: 293.7 });  // D4, higher voice
 
   // ── Step 1, pitch match. Speech clip personalizes the track to the person's
   // own range, then a 4-note triad call-response runs at that root.
