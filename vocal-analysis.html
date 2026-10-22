@@ -939,18 +939,17 @@
   const LEAD_IN_SEC = 0.3;           // LADDER_LEAD_IN_SEC — recording headroom before first tone
   const PRE_SING_PAUSE_SEC = 0.8;    // LADDER_PRE_SING_PAUSE_SEC
 
-  // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly
+  // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly (9 rungs)
   const RUNG_PATTERNS = [
-    { num: 1,  name: "3-note melody",       semitones: [0, 2, 4],                                             note_sec: 1.0, sing_sec: 5.0 },
-    { num: 2,  name: "Major triad",          semitones: [0, 4, 7],                                             note_sec: 1.0, sing_sec: 5.0 },
-    { num: 3,  name: "5-note major scale",   semitones: [0, 2, 4, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
-    { num: 4,  name: "5-note scale up/down", semitones: [0, 2, 4, 5, 7, 5, 4, 2, 0],                          note_sec: 0.8, sing_sec: 9.0 },
-    { num: 5,  name: "5-note minor scale",   semitones: [0, 2, 3, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
-    { num: 6,  name: "Octave arpeggio up",   semitones: [0, 4, 7, 12],                                         note_sec: 1.0, sing_sec: 6.0 },
-    { num: 7,  name: "Octave arpeggio",      semitones: [0, 4, 7, 12, 7, 4, 0],                               note_sec: 0.9, sing_sec: 8.0 },
-    { num: 8,  name: "Full major scale",     semitones: [0, 2, 4, 5, 7, 9, 11, 12, 11, 9, 7, 5, 4, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
-    { num: 9,  name: "Major pentatonic",     semitones: [0, 2, 4, 7, 9, 7, 4, 2, 0],                          note_sec: 0.9, sing_sec: 9.0 },
-    { num: 10, name: "Natural minor scale",  semitones: [0, 2, 3, 5, 7, 8, 10, 12, 10, 8, 7, 5, 3, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
+    { num: 1, name: "3-note melody",       semitones: [0, 2, 4],                                             note_sec: 1.0, sing_sec: 5.0 },
+    { num: 2, name: "Major triad",          semitones: [0, 4, 7],                                             note_sec: 1.0, sing_sec: 5.0 },
+    { num: 3, name: "5-note major scale",   semitones: [0, 2, 4, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
+    { num: 4, name: "5-note scale up/down", semitones: [0, 2, 4, 5, 7, 5, 4, 2, 0],                          note_sec: 0.8, sing_sec: 9.0 },
+    { num: 5, name: "Octave arpeggio up",   semitones: [0, 4, 7, 12],                                         note_sec: 1.0, sing_sec: 6.0 },
+    { num: 6, name: "Octave arpeggio",      semitones: [0, 4, 7, 12, 7, 4, 0],                               note_sec: 0.9, sing_sec: 8.0 },
+    { num: 7, name: "Full major scale",     semitones: [0, 2, 4, 5, 7, 9, 11, 12, 11, 9, 7, 5, 4, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
+    { num: 8, name: "Major pentatonic",     semitones: [0, 2, 4, 7, 9, 7, 4, 2, 0],                          note_sec: 0.9, sing_sec: 9.0 },
+    { num: 9, name: "Natural minor scale",  semitones: [0, 2, 3, 5, 7, 8, 10, 12, 10, 8, 7, 5, 3, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
   ];
 
   const ladderState = {
@@ -1048,7 +1047,7 @@
   // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
   // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORT_FRAC = 0.13;  // portamento = 13% of note duration
+    const PORT_FRAC = 0.07;  // portamento = 7% of note duration
     const FADE_IN   = 0.04;
     const FADE_OUT  = 0.07;
     const PEAK      = 0.5;
