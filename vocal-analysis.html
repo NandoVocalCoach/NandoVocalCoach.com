@@ -1044,43 +1044,48 @@
   }
 
   // Plays all notes as one connected phrase.
-  // Each note gets its OWN oscillator — no frequency automation across boundaries,
-  // so slides are physically impossible regardless of browser AudioParam behaviour.
-  // 15ms crossfade between adjacent notes makes the join inaudible.
+  // Each note has its own oscillator (no frequency automation = no slides).
+  // Adjacent oscillators OVERLAP by XFADE so amplitude never dips between notes.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const XFADE = 0.015; // crossfade between adjacent notes (s)
-    const FADE_EDGE = 0.04; // fade-in on first note, fade-out on last note (s)
-    const preset = VOWEL_FORMANTS[vowel || 'oo'];
+    const XFADE     = 0.025; // overlap between adjacent notes (s) — each extends 25ms past its boundary
+    const FADE_EDGE = 0.04;  // fade-in on first note, fade-out on last note (s)
+    const PEAK      = 0.45;  // gain during overlap (two notes sum to ~0.5 total)
+    const preset    = VOWEL_FORMANTS[vowel || 'oo'];
+    const n         = hzArray.length;
 
-    for (let i = 0; i < hzArray.length; i++) {
-      const hz        = hzArray[i];
-      const noteStart = startTime + i * noteSec;
-      const noteEnd   = noteStart + noteSec;
-      const fadeIn    = i === 0 ? FADE_EDGE : XFADE;
-      const fadeOut   = i === hzArray.length - 1 ? FADE_EDGE : XFADE;
+    for (let i = 0; i < n; i++) {
+      const hz       = hzArray[i];
+      const nomStart = startTime + i * noteSec;
+      const nomEnd   = startTime + (i + 1) * noteSec;
+
+      // Extend into adjacent notes so crossfades overlap — no amplitude gap
+      const oscStart = i === 0     ? nomStart          : nomStart - XFADE;
+      const oscEnd   = i === n - 1 ? nomEnd            : nomEnd   + XFADE;
+      const fadeIn   = i === 0     ? FADE_EDGE         : XFADE;
+      const fadeOut  = i === n - 1 ? FADE_EDGE         : XFADE;
 
       const source = ctx.createOscillator();
       source.type = 'sawtooth';
       source.frequency.value = hz;
 
       // Light vibrato
-      if (noteSec > 0.4) {
+      if (noteSec > 0.35) {
         const lfo = ctx.createOscillator();
         lfo.type = 'sine';
         lfo.frequency.value = 5.5;
         const lfoGain = ctx.createGain();
-        lfoGain.gain.value = hz * 0.005;
+        lfoGain.gain.value = hz * 0.004;
         lfo.connect(lfoGain);
         lfoGain.connect(source.frequency);
-        lfo.start(noteStart);
-        lfo.stop(noteEnd);
+        lfo.start(oscStart);
+        lfo.stop(oscEnd);
       }
 
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0, noteStart);
-      masterGain.gain.linearRampToValueAtTime(0.5, noteStart + fadeIn);
-      masterGain.gain.setValueAtTime(0.5, noteEnd - fadeOut);
-      masterGain.gain.linearRampToValueAtTime(0, noteEnd);
+      masterGain.gain.setValueAtTime(0, oscStart);
+      masterGain.gain.linearRampToValueAtTime(PEAK, oscStart + fadeIn);
+      masterGain.gain.setValueAtTime(PEAK, oscEnd - fadeOut);
+      masterGain.gain.linearRampToValueAtTime(0, oscEnd);
       masterGain.connect(ctx.destination);
 
       preset.f.forEach((freq, fi) => {
@@ -1095,8 +1100,8 @@
         g.connect(masterGain);
       });
 
-      source.start(noteStart);
-      source.stop(noteEnd);
+      source.start(oscStart);
+      source.stop(oscEnd);
     }
   }
 
