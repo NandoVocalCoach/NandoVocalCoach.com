@@ -1047,7 +1047,7 @@
   // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
   // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORT_FRAC = 0.07;  // portamento = 7% of note duration
+    const PORT_FRAC = 0.05;  // portamento = 5% of note duration
     const FADE_IN   = 0.04;
     const FADE_OUT  = 0.07;
     const PEAK      = 0.5;
