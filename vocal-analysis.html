@@ -1225,11 +1225,11 @@
     startBtn.disabled = true;
     resultEl.style.display = 'none';
 
-    // Reset ladder state
+    // Reset ladder state (keep rootHz if already detected — retake skips speech step)
+    const savedRootHz = ladderState.rootHz;
     ladderState.currentRung = 0;
     ladderState.twoStarCount = 0;
     ladderState.rungResults = [];
-    ladderState.rootHz = null;
     ladderState.exited = false;
 
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1245,35 +1245,16 @@
     }
     if (ctx.state === 'suspended') await ctx.resume();
 
-    // ── Speech check: detect user's range ──
-    statusEl.innerHTML = `
-      <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
-        <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Read this sentence aloud, at the volume you'd normally speak:</div>
-        <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
-        <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">3</strong>…</div>
-      </div>`;
-
-    for (let i = 3; i >= 1; i--) {
-      const el = document.getElementById('speechCountNum');
-      if (el) el.textContent = i;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    const countdownBox = statusEl.querySelector('div');
-    if (countdownBox) countdownBox.style.borderColor = '#22c55e';
-    const countdownLabel = document.getElementById('speechCountdown');
-    if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
-
-    let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
-
-    statusEl.textContent = 'Finding your range…';
-    let detection = await detectRootHz(speechBlob);
-
-    // Retry once if detection failed
-    if (!detection.detected) {
+    // ── Speech check: detect user's range (skip on retake) ──
+    let rootHz;
+    if (savedRootHz) {
+      rootHz = savedRootHz;
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Using your range from before. Starting…</div>`;
+      await new Promise(r => setTimeout(r, 1000));
+    } else {
       statusEl.innerHTML = `
         <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
-          <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Couldn't detect your speaking pitch. Try again in a quieter room, or speak a bit louder.</div>
+          <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Read this sentence aloud, at the volume you'd normally speak:</div>
           <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
           <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">3</strong>…</div>
         </div>`;
@@ -1284,23 +1265,50 @@
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      const retryBox = statusEl.querySelector('div');
-      if (retryBox) retryBox.style.borderColor = '#22c55e';
-      const retryLabel = document.getElementById('speechCountdown');
-      if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
+      const countdownBox = statusEl.querySelector('div');
+      if (countdownBox) countdownBox.style.borderColor = '#22c55e';
+      const countdownLabel = document.getElementById('speechCountdown');
+      if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
-      speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+      let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
       statusEl.textContent = 'Finding your range…';
-      detection = await detectRootHz(speechBlob);
+      let detection = await detectRootHz(speechBlob);
 
       if (!detection.detected) {
-        recordings.pitch_detection_failed = true;
+        statusEl.innerHTML = `
+          <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
+            <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Couldn't detect your speaking pitch. Try again in a quieter room, or speak a bit louder.</div>
+            <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
+            <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">3</strong>…</div>
+          </div>`;
+
+        for (let i = 3; i >= 1; i--) {
+          const el = document.getElementById('speechCountNum');
+          if (el) el.textContent = i;
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        const retryBox = statusEl.querySelector('div');
+        if (retryBox) retryBox.style.borderColor = '#22c55e';
+        const retryLabel = document.getElementById('speechCountdown');
+        if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
+
+        speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+        statusEl.textContent = 'Finding your range…';
+        detection = await detectRootHz(speechBlob);
+
+        if (!detection.detected) recordings.pitch_detection_failed = true;
       }
+
+      rootHz = detection.rootHz;
     }
 
     const rootHz = detection.rootHz;
     ladderState.rootHz = rootHz;
     recordings.pitch_root_hz = rootHz;
+
+    statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Range found. Starting pitch test…</div>`;
+    await new Promise(r => setTimeout(r, 1000));
 
     // ── Ladder: run rungs until exit condition ──
     for (let i = 0; i < RUNG_PATTERNS.length; i++) {
