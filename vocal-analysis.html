@@ -1043,6 +1043,81 @@
     noiseSource.stop(startTime + durationSec);
   }
 
+  // Plays all notes as one connected phrase with portamento glide between each note.
+  // Uses same formant synth as scheduleTone but one continuous oscillator for the whole melody.
+  function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
+    const PORTAMENTO = 0.07; // glide time in seconds at end of each note → next
+    const totalDuration = hzArray.length * noteSec;
+    const fade = 0.04;
+
+    const preset = VOWEL_FORMANTS[vowel || 'oo'];
+    const source = ctx.createOscillator();
+    source.type = 'sawtooth';
+
+    // Schedule frequency with portamento into each next note
+    source.frequency.setValueAtTime(hzArray[0], startTime);
+    for (let i = 0; i < hzArray.length; i++) {
+      const noteStart = startTime + i * noteSec;
+      source.frequency.setValueAtTime(hzArray[i], noteStart);
+      if (i < hzArray.length - 1) {
+        const glideStart = noteStart + noteSec - PORTAMENTO;
+        source.frequency.exponentialRampToValueAtTime(hzArray[i + 1], glideStart + PORTAMENTO);
+      }
+    }
+
+    // Vibrato LFO
+    if (totalDuration > 0.4) {
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 5.5;
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = hzArray[0] * 0.008;
+      lfo.connect(lfoGain);
+      lfoGain.connect(source.frequency);
+      lfo.start(startTime);
+      lfo.stop(startTime + totalDuration);
+    }
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, startTime);
+    masterGain.gain.linearRampToValueAtTime(0.5, startTime + fade);
+    masterGain.gain.setValueAtTime(0.5, startTime + totalDuration - fade);
+    masterGain.gain.linearRampToValueAtTime(0, startTime + totalDuration);
+    masterGain.connect(ctx.destination);
+
+    preset.f.forEach((freq, i) => {
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = freq;
+      bp.Q.value = preset.q[i];
+      const g = ctx.createGain();
+      g.gain.value = preset.gain[i];
+      source.connect(bp);
+      bp.connect(g);
+      g.connect(masterGain);
+    });
+
+    const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * totalDuration), ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 4000;
+    noiseFilter.Q.value = 0.7;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.02;
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+
+    source.start(startTime);
+    source.stop(startTime + totalDuration);
+    noiseSource.start(startTime);
+    noiseSource.stop(startTime + totalDuration);
+  }
+
   function recordFixedClip(stream, durationSec) {
     return new Promise((resolve) => {
       const mimeType = pickMimeType();
@@ -1091,9 +1166,12 @@
     const noteHz = rung.semitones.map(s => rootHz * Math.pow(2, s / 12));
 
     statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
-      <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length} — ${rung.name}</div>
-      Listen to the melody, then sing it back.</div>`;
+      <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length}</div>
+      Listen, then sing it back.</div>`;
     await new Promise(r => setTimeout(r, 1500));
+
+    // Resume AudioContext if browser suspended it between rounds
+    if (ctx.state === 'suspended') await ctx.resume();
 
     const mimeType = pickMimeType();
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
@@ -1106,18 +1184,16 @@
     let t = ctx.currentTime + LEAD_IN_SEC;
     let statusCursorSec = LEAD_IN_SEC;
 
-    // Play all notes connected (no pauses between)
+    // Play connected melody (portamento between notes)
     setTimeout(() => {
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
-        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} — ${rung.name}</div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length}</div>
         Listen…</div>`;
     }, statusCursorSec * 1000);
 
-    for (const hz of noteHz) {
-      scheduleTone(ctx, hz, rung.note_sec, t, 'oo');
-      t += rung.note_sec;
-      statusCursorSec += rung.note_sec;
-    }
+    scheduleConnectedMelody(ctx, noteHz, rung.note_sec, t, 'oo');
+    t += noteHz.length * rung.note_sec;
+    statusCursorSec += noteHz.length * rung.note_sec;
 
     // Pre-sing pause
     t += PRE_SING_PAUSE_SEC;
@@ -1132,7 +1208,7 @@
     const singAtSec = statusCursorSec;
     setTimeout(() => {
       statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">
-        <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Round ${rungIndex + 1} — ${rung.name}</div>
+        <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length}</div>
         Sing it back</div>`;
     }, singAtSec * 1000);
 
@@ -1142,12 +1218,6 @@
     setTimeout(() => { recorder.stop(); }, statusCursorSec * 1000 + 300);
     await stopped;
     return new Blob(chunks, { type: mimeType || 'audio/webm' });
-  }
-
-  function starsHtml(stars) {
-    return [1, 2, 3].map(i =>
-      `<span style="font-size:1.2rem; color:${i <= stars ? '#f59e0b' : '#555'};">★</span>`
-    ).join('');
   }
 
   async function runLadderTest() {
@@ -1258,13 +1328,7 @@
 
       if (stars === 2) ladderState.twoStarCount++;
 
-      // Show star result briefly
       const exitReason = stars <= 1 ? 'exit-low' : (ladderState.twoStarCount >= 3 ? 'exit-twos' : null);
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; padding:12px 16px; border-radius:8px; text-align:center;">
-        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:6px;">Round ${i + 1} — ${RUNG_PATTERNS[i].name}</div>
-        <div>${starsHtml(stars)}</div>
-      </div>`;
-      await new Promise(r => setTimeout(r, 1800));
 
       if (exitReason) {
         ladderState.exited = true;
@@ -1273,23 +1337,16 @@
         break;
       }
 
-      // Brief pause between rungs
-      await new Promise(r => setTimeout(r, 800));
+      // Brief neutral transition
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Got it. Next one…</div>`;
+      await new Promise(r => setTimeout(r, 900));
     }
 
     // Save ladder results for submit
     recordings.pitch_ladder_results = JSON.stringify(ladderState.rungResults);
 
-    // Show rung summary
-    const summaryRows = ladderState.rungResults.map(r =>
-      `<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.07);">
-        <span style="font-size:0.8rem; color:var(--muted);">Round ${r.rung}: ${r.rung_name}</span>
-        <span>${starsHtml(r.stars)}</span>
-      </div>`
-    ).join('');
-
     resultEl.style.display = 'block';
-    resultEl.innerHTML = `<div style="margin-top:8px;">${summaryRows}</div>`;
+    resultEl.innerHTML = `<div style="font-size:0.9rem; color:var(--muted); margin-top:6px;">Pitch test complete — ${ladderState.rungResults.length} round${ladderState.rungResults.length !== 1 ? 's' : ''} recorded.</div>`;
 
     statusEl.textContent = '';
     startBtn.textContent = 'Retake';
