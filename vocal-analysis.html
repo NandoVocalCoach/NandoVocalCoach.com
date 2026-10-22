@@ -939,18 +939,24 @@
   const LEAD_IN_SEC = 0.3;           // LADDER_LEAD_IN_SEC — recording headroom before first tone
   const PRE_SING_PAUSE_SEC = 0.8;    // LADDER_PRE_SING_PAUSE_SEC
 
-  // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly (9 rungs)
+  // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly (7 rungs)
+  // Notes get progressively faster. No "same pattern but longer" pairs.
   const RUNG_PATTERNS = [
-    { num: 1, name: "3-note melody",       semitones: [0, 2, 4],                                             note_sec: 1.0, sing_sec: 5.0 },
-    { num: 2, name: "Major triad",          semitones: [0, 4, 7],                                             note_sec: 1.0, sing_sec: 5.0 },
-    { num: 3, name: "5-note major scale",   semitones: [0, 2, 4, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
-    { num: 4, name: "5-note scale up/down", semitones: [0, 2, 4, 5, 7, 5, 4, 2, 0],                          note_sec: 0.8, sing_sec: 9.0 },
-    { num: 5, name: "Octave arpeggio up",   semitones: [0, 4, 7, 12],                                         note_sec: 1.0, sing_sec: 6.0 },
-    { num: 6, name: "Octave arpeggio",      semitones: [0, 4, 7, 12, 7, 4, 0],                               note_sec: 0.9, sing_sec: 8.0 },
-    { num: 7, name: "Full major scale",     semitones: [0, 2, 4, 5, 7, 9, 11, 12, 11, 9, 7, 5, 4, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
-    { num: 8, name: "Major pentatonic",     semitones: [0, 2, 4, 7, 9, 7, 4, 2, 0],                          note_sec: 0.9, sing_sec: 9.0 },
-    { num: 9, name: "Natural minor scale",  semitones: [0, 2, 3, 5, 7, 8, 10, 12, 10, 8, 7, 5, 3, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
+    { num: 1, name: "3-note melody",       semitones: [0, 2, 4],                         note_sec: 1.00, sing_sec: 4.5 },
+    { num: 2, name: "Major triad",          semitones: [0, 4, 7],                         note_sec: 0.90, sing_sec: 4.5 },
+    { num: 3, name: "5-note major scale",   semitones: [0, 2, 4, 5, 7],                   note_sec: 0.80, sing_sec: 5.5 },
+    { num: 4, name: "Octave arpeggio",      semitones: [0, 4, 7, 12],                     note_sec: 0.75, sing_sec: 5.0 },
+    { num: 5, name: "5-note scale up/down", semitones: [0, 2, 4, 5, 7, 5, 4, 2, 0],      note_sec: 0.60, sing_sec: 8.0 },
+    { num: 6, name: "Full octave scale",    semitones: [0, 2, 4, 5, 7, 9, 11, 12],       note_sec: 0.55, sing_sec: 7.0 },
+    { num: 7, name: "Leaping melody",       semitones: [0, 5, 9, 2, 7, 12],              note_sec: 0.65, sing_sec: 6.0 },
   ];
+
+  // Client-side tier from ladder results (mirrors LADDER_TIER_MAP in server.py)
+  function computeTierFromRung(rungReached) {
+    if (rungReached >= 5) return 'working_range';
+    if (rungReached >= 3) return 'training_range';
+    return 'calibration';
+  }
 
   const ladderState = {
     currentRung: 0,
@@ -1047,7 +1053,7 @@
   // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
   // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORT_FRAC = 0.05;  // portamento = 5% of note duration
+    const PORT_FRAC = 0.02;  // portamento = 2% of note duration
     const FADE_IN   = 0.04;
     const FADE_OUT  = 0.07;
     const PEAK      = 0.5;
@@ -1397,6 +1403,11 @@
         // Replace the entire form section with a waiting panel
         const formSection = document.getElementById('form');
         const submittedEmail = document.getElementById('emailField').value.trim();
+        // Compute tier from pitch test to drive the exercise CTA
+        const rungReached = ladderState.rungResults.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
+        const tier = computeTierFromRung(rungReached);
+        const tierLabel = { calibration: 'foundation', training_range: 'training', working_range: 'working range' }[tier];
+        const exerciseUrl = `https://api.nandovocalcoach.com/dev/exercise?tier=${tier}`;
         formSection.innerHTML = `
           <div style="padding: 10px 0;">
             <div style="font-size: 2.2rem; margin-bottom: 16px;">🎙</div>
@@ -1405,10 +1416,10 @@
             <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">Check your inbox at <strong style="color:white;">${submittedEmail}</strong> — your results and personalized exercise link will be there.</p>
             <div style="background: rgba(255,85,0,0.1); border: 1px solid rgba(255,85,0,0.25); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
               <p style="color: white; font-weight: 700; margin: 0 0 6px; font-size: 1rem;">Don't want to wait?</p>
-              <p style="color: #9CA3AF; font-size: 0.88rem; margin: 0 0 14px;">Exercise 1 is free. Your personalized program will be in the email.</p>
-              <a href="https://api.nandovocalcoach.com/dev/exercise"
+              <p style="color: #9CA3AF; font-size: 0.88rem; margin: 0 0 14px;">Your first exercise is matched to your ${tierLabel} level. Full personalized program in the email.</p>
+              <a href="${exerciseUrl}"
                  style="background: #FF5500; color: white; padding: 11px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-block;">
-                Start Exercise 1 →
+                Start Your Exercises →
               </a>
             </div>
             <p style="font-size: 0.82rem; color: #6B7280;">Can't find it? Check your spam folder, or email <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>.</p>
