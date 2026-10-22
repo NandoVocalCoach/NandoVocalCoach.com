@@ -1043,10 +1043,9 @@
     noiseSource.stop(startTime + durationSec);
   }
 
-  // Plays all notes as one connected phrase with portamento glide between each note.
-  // Uses same formant synth as scheduleTone but one continuous oscillator for the whole melody.
+  // Plays all notes as one connected phrase — single amplitude envelope, no gaps.
+  // Pitch changes are instantaneous at each note boundary (legato, not glide).
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORTAMENTO = 0.07; // glide time in seconds at end of each note → next
     const totalDuration = hzArray.length * noteSec;
     const fade = 0.04;
 
@@ -1054,15 +1053,10 @@
     const source = ctx.createOscillator();
     source.type = 'sawtooth';
 
-    // Schedule frequency with portamento into each next note
+    // Hard pitch change at each note boundary — no glide
     source.frequency.setValueAtTime(hzArray[0], startTime);
-    for (let i = 0; i < hzArray.length; i++) {
-      const noteStart = startTime + i * noteSec;
-      source.frequency.setValueAtTime(hzArray[i], noteStart);
-      if (i < hzArray.length - 1) {
-        const glideStart = noteStart + noteSec - PORTAMENTO;
-        source.frequency.exponentialRampToValueAtTime(hzArray[i + 1], glideStart + PORTAMENTO);
-      }
+    for (let i = 1; i < hzArray.length; i++) {
+      source.frequency.setValueAtTime(hzArray[i], startTime + i * noteSec);
     }
 
     // Vibrato LFO
@@ -1078,6 +1072,7 @@
       lfo.stop(startTime + totalDuration);
     }
 
+    // Single amplitude envelope — fades in at start, out at end only (no dips between notes)
     const masterGain = ctx.createGain();
     masterGain.gain.setValueAtTime(0, startTime);
     masterGain.gain.linearRampToValueAtTime(0.5, startTime + fade);
