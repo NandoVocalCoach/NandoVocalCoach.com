@@ -1044,65 +1044,59 @@
   }
 
   // Plays all notes as one connected phrase.
-  // Each note has its own oscillator (no frequency automation = no slides).
-  // Adjacent oscillators OVERLAP by XFADE so amplitude never dips between notes.
+  // Single oscillator per melody phrase.
+  // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
+  // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const XFADE     = 0.025; // overlap between adjacent notes (s) — each extends 25ms past its boundary
-    const FADE_EDGE = 0.04;  // fade-in on first note, fade-out on last note (s)
-    const PEAK      = 0.45;  // gain during overlap (two notes sum to ~0.5 total)
+    const PORT_FRAC = 0.13;  // portamento = 13% of note duration
+    const FADE_IN   = 0.04;
+    const FADE_OUT  = 0.07;
+    const PEAK      = 0.5;
     const preset    = VOWEL_FORMANTS[vowel || 'oo'];
     const n         = hzArray.length;
+    const endTime   = startTime + n * noteSec;
 
+    const source = ctx.createOscillator();
+    source.type = 'sawtooth';
+
+    // Schedule frequency: steady hold → brief portamento at tail of each note
+    source.frequency.setValueAtTime(hzArray[0], startTime);
     for (let i = 0; i < n; i++) {
-      const hz       = hzArray[i];
-      const nomStart = startTime + i * noteSec;
-      const nomEnd   = startTime + (i + 1) * noteSec;
+      const hz        = hzArray[i];
+      const noteStart = startTime + i * noteSec;
+      const noteEnd   = startTime + (i + 1) * noteSec;
+      const portStart = noteEnd - noteSec * PORT_FRAC;
 
-      // Extend into adjacent notes so crossfades overlap — no amplitude gap
-      const oscStart = i === 0     ? nomStart          : nomStart - XFADE;
-      const oscEnd   = i === n - 1 ? nomEnd            : nomEnd   + XFADE;
-      const fadeIn   = i === 0     ? FADE_EDGE         : XFADE;
-      const fadeOut  = i === n - 1 ? FADE_EDGE         : XFADE;
-
-      const source = ctx.createOscillator();
-      source.type = 'sawtooth';
-      source.frequency.value = hz;
-
-      // Light vibrato
-      if (noteSec > 0.35) {
-        const lfo = ctx.createOscillator();
-        lfo.type = 'sine';
-        lfo.frequency.value = 5.5;
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = hz * 0.004;
-        lfo.connect(lfoGain);
-        lfoGain.connect(source.frequency);
-        lfo.start(oscStart);
-        lfo.stop(oscEnd);
+      source.frequency.setValueAtTime(hz, noteStart);       // hold pitch here
+      if (i < n - 1) {
+        source.frequency.setValueAtTime(hz, portStart);     // anchor before ramp
+        source.frequency.exponentialRampToValueAtTime(hzArray[i + 1], noteEnd); // slide to next
       }
-
-      const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0, oscStart);
-      masterGain.gain.linearRampToValueAtTime(PEAK, oscStart + fadeIn);
-      masterGain.gain.setValueAtTime(PEAK, oscEnd - fadeOut);
-      masterGain.gain.linearRampToValueAtTime(0, oscEnd);
-      masterGain.connect(ctx.destination);
-
-      preset.f.forEach((freq, fi) => {
-        const bp = ctx.createBiquadFilter();
-        bp.type = 'bandpass';
-        bp.frequency.value = freq;
-        bp.Q.value = preset.q[fi];
-        const g = ctx.createGain();
-        g.gain.value = preset.gain[fi];
-        source.connect(bp);
-        bp.connect(g);
-        g.connect(masterGain);
-      });
-
-      source.start(oscStart);
-      source.stop(oscEnd);
     }
+
+    // Amplitude envelope: fade in → sustain → fade out
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, startTime);
+    masterGain.gain.linearRampToValueAtTime(PEAK, startTime + FADE_IN);
+    masterGain.gain.setValueAtTime(PEAK, endTime - FADE_OUT);
+    masterGain.gain.linearRampToValueAtTime(0, endTime);
+
+    // Formant filters
+    preset.f.forEach((freq, fi) => {
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = freq;
+      bp.Q.value = preset.q[fi];
+      const g = ctx.createGain();
+      g.gain.value = preset.gain[fi];
+      source.connect(bp);
+      bp.connect(g);
+      g.connect(masterGain);
+    });
+
+    masterGain.connect(ctx.destination);
+    source.start(startTime);
+    source.stop(endTime);
   }
 
   function recordFixedClip(stream, durationSec) {
