@@ -1043,74 +1043,61 @@
     noiseSource.stop(startTime + durationSec);
   }
 
-  // Plays all notes as one connected phrase — single amplitude envelope, no gaps.
-  // Pitch changes are instantaneous at each note boundary (legato, not glide).
+  // Plays all notes as one connected phrase.
+  // Each note gets its OWN oscillator — no frequency automation across boundaries,
+  // so slides are physically impossible regardless of browser AudioParam behaviour.
+  // 15ms crossfade between adjacent notes makes the join inaudible.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const totalDuration = hzArray.length * noteSec;
-    const fade = 0.04;
-
+    const XFADE = 0.015; // crossfade between adjacent notes (s)
+    const FADE_EDGE = 0.04; // fade-in on first note, fade-out on last note (s)
     const preset = VOWEL_FORMANTS[vowel || 'oo'];
-    const source = ctx.createOscillator();
-    source.type = 'sawtooth';
 
-    // Hard pitch change at each note boundary — no glide
-    source.frequency.setValueAtTime(hzArray[0], startTime);
-    for (let i = 1; i < hzArray.length; i++) {
-      source.frequency.setValueAtTime(hzArray[i], startTime + i * noteSec);
+    for (let i = 0; i < hzArray.length; i++) {
+      const hz        = hzArray[i];
+      const noteStart = startTime + i * noteSec;
+      const noteEnd   = noteStart + noteSec;
+      const fadeIn    = i === 0 ? FADE_EDGE : XFADE;
+      const fadeOut   = i === hzArray.length - 1 ? FADE_EDGE : XFADE;
+
+      const source = ctx.createOscillator();
+      source.type = 'sawtooth';
+      source.frequency.value = hz;
+
+      // Light vibrato
+      if (noteSec > 0.4) {
+        const lfo = ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 5.5;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = hz * 0.005;
+        lfo.connect(lfoGain);
+        lfoGain.connect(source.frequency);
+        lfo.start(noteStart);
+        lfo.stop(noteEnd);
+      }
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0, noteStart);
+      masterGain.gain.linearRampToValueAtTime(0.5, noteStart + fadeIn);
+      masterGain.gain.setValueAtTime(0.5, noteEnd - fadeOut);
+      masterGain.gain.linearRampToValueAtTime(0, noteEnd);
+      masterGain.connect(ctx.destination);
+
+      preset.f.forEach((freq, fi) => {
+        const bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = freq;
+        bp.Q.value = preset.q[fi];
+        const g = ctx.createGain();
+        g.gain.value = preset.gain[fi];
+        source.connect(bp);
+        bp.connect(g);
+        g.connect(masterGain);
+      });
+
+      source.start(noteStart);
+      source.stop(noteEnd);
     }
-
-    // Vibrato LFO
-    if (totalDuration > 0.4) {
-      const lfo = ctx.createOscillator();
-      lfo.type = 'sine';
-      lfo.frequency.value = 5.5;
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = hzArray[0] * 0.008;
-      lfo.connect(lfoGain);
-      lfoGain.connect(source.frequency);
-      lfo.start(startTime);
-      lfo.stop(startTime + totalDuration);
-    }
-
-    // Single amplitude envelope — fades in at start, out at end only (no dips between notes)
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0, startTime);
-    masterGain.gain.linearRampToValueAtTime(0.5, startTime + fade);
-    masterGain.gain.setValueAtTime(0.5, startTime + totalDuration - fade);
-    masterGain.gain.linearRampToValueAtTime(0, startTime + totalDuration);
-    masterGain.connect(ctx.destination);
-
-    preset.f.forEach((freq, i) => {
-      const bp = ctx.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.frequency.value = freq;
-      bp.Q.value = preset.q[i];
-      const g = ctx.createGain();
-      g.gain.value = preset.gain[i];
-      source.connect(bp);
-      bp.connect(g);
-      g.connect(masterGain);
-    });
-
-    const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * totalDuration), ctx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = noiseBuffer;
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.value = 4000;
-    noiseFilter.Q.value = 0.7;
-    const noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.02;
-    noiseSource.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(masterGain);
-
-    source.start(startTime);
-    source.stop(startTime + totalDuration);
-    noiseSource.start(startTime);
-    noiseSource.stop(startTime + totalDuration);
   }
 
   function recordFixedClip(stream, durationSec) {
