@@ -353,14 +353,23 @@
   <!-- Recording steps -->
   <div style="margin-bottom: 48px;">
     <div class="section-title">Recording <span>Steps</span></div>
-    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">4 short guided steps, right here in your browser. Hear an example, record, done.</p>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 16px;">4 short guided steps, right here in your browser. Hear an example, record, done.</p>
+
+    <!-- Progress indicator -->
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+      <div style="flex:1; background:rgba(255,255,255,0.08); border-radius:100px; height:6px; overflow:hidden;">
+        <div id="stepsProgressFill" style="width:0%; height:100%; background:#FF5500; border-radius:100px; transition:width 0.4s ease;"></div>
+      </div>
+      <span id="stepsProgressText" style="font-size:0.82rem; color:var(--muted); white-space:nowrap; min-width:68px; text-align:right;">0 of 2 done</span>
+    </div>
+
     <div class="steps">
 
       <div class="step" id="stepSustained">
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Sustained "ah"</h3>
-          <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Just hold it, no technique needed.</p>
+          <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Normal singing volume — not a whisper, not louder than usual. Mic at arm's length, not up close.</p>
 
           <div class="rec-widget-box">
             <button id="sustainedAhExampleBtnA" class="rec-btn rec-btn-outline" type="button">▶ Example A (lower voice)</button>
@@ -380,7 +389,7 @@
         <div class="step-num">2</div>
         <div class="step-body">
           <h3>Glide: low to high to low</h3>
-          <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping.</p>
+          <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping. Same volume as you'd sing normally — no need to push.</p>
 
           <div class="rec-widget-box">
             <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
@@ -438,6 +447,15 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- Ready banner — shown when both required steps are done -->
+    <div id="readyBanner" style="display:none; background:rgba(255,85,0,0.1); border:1px solid rgba(255,85,0,0.35); border-radius:10px; padding:18px 20px; margin-top:12px; text-align:center;">
+      <p style="color:white; font-weight:700; font-size:1rem; margin:0 0 12px;">Your recordings are ready.</p>
+      <button onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'}); setTimeout(()=>document.getElementById('nameField').focus(),400);"
+              style="background:#FF5500; color:white; border:none; padding:11px 28px; border-radius:6px; font-weight:700; font-size:0.95rem; cursor:pointer;">
+        Enter your details and get your results ↓
+      </button>
     </div>
   </div>
 
@@ -497,8 +515,9 @@
 
   <!-- Form -->
   <div class="form-section" id="form">
-    <h2>Get Your Free Vocal Analysis</h2>
-    <p id="submitIntro">Fill in your name and email, then submit. PDF arrives in your inbox shortly after.</p>
+    <div style="font-size:1.8rem; margin-bottom:10px;">🎙</div>
+    <h2>One last step</h2>
+    <p id="submitIntro">Enter your name and email to receive your results right here and in your inbox.</p>
 
     <form id="vocalAnalysisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
       <div style="margin-bottom: 14px;">
@@ -643,6 +662,29 @@
   function updateSubmitState() {
     const submitBtn = document.getElementById('submitBtn');
     if (!submitBtn) return;
+
+    const doneRequired = (recordings.sustained_ah ? 1 : 0) + (recordings.glide ? 1 : 0);
+
+    // Progress bar
+    const fill = document.getElementById('stepsProgressFill');
+    const text = document.getElementById('stepsProgressText');
+    if (fill && text) {
+      fill.style.width = Math.round((doneRequired / 2) * 100) + '%';
+      if (doneRequired === 2) {
+        text.textContent = '✓ Ready';
+        text.style.color = '#FF5500';
+      } else {
+        text.textContent = `${doneRequired} of 2 done`;
+        text.style.color = '';
+      }
+    }
+
+    // Mark completed steps with orange border
+    if (recordings.sustained_ah)        document.getElementById('stepSustained')?.classList.add('step-complete');
+    if (recordings.glide)               document.getElementById('stepGlide')?.classList.add('step-complete');
+    if (recordings.pitch_ladder_results) document.getElementById('stepPitch')?.classList.add('step-complete');
+    if (recordings.song_clip)           document.getElementById('stepSong')?.classList.add('step-complete');
+
     const missing = [];
     if (!recordings.glide) missing.push('glide');
     if (!recordings.sustained_ah) missing.push('sustained "ah"');
@@ -650,6 +692,13 @@
     if (missing.length === 0) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Get My Free Vocal Analysis →';
+
+      // Show ready banner the first time both required steps are done
+      const banner = document.getElementById('readyBanner');
+      if (banner && banner.style.display === 'none') {
+        banner.style.display = 'block';
+        setTimeout(() => banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+      }
     } else {
       submitBtn.disabled = true;
       submitBtn.textContent = `Complete: ${missing.join(', ')}`;
@@ -755,7 +804,7 @@
     resultEl: document.getElementById('glideResult'),
     previewEl: document.getElementById('glidePreview'),
     maxSec: 20,
-    onComplete: () => { unlockStep('stepPitch'); unlockStep('stepSong'); },
+    onComplete: () => { unlockStep('stepPitch'); },
   });
   setupRecordStep({
     key: 'song_clip',
@@ -1283,7 +1332,15 @@
         statusEl.textContent = 'Finding your range…';
         detection = await detectRootHz(speechBlob);
 
-        if (!detection.detected) recordings.pitch_detection_failed = true;
+        if (!detection.detected) {
+          statusEl.innerHTML = `<div style="background:rgba(220,38,38,0.12); border:1px solid #dc2626; color:var(--text); font-size:0.95rem; padding:14px 16px; border-radius:8px;">
+            <strong>Voice range not detected.</strong> Make sure your microphone is working and you're in a quiet room, then try again.
+          </div>`;
+          startBtn.textContent = '🎤 Try Again';
+          startBtn.disabled = false;
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
       }
 
       rootHz = detection.rootHz;
@@ -1296,10 +1353,12 @@
     await new Promise(r => setTimeout(r, 1000));
 
     // ── Ladder: run rungs until exit condition ──
+    const pitchBlobs = [];  // collect for coach email
     for (let i = 0; i < RUNG_PATTERNS.length; i++) {
       ladderState.currentRung = i;
 
       const blob = await runRung(ctx, stream, rootHz, i);
+      pitchBlobs.push(blob);
 
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Checking…</div>`;
 
@@ -1338,6 +1397,12 @@
     // Save ladder results for submit
     recordings.pitch_ladder_results = JSON.stringify(ladderState.rungResults);
 
+    // Concatenate all rung audio blobs → single file for coach email
+    if (pitchBlobs.length > 0) {
+      const mimeType = pitchBlobs[0].type || 'audio/webm';
+      recordings.pitch_test_audio = new Blob(pitchBlobs, { type: mimeType });
+    }
+
     resultEl.style.display = 'block';
     resultEl.innerHTML = `<div style="font-size:0.9rem; color:var(--muted); margin-top:6px;">Pitch test complete — ${ladderState.rungResults.length} round${ladderState.rungResults.length !== 1 ? 's' : ''} recorded.</div>`;
 
@@ -1345,6 +1410,7 @@
     startBtn.textContent = 'Retake';
     startBtn.disabled = false;
     updateSubmitState();
+    unlockStep('stepSong');
   }
 
   if (startBtn) startBtn.addEventListener('click', runLadderTest);
@@ -1387,8 +1453,9 @@
         const songName = recordings.song_clip instanceof File ? recordings.song_clip.name : 'song_clip.webm';
         formData.append('song_clip', recordings.song_clip, songName);
       }
-      if (recordings.pitch_root_hz)     formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
+      if (recordings.pitch_root_hz)       formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
       if (recordings.pitch_ladder_results) formData.append('pitch_ladder_results', recordings.pitch_ladder_results);
+      if (recordings.pitch_test_audio)    formData.append('pitch_test_audio', recordings.pitch_test_audio, 'pitch_test.webm');
 
       try {
         const resp = await fetch(SUBMIT_URL, { method: 'POST', body: formData });
@@ -1397,34 +1464,90 @@
           try { message = (await resp.json()).message; } catch (_) {}
           throw new Error(message || `Server responded ${resp.status}`);
         }
+        const respData = await resp.json();
+        const runId = respData.run_id;
+
         if (micStream) micStream.getTracks().forEach((track) => track.stop());
         if (typeof fbq === 'function') fbq('track', 'Lead');
 
-        // Replace the entire form section with a waiting panel
         const formSection = document.getElementById('form');
         const submittedEmail = document.getElementById('emailField').value.trim();
-        // Compute tier from pitch test to drive the exercise CTA
         const rungReached = ladderState.rungResults.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
         const tier = computeTierFromRung(rungReached);
-        const tierLabel = { calibration: 'foundation', training_range: 'training', working_range: 'working range' }[tier];
         const exerciseUrl = `https://api.nandovocalcoach.com/dev/exercise?tier=${tier}`;
+
+        // Show loading state while polling
         formSection.innerHTML = `
-          <div style="padding: 10px 0;">
+          <div id="analysisWaiting" style="padding: 10px 0; text-align: center;">
             <div style="font-size: 2.2rem; margin-bottom: 16px;">🎙</div>
-            <h2 style="margin-bottom: 12px;">We're analyzing your voice.</h2>
-            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 8px;">Real audio analysis, not a quiz. Your PDF will be ready in <strong style="color:white;">10-15 minutes</strong>.</p>
-            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">Check your inbox at <strong style="color:white;">${submittedEmail}</strong> — your results and personalized exercise link will be there.</p>
-            <div style="background: rgba(255,85,0,0.1); border: 1px solid rgba(255,85,0,0.25); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-              <p style="color: white; font-weight: 700; margin: 0 0 6px; font-size: 1rem;">Don't want to wait?</p>
-              <p style="color: #9CA3AF; font-size: 0.88rem; margin: 0 0 14px;">Your first exercise is matched to your ${tierLabel} level. Full personalized program in the email.</p>
-              <a href="${exerciseUrl}"
-                 style="background: #FF5500; color: white; padding: 11px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-block;">
-                Start Your Exercises →
-              </a>
+            <h2 style="margin-bottom: 12px;">Analyzing your voice...</h2>
+            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">
+              Real audio processing, not a quiz. Usually takes about a minute.
+            </p>
+            <div id="analysisDots" style="display:flex; justify-content:center; gap:8px; margin-bottom: 24px;">
+              <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:1;display:inline-block;"></span>
+              <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:0.4;display:inline-block;"></span>
+              <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:0.4;display:inline-block;"></span>
             </div>
-            <p style="font-size: 0.82rem; color: #6B7280;">Can't find it? Check your spam folder, or email <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>.</p>
+            <p style="font-size: 0.82rem; color: #6B7280;">
+              A full report will also land in <strong style="color:#9CA3AF;">${submittedEmail}</strong>
+            </p>
           </div>
+          <div id="analysisResults" style="display:none;"></div>
         `;
+
+        // Animate the dots
+        let dotFrame = 0;
+        const dots = formSection.querySelectorAll('.dot');
+        const dotTimer = setInterval(() => {
+          dotFrame = (dotFrame + 1) % dots.length;
+          dots.forEach((d, i) => d.style.opacity = i === dotFrame ? '1' : '0.4');
+        }, 400);
+
+        // Poll /status/<run_id>
+        const STATUS_URL = `${API_BASE}/status/${runId}`;
+        const pollTimer = setInterval(async () => {
+          try {
+            const sr = await fetch(STATUS_URL);
+            if (!sr.ok) return;
+            const data = await sr.json();
+
+            if (data.status === 'done') {
+              clearInterval(pollTimer);
+              clearInterval(dotTimer);
+              showAnalysisResults(data, submittedEmail, exerciseUrl, formSection);
+            } else if (data.status === 'error') {
+              clearInterval(pollTimer);
+              clearInterval(dotTimer);
+              const waiting = document.getElementById('analysisWaiting');
+              if (waiting) waiting.innerHTML = `
+                <h2 style="margin-bottom:12px;">Something went wrong</h2>
+                <p style="color:#9CA3AF;">${data.message || 'Please try again or email nando@nandovocalcoach.com'}</p>
+              `;
+            }
+          } catch (_) { /* network blip — keep polling */ }
+        }, 5000);
+
+        // Fallback: if still processing after 8 min, show email message
+        setTimeout(() => {
+          clearInterval(pollTimer);
+          clearInterval(dotTimer);
+          const waiting = document.getElementById('analysisWaiting');
+          if (waiting && waiting.style.display !== 'none') {
+            waiting.innerHTML = `
+              <h2 style="margin-bottom:12px;">Still processing...</h2>
+              <p style="color:#9CA3AF;font-size:0.98rem;margin-bottom:16px;">
+                This is taking longer than usual. Check your inbox at
+                <strong style="color:white;">${submittedEmail}</strong> —
+                your results will arrive there once the analysis completes.
+              </p>
+              <p style="font-size:0.82rem;color:#6B7280;">
+                Questions? <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>
+              </p>
+            `;
+          }
+        }, 8 * 60 * 1000);
+
       } catch (err) {
         submitStatus.textContent = err.message && err.message !== 'Failed to fetch'
           ? err.message
@@ -1433,6 +1556,93 @@
       }
     });
   }
+
+  function showAnalysisResults(data, submittedEmail, exerciseUrl, formSection) {
+    const waiting = document.getElementById('analysisWaiting');
+    if (waiting) waiting.style.display = 'none';
+
+    const tierLabels = { calibration: 'Foundation', training_range: 'Training', working_range: 'Working Range' };
+    const tierLabel = tierLabels[data.skill_tier] || '';
+
+    // Voice profile grid
+    let profileHtml = '';
+    if (data.profile) {
+      const entries = Object.entries(data.profile);
+      profileHtml = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
+          ${entries.map(([key, val]) => `
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;">
+              <div style="font-size:0.78rem;color:#9CA3AF;margin-bottom:4px;">${key}</div>
+              <div style="font-weight:700;font-size:1rem;color:${val.color};">${val.value}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Tips list
+    let tipsHtml = '';
+    if (data.tips && data.tips.length) {
+      tipsHtml = `
+        <div style="margin-bottom:24px;">
+          <p style="font-weight:700;color:white;margin-bottom:10px;">What this means for you:</p>
+          <ul style="margin:0;padding-left:18px;color:#D1D5DB;font-size:0.93rem;line-height:1.7;">
+            ${data.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    // Pitch graph
+    let graphHtml = '';
+    if (data.pitch_graph_b64) {
+      graphHtml = `
+        <div style="margin-bottom:24px;">
+          <p style="font-weight:700;color:white;margin-bottom:10px;">Your pitch range:</p>
+          <img src="data:image/png;base64,${data.pitch_graph_b64}"
+               style="width:100%;border-radius:8px;display:block;" alt="Pitch range graph" />
+        </div>
+      `;
+    }
+
+    const resultsEl = document.getElementById('analysisResults');
+    resultsEl.style.display = 'block';
+    resultsEl.innerHTML = `
+      <div style="padding:10px 0;">
+        <div style="font-size:2.2rem;margin-bottom:12px;">🎙</div>
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:#FF5500;text-transform:uppercase;margin-bottom:6px;">
+          Your Voice Pattern
+        </div>
+        <h2 style="font-size:1.8rem;margin-bottom:8px;color:white;">${data.label || data.pattern}</h2>
+        ${tierLabel ? `<div style="display:inline-block;background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.3);border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#FF5500;font-weight:700;margin-bottom:20px;">Level: ${tierLabel}</div>` : ''}
+        <p style="color:#D1D5DB;font-size:0.95rem;line-height:1.7;margin-bottom:24px;">${data.explanation || ''}</p>
+
+        ${profileHtml}
+        ${graphHtml}
+        ${tipsHtml}
+
+        <div style="background:rgba(255,85,0,0.1);border:1px solid rgba(255,85,0,0.25);border-radius:8px;padding:20px;margin-bottom:20px;">
+          <p style="color:white;font-weight:700;margin:0 0 8px;font-size:1rem;">Ready to fix it?</p>
+          <p style="color:#9CA3AF;font-size:0.88rem;margin:0 0 14px;">
+            Start with exercises matched to your level right now.
+          </p>
+          <a href="${exerciseUrl}"
+             style="background:#FF5500;color:white;padding:11px 24px;border-radius:6px;font-weight:700;font-size:0.95rem;text-decoration:none;display:inline-block;">
+            Start Your Exercises →
+          </a>
+        </div>
+
+        <p style="font-size:0.82rem;color:#6B7280;margin-bottom:6px;">
+          A full PDF report was also sent to <strong style="color:#9CA3AF;">${submittedEmail}</strong>.
+        </p>
+        <p style="font-size:0.82rem;color:#6B7280;">
+          Questions? <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>
+        </p>
+      </div>
+    `;
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
 })();
 </script>
 
