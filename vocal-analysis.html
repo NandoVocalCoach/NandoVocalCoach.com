@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Get a free Vocal Analysis. Record 4 short guided steps right in your browser, receive a full report, your pattern, pitch graph, and a clear direction. From Nando Vocal Coach.">
+  <meta name="description" content="Get a free Vocal Analysis. Record 4 short guided steps right in your browser and receive a full report: your pattern, pitch graph, skill tier, and a clear direction. From Nando Vocal Coach.">
   <link rel="canonical" href="https://nandovocalcoach.com/vocal-analysis">
   <title>Free Vocal Analysis | Nando Vocal Coach</title>
 
@@ -350,33 +350,14 @@
     </div>
   </div>
 
-  <!-- What to send -->
+  <!-- Recording steps -->
   <div style="margin-bottom: 48px;">
-    <div class="section-title">What to <span>Send</span></div>
-    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">Everything happens right here. Hear an example, record, done. Nothing to upload.</p>
+    <div class="section-title">Recording <span>Steps</span></div>
+    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">4 short guided steps, right here in your browser. Hear an example, record, done.</p>
     <div class="steps">
 
-      <div class="step" id="stepGlide">
+      <div class="step" id="stepSustained">
         <div class="step-num">1</div>
-        <div class="step-body">
-          <h3>Glide: low to high to low</h3>
-          <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping.</p>
-
-          <div class="rec-widget-box">
-            <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
-            <button id="glideStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
-            <button id="glideStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
-            <div id="glideStatus" class="rec-status"></div>
-            <div id="glideResult" style="display:none;">
-              <p class="rec-done-msg">✓ Recording captured</p>
-              <audio id="glidePreview" controls style="width:100%; margin: 10px 0;"></audio>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="step step-locked" id="stepSustained">
-        <div class="step-num">2</div>
         <div class="step-body">
           <h3>Sustained "ah"</h3>
           <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Just hold it, no technique needed.</p>
@@ -395,11 +376,30 @@
         </div>
       </div>
 
+      <div class="step step-locked" id="stepGlide">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Glide: low to high to low</h3>
+          <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping.</p>
+
+          <div class="rec-widget-box">
+            <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
+            <button id="glideStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
+            <button id="glideStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
+            <div id="glideStatus" class="rec-status"></div>
+            <div id="glideResult" style="display:none;">
+              <p class="rec-done-msg">✓ Recording captured</p>
+              <audio id="glidePreview" controls style="width:100%; margin: 10px 0;"></audio>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="step step-locked" id="stepPitch">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h3>Pitch match <span style="font-size:0.75rem; font-weight:500; color:var(--muted); font-family:'Montserrat',sans-serif;">(optional)</span></h3>
-          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear 4 notes, one at a time — listen to each one, then sing it back when you see the green cue.</p>
+          <h3>Pitch Matching</h3>
+          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear a short melody — sing it back when you see the green cue.</p>
 
           <div class="rec-widget-box">
             <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
@@ -621,6 +621,7 @@
     : 'https://api.nandovocalcoach.com';
   const SUBMIT_URL = `${API_BASE}/submit`;
   const DETECT_PITCH_URL = `${API_BASE}/detect-pitch`;
+  const PITCH_RUNG_CHECK_URL = `${API_BASE}/pitch-rung-check`;
 
   const recordings = {}; // key -> Blob, filled in as each step completes
 
@@ -737,16 +738,6 @@
   }
 
   setupRecordStep({
-    key: 'glide',
-    startBtn: document.getElementById('glideStartBtn'),
-    stopBtn:  document.getElementById('glideStopBtn'),
-    statusEl: document.getElementById('glideStatus'),
-    resultEl: document.getElementById('glideResult'),
-    previewEl: document.getElementById('glidePreview'),
-    maxSec: 20,
-    onComplete: () => unlockStep('stepSustained'),
-  });
-  setupRecordStep({
     key: 'sustained_ah',
     startBtn: document.getElementById('sustainedAhStartBtn'),
     stopBtn:  document.getElementById('sustainedAhStopBtn'),
@@ -754,6 +745,16 @@
     resultEl: document.getElementById('sustainedAhResult'),
     previewEl: document.getElementById('sustainedAhPreview'),
     maxSec: 8,
+    onComplete: () => unlockStep('stepGlide'),
+  });
+  setupRecordStep({
+    key: 'glide',
+    startBtn: document.getElementById('glideStartBtn'),
+    stopBtn:  document.getElementById('glideStopBtn'),
+    statusEl: document.getElementById('glideStatus'),
+    resultEl: document.getElementById('glideResult'),
+    previewEl: document.getElementById('glidePreview'),
+    maxSec: 20,
     onComplete: () => { unlockStep('stepPitch'); unlockStep('stepSong'); },
   });
   setupRecordStep({
@@ -918,46 +919,58 @@
   wireExampleBtn(document.getElementById('sustainedAhExampleBtnB'),
     { vowel: 'ah', duration: 3, sustainedHz: 293.7 });  // D4, higher voice
 
-  // ── Step 1, pitch match. Speech clip personalizes the track to the person's
-  // own range, then a 4-note triad call-response runs at that root.
-  // Timing constants MUST match build_guide_track() in pitch_test.py —
-  // server regenerates the same manifest from root_hz alone.
+  // ── Step 3, pitch matching. Progressive 2-stage test.
+  // Stage 1: melodic echo (3-note ascending phrase sung back as one melody).
+  // Server checks Stage 1 → advance to Stage 2 or early exit.
+  // Stage 2: 4-note triad call-response (unchanged from original).
+  // Timing constants MUST match pitch_test.py — server regenerates manifests.
   const SPEECH_CHECK_SEC = 8;
-  const DEFAULT_ROOT_HZ = 220.0; // fallback if detection fails, matches DIAGNOSTIC_ROOT_HZ
+  const DEFAULT_ROOT_HZ = 220.0; // matches DIAGNOSTIC_ROOT_HZ in pitch_test.py
 
-  // Guide track — 4-note triad: root, major 3rd, perfect 5th, octave
-  // Matches DIAGNOSTIC_SCALE = "triad" in pitch_test.py
   // Formant presets for voice-like synthesis
   const VOWEL_FORMANTS = {
     oo: { f: [310, 870, 2250],  q: [12, 14, 16], gain: [1.0, 0.32, 0.15] },
     ah: { f: [730, 1090, 2440], q: [12, 14, 16], gain: [1.0, 0.50, 0.30] },
   };
 
-  const SCALE_SEMITONES = [0, 4, 7, 12];
-  const TONE_SEC = 1.5;          // GUIDE_TONE_SEC
-  const PRE_PAUSE_SEC = 0.8;     // GUIDE_PRE_SING_PAUSE_SEC
+  // Shared timing — MUST match LADDER_* constants in pitch_test.py
   const BEEP_HZ = 880;
-  const BEEP_SEC = 0.07;         // GO_BEEP_SEC
-  const SING_SEC = 4.0;          // GUIDE_SING_SEC
-  const POST_PAUSE_SEC = 1.5;    // GUIDE_POST_SING_PAUSE_SEC
+  const BEEP_SEC = 0.07;             // GO_BEEP_SEC
+  const LEAD_IN_SEC = 0.3;           // LADDER_LEAD_IN_SEC — recording headroom before first tone
+  const PRE_SING_PAUSE_SEC = 0.8;    // LADDER_PRE_SING_PAUSE_SEC
 
-  const LEAD_IN_SEC = 0.3; // head start before first tone, avoids scheduling right at ctx "now"
+  // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly
+  const RUNG_PATTERNS = [
+    { num: 1,  name: "3-note melody",       semitones: [0, 2, 4],                                             note_sec: 1.0, sing_sec: 5.0 },
+    { num: 2,  name: "Major triad",          semitones: [0, 4, 7],                                             note_sec: 1.0, sing_sec: 5.0 },
+    { num: 3,  name: "5-note major scale",   semitones: [0, 2, 4, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
+    { num: 4,  name: "5-note scale up/down", semitones: [0, 2, 4, 5, 7, 5, 4, 2, 0],                          note_sec: 0.8, sing_sec: 9.0 },
+    { num: 5,  name: "5-note minor scale",   semitones: [0, 2, 3, 5, 7],                                       note_sec: 0.9, sing_sec: 6.0 },
+    { num: 6,  name: "Octave arpeggio up",   semitones: [0, 4, 7, 12],                                         note_sec: 1.0, sing_sec: 6.0 },
+    { num: 7,  name: "Octave arpeggio",      semitones: [0, 4, 7, 12, 7, 4, 0],                               note_sec: 0.9, sing_sec: 8.0 },
+    { num: 8,  name: "Full major scale",     semitones: [0, 2, 4, 5, 7, 9, 11, 12, 11, 9, 7, 5, 4, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
+    { num: 9,  name: "Major pentatonic",     semitones: [0, 2, 4, 7, 9, 7, 4, 2, 0],                          note_sec: 0.9, sing_sec: 9.0 },
+    { num: 10, name: "Natural minor scale",  semitones: [0, 2, 3, 5, 7, 8, 10, 12, 10, 8, 7, 5, 3, 2, 0],   note_sec: 0.7, sing_sec: 13.0 },
+  ];
+
+  const ladderState = {
+    currentRung: 0,
+    twoStarCount: 0,
+    rungResults: [],
+    rootHz: null,
+    exited: false,
+  };
 
   const startBtn   = document.getElementById('pitchStartBtn');
   const statusEl   = document.getElementById('pitchStatus');
   const resultEl   = document.getElementById('pitchResult');
   const previewEl  = document.getElementById('pitchPreview');
 
-  function buildScaleHz(rootHz) {
-    return SCALE_SEMITONES.map((s) => rootHz * Math.pow(2, s / 12));
-  }
-
-  // vowel = 'oo'|'ah' → formant synthesis (voice-like instrument); null → plain sine (beep)
+  // vowel = 'oo'|'ah' → formant synthesis (voice-like); null → plain sine (beep)
   function scheduleTone(ctx, hz, durationSec, startTime, vowel) {
     const fade = Math.min(0.05, durationSec * 0.15);
 
     if (!vowel) {
-      // Plain sine — used for the short click beep only
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -978,7 +991,6 @@
     source.type = 'sawtooth';
     source.frequency.setValueAtTime(hz, startTime);
 
-    // Light vibrato (only for tones long enough to need it)
     if (durationSec > 0.4) {
       const lfo = ctx.createOscillator();
       lfo.type = 'sine';
@@ -1010,7 +1022,6 @@
       g.connect(masterGain);
     });
 
-    // Breath noise for realism
     const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * durationSec), ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let j = 0; j < data.length; j++) data[j] = Math.random() * 2 - 1;
@@ -1051,19 +1062,106 @@
       const resp = await fetch(DETECT_PITCH_URL, { method: 'POST', body: formData });
       if (!resp.ok) throw new Error(`detect-pitch responded ${resp.status}`);
       const data = await resp.json();
-      return data.root_hz || DEFAULT_ROOT_HZ;
+      return { rootHz: data.root_hz || DEFAULT_ROOT_HZ, detected: data.detected !== false };
     } catch (err) {
-      return DEFAULT_ROOT_HZ; // proceed with the safe default rather than blocking the test
+      return { rootHz: DEFAULT_ROOT_HZ, detected: false };
     }
   }
 
-  async function runPitchTest() {
-    stopExample();  // kill any playing example
+  async function checkRung(blob, rungNum, rootHz) {
+    try {
+      const formData = new FormData();
+      formData.append('audio', blob, 'rung.webm');
+      formData.append('rung_num', String(rungNum));
+      formData.append('root_hz', String(rootHz));
+      formData.append('recording_offset', String(LEAD_IN_SEC));
+      const resp = await fetch(PITCH_RUNG_CHECK_URL, { method: 'POST', body: formData });
+      if (!resp.ok) throw new Error(`rung-check responded ${resp.status}`);
+      return await resp.json();
+    } catch (err) {
+      // On error, return 2 stars so user isn't blocked
+      return { stars: 2, notes_hit: 0, notes_total: 0, hit_ratio: 0, mean_error_cents: 0,
+               ascending_mean_cents: 0, descending_mean_cents: 0, octave_errors: 0 };
+    }
+  }
+
+  // ── Record + play one ladder rung ──
+  async function runRung(ctx, stream, rootHz, rungIndex) {
+    const rung = RUNG_PATTERNS[rungIndex];
+    const noteHz = rung.semitones.map(s => rootHz * Math.pow(2, s / 12));
+
+    statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
+      <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length} — ${rung.name}</div>
+      Listen to the melody, then sing it back.</div>`;
+    await new Promise(r => setTimeout(r, 1500));
+
+    const mimeType = pickMimeType();
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const chunks = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+
+    recorder.start();
+
+    let t = ctx.currentTime + LEAD_IN_SEC;
+    let statusCursorSec = LEAD_IN_SEC;
+
+    // Play all notes connected (no pauses between)
+    setTimeout(() => {
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
+        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} — ${rung.name}</div>
+        Listen…</div>`;
+    }, statusCursorSec * 1000);
+
+    for (const hz of noteHz) {
+      scheduleTone(ctx, hz, rung.note_sec, t, 'oo');
+      t += rung.note_sec;
+      statusCursorSec += rung.note_sec;
+    }
+
+    // Pre-sing pause
+    t += PRE_SING_PAUSE_SEC;
+    statusCursorSec += PRE_SING_PAUSE_SEC;
+
+    // Go beep
+    scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
+    t += BEEP_SEC;
+    statusCursorSec += BEEP_SEC;
+
+    // Show sing prompt when sing window starts
+    const singAtSec = statusCursorSec;
+    setTimeout(() => {
+      statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">
+        <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Round ${rungIndex + 1} — ${rung.name}</div>
+        Sing it back</div>`;
+    }, singAtSec * 1000);
+
+    t += rung.sing_sec;
+    statusCursorSec += rung.sing_sec;
+
+    setTimeout(() => { recorder.stop(); }, statusCursorSec * 1000 + 300);
+    await stopped;
+    return new Blob(chunks, { type: mimeType || 'audio/webm' });
+  }
+
+  function starsHtml(stars) {
+    return [1, 2, 3].map(i =>
+      `<span style="font-size:1.2rem; color:${i <= stars ? '#f59e0b' : '#555'};">★</span>`
+    ).join('');
+  }
+
+  async function runLadderTest() {
+    stopExample();
     startBtn.disabled = true;
     resultEl.style.display = 'none';
 
-    // Create AudioContext synchronously in click handler (before any await)
-    // so it stays alive through the speech-check + detect-pitch round trip.
+    // Reset ladder state
+    ladderState.currentRung = 0;
+    ladderState.twoStarCount = 0;
+    ladderState.rungResults = [];
+    ladderState.rootHz = null;
+    ladderState.exited = false;
+
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     statusEl.textContent = 'Requesting microphone…';
@@ -1096,92 +1194,110 @@
     const countdownLabel = document.getElementById('speechCountdown');
     if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
-    const speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+    let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
 
     statusEl.textContent = 'Finding your range…';
-    const rootHz = await detectRootHz(speechBlob);
-    recordings.pitch_root_hz = rootHz;
+    let detection = await detectRootHz(speechBlob);
 
-    // ── Note-by-note call-response ──
-    // 4 notes: root, major 3rd, perfect 5th, octave.
-    // Each note: hear reference tone → beep → sing it back → pause.
-    // Timing matches build_guide_track() in pitch_test.py exactly.
-    const scaleHz = SCALE_SEMITONES.map(s => rootHz * Math.pow(2, s / 12));
-    const totalNotes = scaleHz.length;
+    // Retry once if detection failed
+    if (!detection.detected) {
+      statusEl.innerHTML = `
+        <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
+          <div style="font-size: 0.95rem; color: var(--text); margin-bottom: 8px;">Couldn't detect your speaking pitch. Try again in a quieter room, or speak a bit louder.</div>
+          <div style="font-size: 1.05rem; font-style: italic; color: var(--text); font-weight: 600; margin-bottom: 10px;">"I sing because it makes me feel alive, and I'm here to find out what's holding me back."</div>
+          <div id="speechCountdown" style="font-size: 0.85rem; color: var(--muted);">Recording starts in <strong id="speechCountNum">3</strong>…</div>
+        </div>`;
 
-    statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Get ready — 4 notes, one at a time. Listen, then sing it back.</div>`;
-    await new Promise(r => setTimeout(r, 2500));
+      for (let i = 3; i >= 1; i--) {
+        const el = document.getElementById('speechCountNum');
+        if (el) el.textContent = i;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
 
-    const mimeType = pickMimeType();
-    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-    const chunks = [];
-    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+      const retryBox = statusEl.querySelector('div');
+      if (retryBox) retryBox.style.borderColor = '#22c55e';
+      const retryLabel = document.getElementById('speechCountdown');
+      if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
-    recorder.start();
+      speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+      statusEl.textContent = 'Finding your range…';
+      detection = await detectRootHz(speechBlob);
 
-    let t = ctx.currentTime + LEAD_IN_SEC;
-    let statusCursorSec = LEAD_IN_SEC;
-
-    for (let i = 0; i < totalNotes; i++) {
-      const hz = scaleHz[i];
-      const noteNum = i + 1;
-
-      // Show "Listen..." status when reference tone starts
-      const listenAtSec = statusCursorSec;
-      setTimeout(() => {
-        statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
-          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Note ${noteNum} of ${totalNotes}</div>
-          Listen…</div>`;
-      }, listenAtSec * 1000);
-
-      // Reference tone
-      scheduleTone(ctx, hz, TONE_SEC, t, 'oo');
-      t += TONE_SEC;
-      statusCursorSec += TONE_SEC;
-
-      // Pre-sing pause
-      t += PRE_PAUSE_SEC;
-      statusCursorSec += PRE_PAUSE_SEC;
-
-      // Go beep
-      scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
-      t += BEEP_SEC;
-      statusCursorSec += BEEP_SEC;
-
-      // Show "Sing it back" when sing window starts
-      const singAtSec = statusCursorSec;
-      setTimeout(() => {
-        statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">
-          <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Note ${noteNum} of ${totalNotes}</div>
-          Sing it back</div>`;
-      }, singAtSec * 1000);
-
-      // Sing window
-      t += SING_SEC;
-      statusCursorSec += SING_SEC;
-
-      // Post-sing pause
-      t += POST_PAUSE_SEC;
-      statusCursorSec += POST_PAUSE_SEC;
+      if (!detection.detected) {
+        recordings.pitch_detection_failed = true;
+      }
     }
 
-    const totalMs = statusCursorSec * 1000;
-    setTimeout(() => { recorder.stop(); }, totalMs + 300);
+    const rootHz = detection.rootHz;
+    ladderState.rootHz = rootHz;
+    recordings.pitch_root_hz = rootHz;
 
-    await stopped;
+    // ── Ladder: run rungs until exit condition ──
+    for (let i = 0; i < RUNG_PATTERNS.length; i++) {
+      ladderState.currentRung = i;
 
-    const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
-    recordings.pitch = blob;
-    previewEl.src = URL.createObjectURL(blob);
+      const blob = await runRung(ctx, stream, rootHz, i);
+
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Checking…</div>`;
+
+      const result = await checkRung(blob, i + 1, rootHz);
+      const stars = result.stars;
+
+      ladderState.rungResults.push({
+        rung: i + 1,
+        rung_name: RUNG_PATTERNS[i].name,
+        stars,
+        notes_hit:              result.notes_hit              || 0,
+        notes_total:            result.notes_total            || 0,
+        hit_ratio:              result.hit_ratio              || 0,
+        mean_error_cents:       result.mean_error_cents       || 0,
+        ascending_mean_cents:   result.ascending_mean_cents   || 0,
+        descending_mean_cents:  result.descending_mean_cents  || 0,
+        octave_errors:          result.octave_errors          || 0,
+      });
+
+      if (stars === 2) ladderState.twoStarCount++;
+
+      // Show star result briefly
+      const exitReason = stars <= 1 ? 'exit-low' : (ladderState.twoStarCount >= 3 ? 'exit-twos' : null);
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; padding:12px 16px; border-radius:8px; text-align:center;">
+        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:6px;">Round ${i + 1} — ${RUNG_PATTERNS[i].name}</div>
+        <div>${starsHtml(stars)}</div>
+      </div>`;
+      await new Promise(r => setTimeout(r, 1800));
+
+      if (exitReason) {
+        ladderState.exited = true;
+        statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">All done! We've got everything we need.</div>`;
+        await new Promise(r => setTimeout(r, 1500));
+        break;
+      }
+
+      // Brief pause between rungs
+      await new Promise(r => setTimeout(r, 800));
+    }
+
+    // Save ladder results for submit
+    recordings.pitch_ladder_results = JSON.stringify(ladderState.rungResults);
+
+    // Show rung summary
+    const summaryRows = ladderState.rungResults.map(r =>
+      `<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <span style="font-size:0.8rem; color:var(--muted);">Round ${r.rung}: ${r.rung_name}</span>
+        <span>${starsHtml(r.stars)}</span>
+      </div>`
+    ).join('');
+
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<div style="margin-top:8px;">${summaryRows}</div>`;
 
     statusEl.textContent = '';
-    resultEl.style.display = 'block';
     startBtn.textContent = 'Retake';
     startBtn.disabled = false;
+    updateSubmitState();
   }
 
-  if (startBtn) startBtn.addEventListener('click', runPitchTest);
+  if (startBtn) startBtn.addEventListener('click', runLadderTest);
 
   // ── Final submit, direct multipart POST, no Tally involved ──
   const diagForm = document.getElementById('vocalAnalysisForm');
@@ -1221,8 +1337,8 @@
         const songName = recordings.song_clip instanceof File ? recordings.song_clip.name : 'song_clip.webm';
         formData.append('song_clip', recordings.song_clip, songName);
       }
-      if (recordings.pitch)        formData.append('pitch', recordings.pitch, 'pitch.webm');
-      if (recordings.pitch_root_hz) formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
+      if (recordings.pitch_root_hz)     formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
+      if (recordings.pitch_ladder_results) formData.append('pitch_ladder_results', recordings.pitch_ladder_results);
 
       try {
         const resp = await fetch(SUBMIT_URL, { method: 'POST', body: formData });
