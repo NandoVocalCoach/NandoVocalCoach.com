@@ -328,7 +328,7 @@
   <div class="hero">
     <div class="hero-label">FREE · NO STRINGS</div>
     <h1>Find out <span>exactly</span> what's<br>holding your voice back.</h1>
-    <p>4 short guided steps, right here in your browser. Hear an example, record, done. Takes about 6 minutes. Get a full Vocal Analysis: your pattern, a pitch graph, and a clear direction. On your screen in 1 to 2 minutes, and in your inbox right after.</p>
+    <p>4 short guided steps, right here in your browser. Hear an example, record, done. Takes about 6 minutes. Get a full Vocal Analysis: your pattern, a pitch graph, and a clear direction. On your screen seconds after you submit, and in your inbox right after.</p>
     <div class="pill-row">
       <span class="pill"><strong>6 min</strong>, all in-browser</span>
       <span class="pill"><strong>Free</strong> forever</span>
@@ -552,7 +552,7 @@
     </div>
     <div class="faq">
       <div class="faq-q">How long until I get my Vocal Analysis?</div>
-      <div class="faq-a">The test itself takes about 6 minutes. The analysis runs automatically after you submit (real audio processing, not a quiz). Your results show up on the page in 1 to 2 minutes, and the PDF lands in your inbox right after.</div>
+      <div class="faq-a">The test itself takes about 6 minutes. The analysis runs automatically after you submit (real audio processing, not a quiz). Your results show up on the page within about 20 seconds of submitting (your recordings are analyzed as you go), and the PDF lands in your inbox right after.</div>
     </div>
     <div class="faq">
       <div class="faq-q">What if my recording quality isn't great?</div>
@@ -624,6 +624,13 @@
   const VALIDATE_CLIP_URL = `${API_BASE}/validate-clip`;
 
   const recordings = {}; // key -> Blob, filled in as each step completes
+
+  // One id per page load. Each clip that passes /validate-clip is analyzed in
+  // the background under this id, so /submit finds the heavy work already done.
+  const SESSION_ID = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  const clipIds = {}; // kind -> clip_id returned by /validate-clip
 
   // ── Shared mic stream, requested once, reused by every step, so the
   // user only sees one permission prompt no matter which step they start
@@ -699,10 +706,11 @@
       const fd = new FormData();
       fd.append('audio', blob, kind + '.webm');
       fd.append('kind', kind);
+      fd.append('session_id', SESSION_ID);
       const resp = await fetch(VALIDATE_CLIP_URL, { method: 'POST', body: fd, signal: ctl.signal });
       if (!resp.ok) throw new Error('validate-clip responded ' + resp.status);
       const data = await resp.json();
-      return { ok: data.ok === true, message: data.message || 'Something was off with that recording. Tap Retake to try again.' };
+      return { ok: data.ok === true, clipId: data.clip_id || null, message: data.message || 'Something was off with that recording. Tap Retake to try again.' };
     } catch (err) {
       return { ok: false, message: "Couldn't check that recording. Tap Retake to try again." };
     } finally {
@@ -766,14 +774,16 @@
 
       const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
 
+      let check = null;
       if (CHECKED_KEYS.includes(key)) {
         stopBtn.style.display = 'none';
         statusEl.textContent = 'Checking your recording…';
-        const check = await validateClip(blob, key);
+        check = await validateClip(blob, key);
         if (!check.ok) {
           // Not good enough to continue with: drop any earlier take too, so
           // the submit button can't go live on stale or bad audio.
           delete recordings[key];
+          delete clipIds[key];
           document.getElementById(key === 'glide' ? 'stepGlide' : 'stepSustained')?.classList.remove('step-complete');
           statusEl.style.color = '#FF5500';
           statusEl.textContent = check.message;
@@ -786,6 +796,7 @@
       }
 
       recordings[key] = blob;
+      if (CHECKED_KEYS.includes(key)) clipIds[key] = check.clipId;
       previewEl.src = URL.createObjectURL(blob);
 
       statusEl.textContent = '';
@@ -1514,6 +1525,9 @@
         };
         formData.append('vtd_scores', JSON.stringify(vtdScores));
       }
+      formData.append('session_id', SESSION_ID);
+      if (clipIds.glide)        formData.append('clip_id_glide', clipIds.glide);
+      if (clipIds.sustained_ah) formData.append('clip_id_sustained_ah', clipIds.sustained_ah);
       if (recordings.glide)        formData.append('glide', recordings.glide, 'glide.webm');
       if (recordings.sustained_ah) formData.append('sustained_ah', recordings.sustained_ah, 'sustained_ah.webm');
       if (recordings.song_clip) {
@@ -1586,13 +1600,20 @@
         const clockTimer = setInterval(() => {
           const sec = Math.floor((Date.now() - waitStart) / 1000);
           if (timerEl) timerEl.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+          if (!rotating && sec >= WAIT_ROTATE_AFTER_SEC) {
+            rotating = true;
+            stopFacts = startFactRotation(document.getElementById('factCard'), document.getElementById('factText'));
+          }
           if (!longWaitShown && sec >= WAIT_LONG_AFTER_SEC) {
             longWaitShown = true;
             const line = document.getElementById('analysisStatusLine');
             if (line) line.textContent = 'Taking longer than usual, still working...';
           }
         }, 1000);
-        const stopFacts = startFactRotation(document.getElementById('factCard'), document.getElementById('factText'));
+        // Normally the wait is only seconds: one fact is plenty. If it drags
+        // on, start rotating them.
+        let stopFacts = startFactRotation(document.getElementById('factCard'), document.getElementById('factText'), { single: true });
+        let rotating = false;
         const stopWaitingUi = () => {
           clearInterval(pollTimer); clearInterval(dotTimer); clearInterval(clockTimer); stopFacts();
         };
@@ -1649,7 +1670,8 @@
 
 
   // ── Waiting screen: pitch result, facts, timer ────────────────────────────
-  const WAIT_STATUS_TEXT = "Your full Vocal Analysis is on its way. This takes 1 to 2 minutes. The page is working, please don't close it.";
+  const WAIT_STATUS_TEXT = "Your full Vocal Analysis is on its way. This usually takes 10 to 20 seconds. The page is working, please don't close it.";
+  const WAIT_ROTATE_AFTER_SEC = 30;   // before this, a single fact; after, rotate
   const WAIT_LONG_AFTER_SEC = 4 * 60;
   const FACT_INTERVAL_MS = 8000;
 
