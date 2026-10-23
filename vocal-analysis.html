@@ -873,7 +873,7 @@
       const now = ctx.currentTime + 0.05;
 
       if (glideFrom != null) {
-        const preset = VOWEL_FORMANTS[vowel || 'oo'];
+        const preset = VOWEL_FORMANTS[vowel || 'ah'];
         const fade = Math.min(0.05, duration * 0.15);
 
         const source = ctx.createOscillator();
@@ -942,7 +942,7 @@
   }
 
   wireExampleBtn(document.getElementById('glideExampleBtn'),
-    { vowel: 'oo', duration: 6, glideFrom: 146.8, glideTo: 392.0 });  // D3 → G4
+    { vowel: 'ah', duration: 6, glideFrom: 146.8, glideTo: 392.0 });  // D3 → G4
   wireExampleBtn(document.getElementById('sustainedAhExampleBtnA'),
     { vowel: 'ah', duration: 3, sustainedHz: 146.8 });  // D3, lower voice
   wireExampleBtn(document.getElementById('sustainedAhExampleBtnB'),
@@ -1082,11 +1082,11 @@
   // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
   // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORT_FRAC = 0.02;  // portamento = 2% of note duration
+    const PORT_FRAC = 0.05;  // portamento = 5% of note duration
     const FADE_IN   = 0.04;
     const FADE_OUT  = 0.07;
     const PEAK      = 0.5;
-    const preset    = VOWEL_FORMANTS[vowel || 'oo'];
+    const preset    = VOWEL_FORMANTS[vowel || 'ah'];
     const n         = hzArray.length;
     const endTime   = startTime + n * noteSec;
 
@@ -1206,7 +1206,7 @@
         Listen…</div>`;
     }, statusCursorSec * 1000);
 
-    scheduleConnectedMelody(ctx, noteHz, rung.note_sec, t, 'oo');
+    scheduleConnectedMelody(ctx, noteHz, rung.note_sec, t, 'ah');
     t += noteHz.length * rung.note_sec;
     statusCursorSec += noteHz.length * rung.note_sec;
 
