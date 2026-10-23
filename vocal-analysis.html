@@ -361,6 +361,7 @@
           <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Normal singing volume — not a whisper, not louder than usual. Mic at arm's length, not up close.</p>
 
           <div class="rec-widget-box">
+            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
             <button id="sustainedAhExampleBtnA" class="rec-btn rec-btn-outline" type="button">▶ Example A (lower voice)</button>
             <button id="sustainedAhExampleBtnB" class="rec-btn rec-btn-outline" type="button">▶ Example B (higher voice)</button>
             <button id="sustainedAhStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
@@ -381,6 +382,7 @@
           <p>Lip trill or straw buzz. Lowest note → as high as you can → back down. One smooth sweep, no stopping. Same volume as you'd sing normally — no need to push.</p>
 
           <div class="rec-widget-box">
+            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
             <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
             <button id="glideStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
             <button id="glideStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
@@ -400,6 +402,7 @@
           <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear a short melody — sing it back when you see the green cue.</p>
 
           <div class="rec-widget-box">
+            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Start, not during.</p>
             <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
             <div id="pitchStatus" class="rec-status"></div>
             <div id="pitchResult" style="display:none;">
@@ -635,6 +638,19 @@
   const clipIds = {}; // kind -> clip_id returned by /validate-clip
   let stopActiveRecording = null; // set while a record-in-place step is recording
 
+  // One recording at a time. Starting any recording cancels the one in
+  // progress: its audio is discarded (not stored, validated or sent) and that
+  // step goes back to how it looked before the take.
+  let activeCapture = null;
+  function beginCapture(cancelFn) {
+    if (activeCapture) { try { activeCapture.cancel(); } catch (_) {} }
+    const cap = { cancel: cancelFn };
+    activeCapture = cap;
+    return cap;
+  }
+  function endCapture(cap) { if (activeCapture === cap) activeCapture = null; }
+  let ladderRun = null; // the pitch test in progress, if any (see runLadderTest)
+
   // ── Shared mic stream, requested once, reused by every step, so the
   // user only sees one permission prompt no matter which step they start
   // with. Tracks are only stopped after a successful final submit.
@@ -731,6 +747,7 @@
     let chunks = [];
     let timerInterval = null;
     let elapsed = 0;
+    let cancelled = false;
 
     function stop() {
       if (recorder && recorder.state === 'recording') recorder.stop();
@@ -738,6 +755,8 @@
 
     async function start() {
       stopExample();  // kill any playing example tone immediately
+      const prevLabel = startBtn.textContent;   // Record or Retake, restored if this take is cancelled
+      cancelled = false;
       startBtn.disabled = true;
       resultEl.style.display = 'none';
       statusEl.style.color = '';
@@ -758,6 +777,11 @@
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
       const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
 
+      const cap = beginCapture(() => {
+        cancelled = true;
+        clearInterval(timerInterval);
+        if (recorder && recorder.state === 'recording') recorder.stop();
+      });
       recorder.start();
       stopActiveRecording = stop;
       elapsed = 0;
@@ -776,6 +800,19 @@
       await stopped;
       clearInterval(timerInterval);
       if (stopActiveRecording === stop) stopActiveRecording = null;
+      endCapture(cap);
+
+      if (cancelled) {
+        // Another recording started: drop this take, put the step back as it was
+        statusEl.textContent = '';
+        statusEl.style.color = '';
+        stopBtn.style.display = 'none';
+        startBtn.style.display = 'inline-block';
+        startBtn.textContent = prevLabel;
+        startBtn.disabled = false;
+        resultEl.style.display = recordings[key] ? 'block' : 'none';
+        return;
+      }
 
       const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
 
@@ -1225,8 +1262,9 @@
       const chunks = [];
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType || 'audio/webm' }));
+      if (ladderRun) ladderRun.recorder = recorder;
       recorder.start();
-      setTimeout(() => recorder.stop(), durationSec * 1000);
+      setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, durationSec * 1000);
     });
   }
 
@@ -1271,12 +1309,14 @@
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:14px 16px; border-radius:8px; text-align:center;">
         <div style="margin-bottom:10px;">${message}</div>
         <button type="button" id="ladderRetryBtn" class="rec-btn">${buttonLabel}</button></div>`;
+      if (ladderRun) ladderRun.pauseResolve = resolve;
       document.getElementById('ladderRetryBtn').addEventListener('click', () => resolve(), { once: true });
     });
   }
 
   // ── Record + play one ladder rung ──
   async function runRung(ctx, stream, rootHz, rungIndex) {
+    const run = ladderRun;   // so late timers can tell the test was cancelled
     const rung = RUNG_PATTERNS[rungIndex];
     const noteHz = rung.semitones.map(s => rootHz * Math.pow(2, s / 12));
 
@@ -1294,6 +1334,7 @@
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
     const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
 
+    if (run) run.recorder = recorder;
     recorder.start();
 
     let t = ctx.currentTime + LEAD_IN_SEC;
@@ -1301,6 +1342,7 @@
 
     // Play connected melody (portamento between notes)
     setTimeout(() => {
+      if (run && run.aborted) return;
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">
         <div style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length}</div>
         Listen…</div>`;
@@ -1322,6 +1364,7 @@
     // Show sing prompt when sing window starts
     const singAtSec = statusCursorSec;
     setTimeout(() => {
+      if (run && run.aborted) return;
       statusEl.innerHTML = `<div style="background:#22c55e; color:white; font-size:1.1rem; font-weight:700; padding:12px 16px; border-radius:8px; text-align:center; letter-spacing:0.05em;">
         <div style="font-size:0.75rem; opacity:0.85; margin-bottom:2px; font-weight:500; letter-spacing:0;">Round ${rungIndex + 1} of ${RUNG_PATTERNS.length}</div>
         Sing it back</div>`;
@@ -1330,12 +1373,14 @@
     t += rung.sing_sec;
     statusCursorSec += rung.sing_sec;
 
-    setTimeout(() => { recorder.stop(); }, statusCursorSec * 1000 + 300);
+    setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, statusCursorSec * 1000 + 300);
     await stopped;
     return new Blob(chunks, { type: mimeType || 'audio/webm' });
   }
 
-  async function runLadderTest() {
+  const LADDER_ABORT = { ladderAborted: true };
+
+  async function runLadderTestInner(run) {
     stopExample();
     startBtn.disabled = true;
     resultEl.style.display = 'none';
@@ -1348,17 +1393,21 @@
     ladderState.exited = false;
 
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    run.ctx = ctx;
 
     statusEl.textContent = 'Requesting microphone…';
     let stream;
     try {
       stream = await getMicStream();
+      if (run.aborted) throw LADDER_ABORT;
     } catch (err) {
+      if (err === LADDER_ABORT || run.aborted) throw LADDER_ABORT;
       statusEl.textContent = "Couldn't access your microphone. Check browser permissions, or try a different browser.";
       startBtn.disabled = false;
       return;
     }
     if (ctx.state === 'suspended') await ctx.resume();
+    if (run.aborted) throw LADDER_ABORT;
 
     // ── Speech check: detect user's range (skip on retake) ──
     let rootHz;
@@ -1366,6 +1415,7 @@
       rootHz = savedRootHz;
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Using your range from before. Starting…</div>`;
       await new Promise(r => setTimeout(r, 1000));
+      if (run.aborted) throw LADDER_ABORT;
     } else {
       statusEl.innerHTML = `
         <div style="background: rgba(255,85,0,0.12); border: 1px solid #FF5500; border-radius: 8px; padding: 14px 16px; margin-top: 8px; text-align: left;">
@@ -1378,6 +1428,7 @@
         const el = document.getElementById('speechCountNum');
         if (el) el.textContent = i;
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (run.aborted) throw LADDER_ABORT;
       }
 
       const countdownBox = statusEl.querySelector('div');
@@ -1386,8 +1437,10 @@
       if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
       let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+      if (run.aborted) throw LADDER_ABORT;
       statusEl.textContent = 'Finding your range…';
       let detection = await detectRootHz(speechBlob);
+      if (run.aborted) throw LADDER_ABORT;
 
       if (!detection.detected) {
         statusEl.innerHTML = `
@@ -1401,6 +1454,7 @@
           const el = document.getElementById('speechCountNum');
           if (el) el.textContent = i;
           await new Promise((resolve) => setTimeout(resolve, 1000));
+          if (run.aborted) throw LADDER_ABORT;
         }
 
         const retryBox = statusEl.querySelector('div');
@@ -1409,8 +1463,10 @@
         if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
 
         speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
+        if (run.aborted) throw LADDER_ABORT;
         statusEl.textContent = 'Finding your range…';
         detection = await detectRootHz(speechBlob);
+        if (run.aborted) throw LADDER_ABORT;
 
         if (!detection.detected) {
           statusEl.innerHTML = `<div style="background:rgba(220,38,38,0.12); border:1px solid #dc2626; color:var(--text); font-size:0.95rem; padding:14px 16px; border-radius:8px;">
@@ -1432,6 +1488,7 @@
 
     statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Range found. Starting pitch test…</div>`;
     await new Promise(r => setTimeout(r, 1000));
+    if (run.aborted) throw LADDER_ABORT;
 
     // ── Ladder: run rungs until exit condition ──
     const pitchBlobs = [];  // one accepted take per round, for the coach email
@@ -1446,18 +1503,22 @@
       let silentTries = 0;
       while (true) {
         blob = await runRung(ctx, stream, rootHz, i);
+        if (run.aborted) throw LADDER_ABORT;
 
         statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Checking…</div>`;
 
         result = await checkRung(blob, i + 1, rootHz);
+        if (run.aborted) throw LADDER_ABORT;
         if (!result) {
           await pauseWithRetry('Connection problem.', 'Retry this round');
+          if (run.aborted) throw LADDER_ABORT;
           continue;
         }
         if (result.silent) {
           silentTries++;
           const hint = silentTries >= 2 ? ' Check that your mic is on and sing a little louder.' : '';
           await pauseWithRetry(`We didn't hear you that time.${hint}`, 'Retry this round');
+          if (run.aborted) throw LADDER_ABORT;
           continue;
         }
         break;
@@ -1490,12 +1551,14 @@
         ladderState.exited = true;
         statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">All done! We've got everything we need.</div>`;
         await new Promise(r => setTimeout(r, 1500));
+        if (run.aborted) throw LADDER_ABORT;
         break;
       }
 
       // Brief neutral transition
       statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Got it. Next one…</div>`;
       await new Promise(r => setTimeout(r, 900));
+      if (run.aborted) throw LADDER_ABORT;
     }
 
     // Save ladder results for submit
@@ -1517,6 +1580,44 @@
     startBtn.disabled = false;
     updateSubmitState();
     unlockStep('stepSong');
+  }
+
+
+  // Wrapper: registers the pitch test as the active recording, so starting any
+  // other recording aborts it cleanly (and it can simply be started again).
+  async function runLadderTest() {
+    const prev = {
+      results: ladderState.rungResults.slice(), twoStarCount: ladderState.twoStarCount,
+      exited: ladderState.exited, currentRung: ladderState.currentRung,
+    };
+    const hadResult = !!recordings.pitch_ladder_results;
+    const run = { aborted: false, recorder: null, ctx: null, pauseResolve: null };
+    ladderRun = run;
+    const cap = beginCapture(() => {
+      run.aborted = true;
+      try { if (run.recorder && run.recorder.state === 'recording') run.recorder.stop(); } catch (_) {}
+      try { if (run.ctx) run.ctx.close(); } catch (_) {}
+      if (run.pauseResolve) run.pauseResolve();
+    });
+    try {
+      await runLadderTestInner(run);
+    } catch (err) {
+      if (!run.aborted) throw err;   // real error, not a cancel
+    } finally {
+      endCapture(cap);
+      if (ladderRun === run) ladderRun = null;
+      if (run.aborted) {
+        // Back to how the step looked before: keep any earlier finished test
+        ladderState.rungResults = prev.results;
+        ladderState.twoStarCount = prev.twoStarCount;
+        ladderState.exited = prev.exited;
+        ladderState.currentRung = prev.currentRung;
+        statusEl.textContent = '';
+        resultEl.style.display = hadResult ? 'block' : 'none';
+        startBtn.textContent = hadResult ? 'Retake' : '🎤 Start Pitch Test';
+        startBtn.disabled = false;
+      }
+    }
   }
 
   if (startBtn) startBtn.addEventListener('click', runLadderTest);
