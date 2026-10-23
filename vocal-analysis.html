@@ -1491,6 +1491,7 @@
       submitBtn.disabled = true;
       submitStatus.textContent = 'Submitting…';
 
+      fieldSnapshot = snapshotFields();
       const formData = new FormData();
       formData.append('name', document.getElementById('nameField').value.trim());
       formData.append('email', document.getElementById('emailField').value.trim());
@@ -1835,6 +1836,34 @@
     if (key === 'perfect') launchConfetti();
   }
 
+  // ── Try again: keep what was typed, redo the recordings ──
+  const SAVED_FIELDS_KEY = 'va_saved_fields';
+  const savedFieldsSelector = 'input[type="text"][id], input[type="email"][id], textarea[id], select[id]';
+  let fieldSnapshot = {};
+  function snapshotFields() {
+    const out = {};
+    document.querySelectorAll(savedFieldsSelector).forEach((el) => { out[el.id] = el.value; });
+    return out;
+  }
+  function restoreSavedFields() {
+    try {
+      const raw = sessionStorage.getItem(SAVED_FIELDS_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(SAVED_FIELDS_KEY);
+      const saved = JSON.parse(raw);
+      Object.entries(saved).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el && typeof value === 'string') el.value = value;
+      });
+    } catch (_) { /* storage blocked or bad data: just start with an empty form */ }
+  }
+  restoreSavedFields();
+
+  function tryAgain() {
+    try { sessionStorage.setItem(SAVED_FIELDS_KEY, JSON.stringify(fieldSnapshot)); } catch (_) {}
+    location.reload();
+  }
+
   function showAnalysisResults(data, submittedEmail, exerciseUrl, formSection) {
     const waiting = document.getElementById('analysisWaiting');
     if (waiting) waiting.style.display = 'none';
@@ -1910,6 +1939,14 @@
           </a>
         </div>
 
+        <div style="margin-bottom:20px;">
+          <button type="button" id="tryAgainBtn"
+                  style="background:none;border:1px solid rgba(255,255,255,0.35);color:white;padding:10px 22px;border-radius:6px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:inherit;">
+            Try again
+          </button>
+          <div style="font-size:0.78rem;color:#6B7280;margin-top:6px;">Your details stay filled in. You'll redo the recordings.</div>
+        </div>
+
         <p style="font-size:0.82rem;color:#6B7280;margin-bottom:6px;">
           A full PDF report was also sent to <strong style="color:#9CA3AF;">${submittedEmail}</strong>.
         </p>
@@ -1918,6 +1955,7 @@
         </p>
       </div>
     `;
+    document.getElementById('tryAgainBtn')?.addEventListener('click', tryAgain);
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
