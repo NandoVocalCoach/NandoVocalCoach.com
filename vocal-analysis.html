@@ -347,7 +347,7 @@
       <div style="flex:1; background:rgba(255,255,255,0.08); border-radius:100px; height:6px; overflow:hidden;">
         <div id="stepsProgressFill" style="width:0%; height:100%; background:#FF5500; border-radius:100px; transition:width 0.4s ease;"></div>
       </div>
-      <span id="stepsProgressText" style="font-size:0.82rem; color:var(--muted); white-space:nowrap; min-width:68px; text-align:right;">0 of 2 done</span>
+      <span id="stepsProgressText" style="font-size:0.82rem; color:var(--muted); white-space:nowrap; min-width:68px; text-align:right;">0 of 3 done</span>
     </div>
 
     <div class="steps">
@@ -436,7 +436,7 @@
 
     </div>
 
-    <!-- Ready banner — shown when both required steps are done -->
+    <!-- Ready banner — shown when all three required steps are done -->
     <div id="readyBanner" style="display:none; background:rgba(255,85,0,0.1); border:1px solid rgba(255,85,0,0.35); border-radius:10px; padding:18px 20px; margin-top:12px; text-align:center;">
       <p style="color:white; font-weight:700; font-size:1rem; margin:0 0 12px;">Your recordings are ready.</p>
       <button onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'}); setTimeout(()=>document.getElementById('nameField').focus(),400);"
@@ -621,6 +621,7 @@
   const SUBMIT_URL = `${API_BASE}/submit`;
   const DETECT_PITCH_URL = `${API_BASE}/detect-pitch`;
   const PITCH_RUNG_CHECK_URL = `${API_BASE}/pitch-rung-check`;
+  const VALIDATE_CLIP_URL = `${API_BASE}/validate-clip`;
 
   const recordings = {}; // key -> Blob, filled in as each step completes
 
@@ -643,18 +644,18 @@
     const submitBtn = document.getElementById('submitBtn');
     if (!submitBtn) return;
 
-    const doneRequired = (recordings.sustained_ah ? 1 : 0) + (recordings.glide ? 1 : 0);
+    const doneRequired = (recordings.sustained_ah ? 1 : 0) + (recordings.glide ? 1 : 0) + (recordings.pitch_ladder_results ? 1 : 0);
 
     // Progress bar
     const fill = document.getElementById('stepsProgressFill');
     const text = document.getElementById('stepsProgressText');
     if (fill && text) {
-      fill.style.width = Math.round((doneRequired / 2) * 100) + '%';
-      if (doneRequired === 2) {
+      fill.style.width = Math.round((doneRequired / 3) * 100) + '%';
+      if (doneRequired === 3) {
         text.textContent = '✓ Ready';
         text.style.color = '#FF5500';
       } else {
-        text.textContent = `${doneRequired} of 2 done`;
+        text.textContent = `${doneRequired} of 3 done`;
         text.style.color = '';
       }
     }
@@ -666,8 +667,9 @@
     if (recordings.song_clip)           document.getElementById('stepSong')?.classList.add('step-complete');
 
     const missing = [];
-    if (!recordings.glide) missing.push('glide');
     if (!recordings.sustained_ah) missing.push('sustained "ah"');
+    if (!recordings.glide) missing.push('glide');
+    if (!recordings.pitch_ladder_results) missing.push('pitch test');
 
     if (missing.length === 0) {
       submitBtn.disabled = false;
@@ -682,6 +684,29 @@
     } else {
       submitBtn.disabled = true;
       submitBtn.textContent = `Complete: ${missing.join(', ')}`;
+    }
+  }
+
+  // ── Fast server-side sanity check of a fresh recording (about 1 s). A clip
+  // that doesn't look like what the step asks for is never stored, so the
+  // person can't continue with it. Network/server errors also block (never
+  // pass silently): they get a Retake prompt.
+  const CHECKED_KEYS = ['sustained_ah', 'glide'];
+  async function validateClip(blob, kind) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 20000);
+    try {
+      const fd = new FormData();
+      fd.append('audio', blob, kind + '.webm');
+      fd.append('kind', kind);
+      const resp = await fetch(VALIDATE_CLIP_URL, { method: 'POST', body: fd, signal: ctl.signal });
+      if (!resp.ok) throw new Error('validate-clip responded ' + resp.status);
+      const data = await resp.json();
+      return { ok: data.ok === true, message: data.message || 'Something was off with that recording. Tap Retake to try again.' };
+    } catch (err) {
+      return { ok: false, message: "Couldn't check that recording. Tap Retake to try again." };
+    } finally {
+      clearTimeout(timer);
     }
   }
 
@@ -704,6 +729,7 @@
       stopExample();  // kill any playing example tone immediately
       startBtn.disabled = true;
       resultEl.style.display = 'none';
+      statusEl.style.color = '';
       statusEl.textContent = 'Requesting microphone…';
 
       let stream;
@@ -739,6 +765,26 @@
       clearInterval(timerInterval);
 
       const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
+
+      if (CHECKED_KEYS.includes(key)) {
+        stopBtn.style.display = 'none';
+        statusEl.textContent = 'Checking your recording…';
+        const check = await validateClip(blob, key);
+        if (!check.ok) {
+          // Not good enough to continue with: drop any earlier take too, so
+          // the submit button can't go live on stale or bad audio.
+          delete recordings[key];
+          document.getElementById(key === 'glide' ? 'stepGlide' : 'stepSustained')?.classList.remove('step-complete');
+          statusEl.style.color = '#FF5500';
+          statusEl.textContent = check.message;
+          startBtn.style.display = 'inline-block';
+          startBtn.textContent = '🔁 Retake';
+          startBtn.disabled = false;
+          updateSubmitState();
+          return;
+        }
+      }
+
       recordings[key] = blob;
       previewEl.src = URL.createObjectURL(blob);
 
@@ -1158,21 +1204,36 @@
     }
   }
 
+  // Returns the server's scoring JSON, or null if the check failed twice
+  // (one automatic retry). Never invents a score: a failure pauses the ladder.
   async function checkRung(blob, rungNum, rootHz) {
-    try {
-      const formData = new FormData();
-      formData.append('audio', blob, 'rung.webm');
-      formData.append('rung_num', String(rungNum));
-      formData.append('root_hz', String(rootHz));
-      formData.append('recording_offset', String(LEAD_IN_SEC));
-      const resp = await fetch(PITCH_RUNG_CHECK_URL, { method: 'POST', body: formData });
-      if (!resp.ok) throw new Error(`rung-check responded ${resp.status}`);
-      return await resp.json();
-    } catch (err) {
-      // On error, return 2 stars so user isn't blocked
-      return { stars: 2, notes_hit: 0, notes_total: 0, hit_ratio: 0, mean_error_cents: 0,
-               ascending_mean_cents: 0, descending_mean_cents: 0, octave_errors: 0 };
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const formData = new FormData();
+        formData.append('audio', blob, 'rung.webm');
+        formData.append('rung_num', String(rungNum));
+        formData.append('root_hz', String(rootHz));
+        formData.append('recording_offset', String(LEAD_IN_SEC));
+        const resp = await fetch(PITCH_RUNG_CHECK_URL, { method: 'POST', body: formData });
+        if (!resp.ok) throw new Error(`rung-check responded ${resp.status}`);
+        const data = await resp.json();
+        if (typeof data.stars !== 'number') throw new Error('bad rung-check payload');
+        return data;
+      } catch (err) {
+        if (attempt === 0) await new Promise(r => setTimeout(r, 800));
+      }
     }
+    return null;
+  }
+
+  // Shows a message with a button and resolves when the person taps it.
+  function pauseWithRetry(message, buttonLabel) {
+    return new Promise((resolve) => {
+      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:14px 16px; border-radius:8px; text-align:center;">
+        <div style="margin-bottom:10px;">${message}</div>
+        <button type="button" id="ladderRetryBtn" class="rec-btn">${buttonLabel}</button></div>`;
+      document.getElementById('ladderRetryBtn').addEventListener('click', () => resolve(), { once: true });
+    });
   }
 
   // ── Record + play one ladder rung ──
@@ -1333,16 +1394,35 @@
     await new Promise(r => setTimeout(r, 1000));
 
     // ── Ladder: run rungs until exit condition ──
-    const pitchBlobs = [];  // collect for coach email
+    const pitchBlobs = [];  // one accepted take per round, for the coach email
     for (let i = 0; i < RUNG_PATTERNS.length; i++) {
       ladderState.currentRung = i;
 
-      const blob = await runRung(ctx, stream, rootHz, i);
+      // Run the round until we get a real, scoreable attempt. A silent round
+      // ("we didn't hear you") and a failed check (network/server) are NOT
+      // scores: they never count toward stars or ending the test, the round
+      // is simply repeated.
+      let blob, result;
+      let silentTries = 0;
+      while (true) {
+        blob = await runRung(ctx, stream, rootHz, i);
+
+        statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Checking…</div>`;
+
+        result = await checkRung(blob, i + 1, rootHz);
+        if (!result) {
+          await pauseWithRetry('Connection problem.', 'Retry this round');
+          continue;
+        }
+        if (result.silent) {
+          silentTries++;
+          const hint = silentTries >= 2 ? ' Check that your mic is on and sing a little louder.' : '';
+          await pauseWithRetry(`We didn't hear you that time.${hint}`, 'Retry this round');
+          continue;
+        }
+        break;
+      }
       pitchBlobs.push(blob);
-
-      statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Checking…</div>`;
-
-      const result = await checkRung(blob, i + 1, rootHz);
       const stars = result.stars;
 
       ladderState.rungResults.push({
