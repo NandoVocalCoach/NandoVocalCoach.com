@@ -521,6 +521,14 @@
           style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;">
       </div>
       <div style="margin-bottom: 20px;">
+        <div style="font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;">Have you already booked a session with me?</div>
+        <div style="display:flex; gap:20px; color:white; font-size:0.95rem;">
+          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientYes" value="yes"> Yes</label>
+          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientNo" value="no"> No</label>
+        </div>
+        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;">Optional. It just changes what I show you at the end.</p>
+      </div>
+      <div style="margin-bottom: 20px;">
         <textarea id="vocalDifficultyField" name="vocal_difficulty" placeholder="What happens in your voice when it goes wrong? Describe the feeling, not just 'I go off-key.' (optional)" rows="3"
           style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;"></textarea>
         <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;">You don't need to be a good singer. You need to be an honest one. The analysis works on what's actually happening, not on how polished you sound.</p>
@@ -650,6 +658,27 @@
   }
   function endCapture(cap) { if (activeCapture === cap) activeCapture = null; }
   let ladderRun = null; // the pitch test in progress, if any (see runLadderTest)
+
+  // Client vs lead: paying clients are sent here before session 1 (?client=1)
+  // and shouldn't be pitched a booking again. 'yes' | 'no' | 'unknown'.
+  function getIsClient() {
+    if (document.getElementById('isClientYes')?.checked) return 'yes';
+    if (document.getElementById('isClientNo')?.checked) return 'no';
+    return 'unknown';
+  }
+  function applyClientMode() {
+    const fab = document.getElementById('va-book-fab');
+    if (fab) fab.style.display = getIsClient() === 'yes' ? 'none' : '';
+  }
+  try {
+    if (new URLSearchParams(location.search).get('client') === '1') {
+      const yes = document.getElementById('isClientYes');
+      if (yes) yes.checked = true;
+    }
+  } catch (_) {}
+  document.querySelectorAll('input[name="booked"]').forEach((r) => r.addEventListener('change', applyClientMode));
+  applyClientMode();
+  document.addEventListener('DOMContentLoaded', applyClientMode);   // the FAB is below this script
 
   // ── Shared mic stream, requested once, reused by every step, so the
   // user only sees one permission prompt no matter which step they start
@@ -1656,6 +1685,7 @@
         formData.append('vtd_scores', JSON.stringify(vtdScores));
       }
       formData.append('session_id', SESSION_ID);
+      formData.append('is_client', getIsClient());
       if (clipIds.glide)        formData.append('clip_id_glide', clipIds.glide);
       if (clipIds.sustained_ah) formData.append('clip_id_sustained_ah', clipIds.sustained_ah);
       if (recordings.glide)        formData.append('glide', recordings.glide, 'glide.webm');
@@ -2008,6 +2038,7 @@
   function snapshotFields() {
     const out = {};
     document.querySelectorAll(savedFieldsSelector).forEach((el) => { out[el.id] = el.value; });
+    out.__is_client = getIsClient();
     return out;
   }
   function restoreSavedFields() {
@@ -2016,7 +2047,11 @@
       if (!raw) return;
       sessionStorage.removeItem(SAVED_FIELDS_KEY);
       const saved = JSON.parse(raw);
+      if (saved.__is_client === 'yes') document.getElementById('isClientYes').checked = true;
+      if (saved.__is_client === 'no') document.getElementById('isClientNo').checked = true;
+      applyClientMode();
       Object.entries(saved).forEach(([id, value]) => {
+        if (id === '__is_client') return;
         const el = document.getElementById(id);
         if (el && typeof value === 'string') el.value = value;
       });
@@ -2077,6 +2112,7 @@
       `;
     }
 
+    const isClientMode = (data.is_client || fieldSnapshot.__is_client) === 'yes';
     const resultsEl = document.getElementById('analysisResults');
     resultsEl.style.display = 'block';
     resultsEl.innerHTML = `
@@ -2100,6 +2136,15 @@
           </p>
           <p style="color:white;font-size:0.9rem;margin:10px 0 0;">Nando</p>
         </div>
+
+        ${isClientMode ? '' : `
+        <div style="text-align:center;margin-bottom:24px;">
+          <p style="color:#D1D5DB;font-size:0.95rem;margin:0 0 12px;">Want to work on this live?</p>
+          <a href="https://nandovocalcoach.com/#booking"
+             style="background:#FF5500;color:white;padding:11px 24px;border-radius:6px;font-weight:700;font-size:0.95rem;text-decoration:none;display:inline-block;">
+            Book a Session · $40
+          </a>
+        </div>`}
 
         <div style="margin-bottom:20px;">
           <button type="button" id="tryAgainBtn"
