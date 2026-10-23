@@ -1629,6 +1629,18 @@
             if (data.status === 'done') {
               stopWaitingUi();
               showAnalysisResults(data, submittedEmail, exerciseUrl, formSection);
+            } else if (data.status === 'needs_retake') {
+              // The server could not measure something reliably: no pattern is shown
+              stopWaitingUi();
+              const waiting = document.getElementById('analysisWaiting');
+              if (waiting) {
+                waiting.innerHTML = `
+                  <h2 style="margin-bottom:12px;">Let's redo one step</h2>
+                  <p style="color:#D1D5DB;font-size:0.98rem;margin-bottom:18px;">${data.message || 'We could not measure your recording reliably. Please retake it.'}</p>
+                  <button type="button" id="retakeStepBtn" style="background:#FF5500;color:white;border:none;padding:11px 28px;border-radius:6px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:inherit;">Try again</button>
+                  <div style="font-size:0.78rem;color:#6B7280;margin-top:8px;">Your details stay filled in.</div>`;
+                document.getElementById('retakeStepBtn').addEventListener('click', tryAgain);
+              }
             } else if (data.status === 'error') {
               stopWaitingUi();
               const waiting = document.getElementById('analysisWaiting');
