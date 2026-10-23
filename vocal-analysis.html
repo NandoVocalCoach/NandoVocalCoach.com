@@ -206,6 +206,8 @@
       margin-bottom: 8px;
     }
     .rec-btn:disabled { opacity: 0.5; cursor: default; }
+    /* Example button while playing: same size (width/height locked in JS), orange, label STOP */
+    .rec-btn.example-stop { background: #FF5500; color: #fff; border-color: #FF5500; text-align: center; white-space: nowrap; box-sizing: border-box; }
     .rec-btn-outline {
       background: transparent;
       color: #FF5500;
@@ -631,6 +633,7 @@
     ? crypto.randomUUID()
     : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
   const clipIds = {}; // kind -> clip_id returned by /validate-clip
+  let stopActiveRecording = null; // set while a record-in-place step is recording
 
   // ── Shared mic stream, requested once, reused by every step, so the
   // user only sees one permission prompt no matter which step they start
@@ -756,6 +759,7 @@
       const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
 
       recorder.start();
+      stopActiveRecording = stop;
       elapsed = 0;
       statusEl.textContent = 'Recording… 0:00';
       startBtn.style.display = 'none';
@@ -771,6 +775,7 @@
 
       await stopped;
       clearInterval(timerInterval);
+      if (stopActiveRecording === stop) stopActiveRecording = null;
 
       const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
 
@@ -906,6 +911,25 @@
   let _exampleTimeout = null;
   let _exampleBtn = null;   // button that started current playback
 
+  // Playing: lock the button's exact size, turn it orange, label STOP.
+  // Not playing: back to its normal look and text. No layout jump either way.
+  function setExampleBtnState(btn, playing) {
+    if (playing) {
+      const r = btn.getBoundingClientRect();
+      btn.style.width = r.width + 'px';
+      btn.style.height = r.height + 'px';
+      btn.classList.add('example-stop');
+      btn.textContent = 'STOP';
+      btn.dataset.playing = 'true';
+    } else {
+      btn.style.width = '';
+      btn.style.height = '';
+      btn.classList.remove('example-stop');
+      btn.textContent = btn.dataset.label;
+      btn.dataset.playing = '';
+    }
+  }
+
   function stopExample() {
     if (_exampleCtx) {
       try { _exampleCtx.close(); } catch (_) {}
@@ -914,10 +938,7 @@
     if (_exampleTimeout) { clearTimeout(_exampleTimeout); _exampleTimeout = null; }
     if (_exampleResolve) { _exampleResolve(); _exampleResolve = null; }
     // Restore all example buttons
-    document.querySelectorAll('.example-play-btn').forEach(b => {
-      b.textContent = b.dataset.label;
-      b.dataset.playing = '';
-    });
+    document.querySelectorAll('.example-play-btn').forEach(b => setExampleBtnState(b, false));
     _exampleBtn = null;
   }
 
@@ -970,8 +991,7 @@
         _exampleCtx = null; _exampleResolve = null; _exampleTimeout = null;
         try { ctx.close(); } catch (_) {}
         if (_exampleBtn) {
-          _exampleBtn.textContent = _exampleBtn.dataset.label;
-          _exampleBtn.dataset.playing = '';
+          setExampleBtnState(_exampleBtn, false);
           _exampleBtn = null;
         }
         resolve();
@@ -984,19 +1004,25 @@
     btn.classList.add('example-play-btn');
     btn.dataset.label = btn.textContent;
     btn.addEventListener('click', async () => {
+      // Pressing any example while recording ends the recording right away
+      // (a normal stop: the step shows Retake and the clip is still validated).
+      if (stopActiveRecording) stopActiveRecording();
       if (btn.dataset.playing === 'true') {
         stopExample();
         return;
       }
       stopExample();  // stop any other example
-      btn.textContent = '⏹ Stop';
-      btn.dataset.playing = 'true';
+      setExampleBtnState(btn, true);
       _exampleBtn = btn;
       await playVowelExample(opts);
-      btn.textContent = btn.dataset.label;
-      btn.dataset.playing = '';
+      setExampleBtnState(btn, false);
     });
   }
+
+  // Same for any audio preview play button: playing something stops a live recording.
+  document.addEventListener('play', (e) => {
+    if (e.target && e.target.tagName === 'AUDIO' && stopActiveRecording) stopActiveRecording();
+  }, true);
 
   wireExampleBtn(document.getElementById('glideExampleBtn'),
     { vowel: 'ah', duration: 6, glideFrom: 146.8, glideTo: 392.0 });  // D3 → G4
@@ -1139,7 +1165,9 @@
   // Pitch held steady each note, then brief exponential portamento at the tail into the next note.
   // This is what makes it sound sung rather than robotic.
   function scheduleConnectedMelody(ctx, hzArray, noteSec, startTime, vowel) {
-    const PORT_FRAC = 0.05;  // portamento = 5% of note duration
+    // Portamento is a fixed TIME, not a share of the note, so fast and slow
+    // melodies slide at the same speed (clamped for very short notes).
+    const PORT_SEC  = 0.040;
     const FADE_IN   = 0.04;
     const FADE_OUT  = 0.07;
     const PEAK      = 0.5;
@@ -1156,7 +1184,7 @@
       const hz        = hzArray[i];
       const noteStart = startTime + i * noteSec;
       const noteEnd   = startTime + (i + 1) * noteSec;
-      const portStart = noteEnd - noteSec * PORT_FRAC;
+      const portStart = noteEnd - Math.min(PORT_SEC, noteSec * 0.3);
 
       source.frequency.setValueAtTime(hz, noteStart);       // hold pitch here
       if (i < n - 1) {
@@ -1396,6 +1424,7 @@
       }
 
       rootHz = detection.rootHz;
+      recordings.speech_clip = speechBlob;   // attached to the coach email, labeled "speaking voice"
     }
 
     ladderState.rootHz = rootHz;
@@ -1537,6 +1566,7 @@
       if (recordings.pitch_root_hz)       formData.append('pitch_root_hz', String(recordings.pitch_root_hz));
       if (recordings.pitch_ladder_results) formData.append('pitch_ladder_results', recordings.pitch_ladder_results);
       if (recordings.pitch_test_audio)    formData.append('pitch_test_audio', recordings.pitch_test_audio, 'pitch_test.webm');
+      if (recordings.speech_clip)         formData.append('speech_clip', recordings.speech_clip, 'speech_clip.webm');
 
       try {
         const resp = await fetch(SUBMIT_URL, { method: 'POST', body: formData });
