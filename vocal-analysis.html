@@ -328,7 +328,7 @@
   <div class="hero">
     <div class="hero-label">FREE · NO STRINGS</div>
     <h1>Find out <span>exactly</span> what's<br>holding your voice back.</h1>
-    <p>4 short guided steps, right here in your browser. Hear an example, record, done. Takes about 6 minutes. Get a full Vocal Analysis: your pattern, a pitch graph, and a clear direction. In your inbox in 10-15 minutes.</p>
+    <p>4 short guided steps, right here in your browser. Hear an example, record, done. Takes about 6 minutes. Get a full Vocal Analysis: your pattern, a pitch graph, and a clear direction. On your screen in 1 to 2 minutes, and in your inbox right after.</p>
     <div class="pill-row">
       <span class="pill"><strong>6 min</strong>, all in-browser</span>
       <span class="pill"><strong>Free</strong> forever</span>
@@ -552,7 +552,7 @@
     </div>
     <div class="faq">
       <div class="faq-q">How long until I get my Vocal Analysis?</div>
-      <div class="faq-a">The test itself takes about 6 minutes. The analysis runs automatically after you submit (real audio processing, not a quiz) and the PDF lands in your inbox in 10-15 minutes.</div>
+      <div class="faq-a">The test itself takes about 6 minutes. The analysis runs automatically after you submit (real audio processing, not a quiz). Your results show up on the page in 1 to 2 minutes, and the PDF lands in your inbox right after.</div>
     </div>
     <div class="faq">
       <div class="faq-q">What if my recording quality isn't great?</div>
@@ -1436,6 +1436,10 @@
         ascending_mean_cents:   result.ascending_mean_cents   || 0,
         descending_mean_cents:  result.descending_mean_cents  || 0,
         octave_errors:          result.octave_errors          || 0,
+        // Evidence for the on-screen per-round graph only (stripped before submit)
+        notes:                  result.notes                  || [],
+        contour:                result.contour                || [],
+        sing_sec:               result.sing_sec               || RUNG_PATTERNS[i].sing_sec,
       });
 
       if (stars === 2) ladderState.twoStarCount++;
@@ -1455,7 +1459,9 @@
     }
 
     // Save ladder results for submit
-    recordings.pitch_ladder_results = JSON.stringify(ladderState.rungResults);
+    recordings.pitch_ladder_results = JSON.stringify(
+      ladderState.rungResults.map(({ notes, contour, sing_sec, ...forServer }) => forServer)
+    );
 
     // Concatenate all rung audio blobs → single file for coach email
     if (pitchBlobs.length > 0) {
@@ -1536,18 +1542,24 @@
         const tier = computeTierFromRung(rungReached);
         const exerciseUrl = `https://api.nandovocalcoach.com/dev/exercise?tier=${tier}`;
 
-        // Show loading state while polling
+        // Waiting screen: pitch result first (already scored in the browser),
+        // then a status line with a live timer, then rotating facts.
         formSection.innerHTML = `
+          <div id="pitchSummary"></div>
           <div id="analysisWaiting" style="padding: 10px 0; text-align: center;">
-            <div style="font-size: 2.2rem; margin-bottom: 16px;">🎙</div>
             <h2 style="margin-bottom: 12px;">Analyzing your voice...</h2>
-            <p style="color: #9CA3AF; font-size: 0.98rem; margin-bottom: 24px;">
-              Real audio processing, not a quiz. Usually takes about a minute.
-            </p>
-            <div id="analysisDots" style="display:flex; justify-content:center; gap:8px; margin-bottom: 24px;">
+            <div id="analysisDots" style="display:flex; justify-content:center; gap:8px; margin-bottom: 14px;">
               <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:1;display:inline-block;"></span>
               <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:0.4;display:inline-block;"></span>
               <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FF5500;opacity:0.4;display:inline-block;"></span>
+            </div>
+            <p id="analysisStatusLine" style="color: #9CA3AF; font-size: 0.98rem; margin: 0 0 6px;">${WAIT_STATUS_TEXT}</p>
+            <p style="font-size:1.05rem; font-weight:700; color:#FF5500; margin: 0 0 22px; font-variant-numeric: tabular-nums;">
+              <span id="analysisTimer">0:00</span>
+            </p>
+            <div id="factCard" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:16px 18px; margin: 0 auto 22px; max-width:480px; text-align:left; transition: opacity 0.5s ease;">
+              <div style="font-size:0.72rem; font-weight:700; letter-spacing:0.1em; color:#FF5500; text-transform:uppercase; margin-bottom:6px;">Did you know...</div>
+              <div id="factText" style="font-size:0.95rem; line-height:1.6; color:#D1D5DB;"></div>
             </div>
             <p style="font-size: 0.82rem; color: #6B7280;">
               A full report will also land in <strong style="color:#9CA3AF;">${submittedEmail}</strong>
@@ -1556,6 +1568,8 @@
           <div id="analysisResults" style="display:none;"></div>
         `;
 
+        renderPitchSummary(document.getElementById('pitchSummary'));
+
         // Animate the dots
         let dotFrame = 0;
         const dots = formSection.querySelectorAll('.dot');
@@ -1563,6 +1577,24 @@
           dotFrame = (dotFrame + 1) % dots.length;
           dots.forEach((d, i) => d.style.opacity = i === dotFrame ? '1' : '0.4');
         }, 400);
+
+        // Live elapsed timer + rotating facts
+        const waitStart = Date.now();
+        let longWaitShown = false;
+        const timerEl = document.getElementById('analysisTimer');
+        const clockTimer = setInterval(() => {
+          const sec = Math.floor((Date.now() - waitStart) / 1000);
+          if (timerEl) timerEl.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+          if (!longWaitShown && sec >= WAIT_LONG_AFTER_SEC) {
+            longWaitShown = true;
+            const line = document.getElementById('analysisStatusLine');
+            if (line) line.textContent = 'Taking longer than usual, still working...';
+          }
+        }, 1000);
+        const stopFacts = startFactRotation(document.getElementById('factCard'), document.getElementById('factText'));
+        const stopWaitingUi = () => {
+          clearInterval(pollTimer); clearInterval(dotTimer); clearInterval(clockTimer); stopFacts();
+        };
 
         // Poll /status/<run_id>
         const STATUS_URL = `${API_BASE}/status/${runId}`;
@@ -1573,33 +1605,30 @@
             const data = await sr.json();
 
             if (data.status === 'done') {
-              clearInterval(pollTimer);
-              clearInterval(dotTimer);
+              stopWaitingUi();
               showAnalysisResults(data, submittedEmail, exerciseUrl, formSection);
             } else if (data.status === 'error') {
-              clearInterval(pollTimer);
-              clearInterval(dotTimer);
+              stopWaitingUi();
               const waiting = document.getElementById('analysisWaiting');
               if (waiting) waiting.innerHTML = `
                 <h2 style="margin-bottom:12px;">Something went wrong</h2>
                 <p style="color:#9CA3AF;">${data.message || 'Please try again or email nando@nandovocalcoach.com'}</p>
               `;
             }
-          } catch (_) { /* network blip — keep polling */ }
-        }, 5000);
+          } catch (_) { /* network blip, keep polling */ }
+        }, 2000);
 
         // Fallback: if still processing after 8 min, show email message
         setTimeout(() => {
-          clearInterval(pollTimer);
-          clearInterval(dotTimer);
+          stopWaitingUi();
           const waiting = document.getElementById('analysisWaiting');
           if (waiting && waiting.style.display !== 'none') {
             waiting.innerHTML = `
               <h2 style="margin-bottom:12px;">Still processing...</h2>
               <p style="color:#9CA3AF;font-size:0.98rem;margin-bottom:16px;">
                 This is taking longer than usual. Check your inbox at
-                <strong style="color:white;">${submittedEmail}</strong> —
-                your results will arrive there once the analysis completes.
+                <strong style="color:white;">${submittedEmail}</strong>.
+                Your results will arrive there once the analysis completes.
               </p>
               <p style="font-size:0.82rem;color:#6B7280;">
                 Questions? <a href="mailto:nando@nandovocalcoach.com" style="color:#FF5500;">nando@nandovocalcoach.com</a>
@@ -1615,6 +1644,195 @@
         submitBtn.disabled = false;
       }
     });
+  }
+
+
+  // ── Waiting screen: pitch result, facts, timer ────────────────────────────
+  const WAIT_STATUS_TEXT = "Your full Vocal Analysis is on its way. This takes 1 to 2 minutes. The page is working, please don't close it.";
+  const WAIT_LONG_AFTER_SEC = 4 * 60;
+  const FACT_INTERVAL_MS = 8000;
+
+  // Edit freely: one fact per line. Shown in random order, no repeats until all are seen.
+  const DID_YOU_KNOW = [
+    "Your voice doesn't come from your chest or your head. It all starts at your vocal folds, and your throat and mouth shape the sound on its way out.",
+    "On a note around middle C, your vocal folds open and close about 260 times every second.",
+    "Your recorded voice sounds \"off\" because when you sing, you also hear yourself through the bones of your head, which adds bass. The recording is closer to what everyone else hears.",
+    "You can't really feel or control your diaphragm while you sing. It pulls air in, then gently releases as you sing. What singers call \"support\" is mostly your belly and rib muscles.",
+    "Getting louder isn't about pushing more air. It's pressure under the vocal folds plus how cleanly they close. More air through loosely closed folds just sounds breathy.",
+    "A voice crack is a quick hand-off between two muscles: one stretches the folds, the other thickens them. It's coordination, not weakness, and coordination is trainable.",
+    "Chest voice and head voice aren't separate boxes. Two muscles trade the work gradually, which is why a \"mix\" is possible.",
+    "True tone deafness is rare. Many people who think they're tone-deaf simply never practiced matching pitch, and that's a trainable skill.",
+    "Lifting your chin to reach a high note usually makes it harder. It pulls on the muscles around your larynx and narrows the space the sound travels through.",
+    "Short practice sessions spread over several days stick better than one long session.",
+    "Vibrato usually shows up on its own once tension lets go. After that, singers learn to shape its speed and width.",
+    "Your brain doesn't time each vibration. Air pressure and elastic tissue keep your folds vibrating on their own, like a flag flapping in the wind.",
+    "When you get louder, your pitch naturally drifts up a little. Your muscles quietly adjust to keep you in tune.",
+    "A rich, full sound comes from the vocal folds getting thicker, not from squeezing them together harder.",
+  ];
+
+  // Rotates facts with a fade, shuffled, no repeats until the deck is used up.
+  // Returns a stop function. Shows only one fact if WAIT is expected to be short.
+  function startFactRotation(cardEl, textEl, { single = false } = {}) {
+    if (!cardEl || !textEl) return () => {};
+    let deck = [];
+    let last = -1;
+    function nextFact() {
+      if (deck.length === 0) {
+        deck = DID_YOU_KNOW.map((_, i) => i);
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        // don't repeat the previous fact across the deck boundary
+        if (deck.length > 1 && deck[deck.length - 1] === last) {
+          [deck[0], deck[deck.length - 1]] = [deck[deck.length - 1], deck[0]];
+        }
+      }
+      last = deck.pop();
+      return DID_YOU_KNOW[last];
+    }
+    textEl.textContent = nextFact();
+    if (single) return () => {};
+    const iv = setInterval(() => {
+      cardEl.style.opacity = '0';
+      setTimeout(() => { textEl.textContent = nextFact(); cardEl.style.opacity = '1'; }, 520);
+    }, FACT_INTERVAL_MS);
+    return () => clearInterval(iv);
+  }
+
+  // ── Pitch matching result messages (approved copy) ──
+  const PITCH_MESSAGES = {
+    perfect: "You climbed the whole ladder without missing a step. That last melody is fast, it leaps around, and it doesn't follow familiar patterns, so it trips up trained singers. Your ear and your voice are working together really well. 🎉",
+    top:     "You made it to the top of the ladder. The last rounds are built to stretch even experienced singers: fast, jumpy, unfamiliar. A few slips up there is normal. Your ear is in great shape.",
+    mid:     "You climbed into the advanced rounds. Short patterns are solid for you. The faster, jumpier ones are where your ear and voice are still syncing up, and that's very trainable.",
+    low:     "Simple melodies came through clearly. As the patterns got longer and faster, keeping every note on target got harder. That's exactly the skill pitch training builds, one step at a time.",
+    start:   "This part finds where your ear and your voice meet. Matching a note you just heard is a skill, not a talent, and many people simply never got to practice it. Now we know your starting point, and it's very trainable.",
+  };
+
+  function pitchMessageKey(results) {
+    const reached = results.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
+    const perfect = results.length === RUNG_PATTERNS.length && results.every(r => r.stars === 3);
+    if (perfect) return 'perfect';
+    if (reached >= 7) return 'top';
+    if (reached >= 5) return 'mid';
+    if (reached >= 3) return 'low';
+    return 'start';
+  }
+
+  // Ladder graphic: 7 rungs, climbed ones filled. No numbers, stars or percentages.
+  function ladderSvg(reached) {
+    const n = RUNG_PATTERNS.length;
+    const W = 96, H = 190, top = 10, gap = (H - top - 12) / (n - 1);
+    let rungs = '';
+    for (let k = 1; k <= n; k++) {
+      const y = H - 12 - (k - 1) * gap;
+      const on = k <= reached;
+      rungs += `<rect x="16" y="${(y - 6).toFixed(1)}" width="64" height="12" rx="6" fill="${on ? '#FF5500' : 'rgba(255,255,255,0.12)'}" stroke="${on ? '#FF5500' : 'rgba(255,255,255,0.25)'}" stroke-width="1"/>`;
+    }
+    return `<svg viewBox="0 0 ${W} ${H}" width="96" height="190" role="img" aria-label="Pitch ladder, ${reached} of ${n} rungs climbed" style="flex-shrink:0;">
+      <rect x="10" y="2" width="5" height="${H - 4}" rx="2.5" fill="rgba(255,255,255,0.3)"/>
+      <rect x="81" y="2" width="5" height="${H - 4}" rx="2.5" fill="rgba(255,255,255,0.3)"/>
+      ${rungs}
+    </svg>`;
+  }
+
+  // Small graph for one round: target notes as horizontal bars, the singer's voice as a line.
+  function roundGraphSvg(r) {
+    const W = 300, H = 96, padX = 6, padY = 8;
+    const notes = r.notes || [];
+    const contour = r.contour || [];
+    if (!notes.length) return '';
+    const sing = r.sing_sec || 6;
+    const toSt = (hz) => 12 * Math.log2(hz / 220);
+    let lo = Math.min(...notes.map(n => toSt(n.target_hz)));
+    let hi = Math.max(...notes.map(n => toSt(n.target_hz)));
+    contour.forEach(c => { if (c.hz) { const st = toSt(c.hz); lo = Math.min(lo, st); hi = Math.max(hi, st); } });
+    lo -= 1.5; hi += 1.5;
+    const x = (t) => padX + Math.max(0, Math.min(1, t / sing)) * (W - 2 * padX);
+    const y = (st) => H - padY - ((st - lo) / (hi - lo)) * (H - 2 * padY);
+    const seg = sing / notes.length;
+    const bars = notes.map((n, i) => {
+      const t0 = n.t_start != null ? n.t_start : i * seg;
+      const t1 = n.t_end   != null ? n.t_end   : (i + 1) * seg;
+      const col = n.hit ? '#22c55e' : '#f59e0b';
+      return `<rect x="${x(t0).toFixed(1)}" y="${(y(toSt(n.target_hz)) - 4).toFixed(1)}" width="${Math.max(3, x(t1) - x(t0) - 1).toFixed(1)}" height="8" rx="3" fill="${col}" fill-opacity="0.55"/>`;
+    }).join('');
+    let d = '', pen = false;
+    contour.forEach(c => {
+      if (!c.hz) { pen = false; return; }
+      d += `${pen ? 'L' : 'M'}${x(c.t).toFixed(1)} ${y(toSt(c.hz)).toFixed(1)} `;
+      pen = true;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Target notes and what you sang, round ${r.rung}" style="display:block; background:rgba(255,255,255,0.04); border-radius:8px;">
+      ${bars}
+      <path d="${d}" fill="none" stroke="#FF5500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  function launchConfetti() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = document.createElement('canvas');
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2000;';
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    document.body.appendChild(cv);
+    const g = cv.getContext('2d');
+    const colors = ['#FF5500', '#22c55e', '#fbbf24', '#60a5fa', '#f472b6', '#ffffff'];
+    const bits = Array.from({ length: 140 }, () => ({
+      x: Math.random() * cv.width, y: -Math.random() * cv.height * 0.5,
+      w: (6 + Math.random() * 6) * dpr, h: (8 + Math.random() * 8) * dpr,
+      vx: (Math.random() - 0.5) * 2 * dpr, vy: (2 + Math.random() * 4) * dpr,
+      rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.3,
+      c: colors[Math.floor(Math.random() * colors.length)],
+    }));
+    const t0 = performance.now();
+    (function frame(now) {
+      const age = now - t0;
+      g.clearRect(0, 0, cv.width, cv.height);
+      bits.forEach(b => {
+        b.x += b.vx; b.y += b.vy; b.rot += b.vr;
+        g.save(); g.translate(b.x, b.y); g.rotate(b.rot);
+        g.globalAlpha = Math.max(0, Math.min(1, (3800 - age) / 800));
+        g.fillStyle = b.c; g.fillRect(-b.w / 2, -b.h / 2, b.w, b.h); g.restore();
+      });
+      if (age < 3800) requestAnimationFrame(frame); else cv.remove();
+    })(t0);
+  }
+
+  function renderPitchSummary(container) {
+    if (!container) return;
+    const results = ladderState.rungResults;
+    if (!results.length) return;
+    const reached = results.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
+    const key = pitchMessageKey(results);
+    const rounds = results.map(r => `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem; color:#9CA3AF; margin-bottom:5px;">Round ${r.rung}: ${r.rung_name}</div>
+        ${roundGraphSvg(r)}
+      </div>`).join('');
+    container.innerHTML = `
+      <div style="text-align:left; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:20px; margin-bottom:24px;">
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:#FF5500;text-transform:uppercase;margin-bottom:12px;">Your Pitch Matching</div>
+        <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+          ${ladderSvg(reached)}
+          <p style="flex:1; min-width:220px; margin:0; color:#E5E7EB; font-size:1rem; line-height:1.65;">${PITCH_MESSAGES[key]}</p>
+        </div>
+        <button type="button" id="seeRoundsBtn" aria-expanded="false"
+                style="margin-top:14px; background:none; border:none; padding:0; color:#FF5500; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit;">See each round ▾</button>
+        <div id="roundsDetail" style="display:none; margin-top:14px;">
+          <p style="font-size:0.78rem; color:#9CA3AF; margin:0 0 12px;">Bars are the notes you heard (green = you landed it, amber = it slipped). The orange line is your voice.</p>
+          ${rounds}
+        </div>
+      </div>`;
+    const btn = document.getElementById('seeRoundsBtn');
+    const detail = document.getElementById('roundsDetail');
+    btn.addEventListener('click', () => {
+      const open = detail.style.display === 'none';
+      detail.style.display = open ? 'block' : 'none';
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Hide rounds ▴' : 'See each round ▾';
+    });
+    if (key === 'perfect') launchConfetti();
   }
 
   function showAnalysisResults(data, submittedEmail, exerciseUrl, formSection) {
