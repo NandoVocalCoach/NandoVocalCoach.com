@@ -124,6 +124,7 @@
 
         <p class="book-label">Book your first session</p>
         <p class="book-sub" id="book-sub">Pick the day and time that works best for you.</p>
+        <p class="book-sub">Cancel or reschedule at least 24 hours before your session. Missed sessions and late cancellations count as used.</p>
 
         <div class="tidycal-wrap">
             <div class="tidycal-embed" id="tidycal-embed"></div>
@@ -172,7 +173,7 @@
         var el = document.getElementById('sessions-count');
         if (plan === '590' || plan === '360') {
             el.textContent = 'Your ' + (plan === '590' ? '8' : '4') + ' sessions are ready to schedule.';
-            document.getElementById('book-sub').textContent = "Use this same link to book each one, they're all included in your pack. Come back to it each time you're ready to book the next one.";
+            document.getElementById('book-sub').textContent = "Use this same link to book each one, they're all included in your pack. Your pack is valid for " + (plan === '590' ? "4 weeks from your first session, 2 sessions per week." : "90 days from your first session.");
         } else if (plan === '40') {
             el.textContent = 'Your first session is ready to schedule.';
         }
