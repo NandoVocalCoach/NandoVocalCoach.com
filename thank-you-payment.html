@@ -123,7 +123,7 @@
         <hr class="divider">
 
         <p class="book-label">Book your first session</p>
-        <p class="book-sub">Use this link to schedule each of your sessions — it won't charge you again.<br>Come back to it each time you're ready to book the next one.</p>
+        <p class="book-sub" id="book-sub">Pick the day and time that works best for you.</p>
 
         <div class="tidycal-wrap">
             <div class="tidycal-embed" id="tidycal-embed"></div>
@@ -170,10 +170,9 @@
         var params = new URLSearchParams(window.location.search);
         var plan = params.get('plan');
         var el = document.getElementById('sessions-count');
-        if (plan === '590') {
-            el.textContent = 'Your 8 sessions are ready to schedule.';
-        } else if (plan === '360') {
-            el.textContent = 'Your 4 sessions are ready to schedule.';
+        if (plan === '590' || plan === '360') {
+            el.textContent = 'Your ' + (plan === '590' ? '8' : '4') + ' sessions are ready to schedule.';
+            document.getElementById('book-sub').textContent = "Use this same link to book each one, they're all included in your pack. Come back to it each time you're ready to book the next one.";
         } else if (plan === '40') {
             el.textContent = 'Your first session is ready to schedule.';
         }
