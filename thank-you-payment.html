@@ -18,8 +18,15 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1823893192119219');
     fbq('track', 'PageView');
-    var _planAmt = parseFloat(new URLSearchParams(window.location.search).get('plan')) || 0;
-    fbq('track', 'Purchase', {value: _planAmt, currency: 'USD'});
+    var _params = new URLSearchParams(window.location.search);
+    var _planAmt = parseFloat(_params.get('plan')) || 0;
+    var _eid = _params.get('eid');
+    // eid matches the server-side Conversions API event, so Meta counts the sale once
+    if (_eid) {
+        fbq('track', 'Purchase', {value: _planAmt, currency: 'USD'}, {eventID: _eid});
+    } else {
+        fbq('track', 'Purchase', {value: _planAmt, currency: 'USD'});
+    }
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1823893192119219&ev=Purchase&noscript=1"

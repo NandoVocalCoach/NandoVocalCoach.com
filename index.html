@@ -893,13 +893,23 @@
                         var name  = (details.payer && details.payer.name)
                             ? (details.payer.name.given_name + ' ' + details.payer.name.surname).trim()
                             : '';
-                        // Fire booking email server-side; redirect regardless of outcome
+                        // Shared with the pixel on the thank-you page so Meta counts the sale once
+                        var eventId = 'pp_' + (details.id || Date.now());
+                        var cookie = function(n) {
+                            var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)');
+                            return m ? decodeURIComponent(m[1]) : '';
+                        };
+                        // Fire booking email + Meta Conversions API server-side; redirect regardless of outcome
                         fetch('https://api.nandovocalcoach.com/session/pay', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: new URLSearchParams({ email: email, name: name, plan: plan })
+                            body: new URLSearchParams({
+                                email: email, name: name, plan: plan,
+                                event_id: eventId, fbp: cookie('_fbp'), fbc: cookie('_fbc'),
+                                source_url: window.location.href
+                            })
                         }).finally(function() {
-                            window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan;
+                            window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan + '&eid=' + encodeURIComponent(eventId);
                         });
                     });
                 },
