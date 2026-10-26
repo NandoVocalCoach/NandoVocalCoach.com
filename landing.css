@@ -75,6 +75,10 @@ h1 span { display: block; white-space: nowrap; }
 
 /* ---------- Proof ---------- */
 .proof .video-box { width: 82%; margin: 0 auto 18px; }
+.proof .video-box + .who { margin-top: -8px; }
+.who { text-align: center; font-size: 13px; color: var(--muted); margin: 0 0 20px; line-height: 1.45; }
+.who b { color: var(--text); }
+.who span { display: block; }
 .badge { width: 72%; max-width: 300px; margin: 6px auto 20px; border-radius: 12px; }
 blockquote { margin: 0 0 14px; background: var(--card); border-left: 3px solid var(--orange); border-radius: 10px; padding: 14px 16px; font-size: 15px; }
 blockquote cite { display: block; margin-top: 8px; font-style: normal; font-weight: 700; color: var(--muted); font-size: 13px; }
