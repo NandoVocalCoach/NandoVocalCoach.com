@@ -27,24 +27,40 @@
   }
   window.addEventListener('scroll', updateSticky, { passive: true });
 
-  // Videos: play muted when on screen (captions are burned in); the sound button restarts with sound
+  // Videos: play muted when on screen (captions are burned in). Tap the video to pause/play; the sound button toggles sound.
   var videos = document.querySelectorAll('video');
   videos.forEach(function (v) {
-    var btn = v.parentNode.querySelector('.sound-btn');
-    if (btn) btn.addEventListener('click', function () {
-      videos.forEach(function (o) { if (o !== v) { o.muted = true; } });
-      v.muted = false; v.currentTime = 0; v.play();
-      btn.hidden = true;
+    var box = v.parentNode;
+    var btn = box.querySelector('.sound-btn');
+    var ico = document.createElement('div');
+    ico.className = 'play-ico'; ico.innerHTML = '&#9658;';
+    box.appendChild(ico);
+    v.addEventListener('click', function () {
+      if (v.paused) { v.dataset.userPaused = ''; v.play(); } else { v.dataset.userPaused = '1'; v.pause(); }
     });
-    v.addEventListener('volumechange', function () { if (btn) btn.hidden = !v.muted; });
+    v.addEventListener('play', function () { box.classList.remove('paused'); });
+    v.addEventListener('pause', function () { box.classList.toggle('paused', v.dataset.userPaused === '1'); });
+    if (btn) btn.addEventListener('click', function () {
+      if (v.muted) {
+        videos.forEach(function (o) { if (o !== v) o.muted = true; });
+        v.muted = false;
+        if (v.paused) { v.dataset.userPaused = ''; v.play(); }
+      } else { v.muted = true; }
+    });
+    v.addEventListener('volumechange', function () { if (btn) btn.innerHTML = v.muted ? '&#128264; Tap for sound' : '&#128266; Sound on'; });
   });
   var playIfVisible = function (v, visible) {
-    if (visible) { var p = v.play(); if (p && p.catch) p.catch(function () { v.controls = true; }); }
-    else v.pause();
+    if (visible) {
+      if (v.dataset.userPaused === '1') return;
+      var p = v.play(); if (p && p.catch) p.catch(function () { v.controls = true; });
+    } else v.pause();
   };
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { playIfVisible(e.target, e.intersectionRatio > 0.5); });
+      es.forEach(function (e) {
+        if (!e.isIntersecting) e.target.dataset.userPaused = '';  // re-arm autoplay after it leaves the screen
+        playIfVisible(e.target, e.intersectionRatio > 0.5);
+      });
     }, { threshold: [0, 0.5] });
     // Hero waits for the page to finish loading so the first screen never waits on video
     window.addEventListener('load', function () { videos.forEach(function (v) { io.observe(v); }); });
