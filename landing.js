@@ -35,7 +35,9 @@
     var ico = document.createElement('div');
     ico.className = 'play-ico'; ico.innerHTML = '&#9658;';
     box.appendChild(ico);
+    // First tap on a muted video turns the sound on; after that, taps pause/play
     v.addEventListener('click', function () {
+      if (v.muted && !v.paused && btn) { btn.click(); return; }
       if (v.paused) { v.dataset.userPaused = ''; v.play(); } else { v.dataset.userPaused = '1'; v.pause(); }
     });
     v.addEventListener('play', function () { box.classList.remove('paused'); });
