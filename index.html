@@ -52,7 +52,7 @@
       "@type": "Person",
       "name": "Nando",
       "jobTitle": "Vocal Coach",
-      "description": "Vocal coach specializing in singers other coaches give up on. MTD, vocal hyperfunction, and voices that fight themselves. Choir Conductor, Tolima Conservatory. 12+ years experience. Fiverr Top Rated, 270+ reviews, 5.0 average.",
+      "description": "Vocal coach specializing in singers other coaches give up on. MTD, vocal hyperfunction, and voices that fight themselves. Choir Conductor, Tolima Conservatory. 12+ years experience. Fiverr Top Rated, 280+ reviews, 5.0 average.",
       "url": "https://nandovocalcoach.com",
       "sameAs": [
         "https://www.instagram.com/nandovocalcoach/",
@@ -64,7 +64,7 @@
         "name": "Vocal Coaching Services",
         "itemListElement": [
           { "@type": "Offer", "name": "1st Voicebuilding Session", "price": "40", "priceCurrency": "USD" },
-          { "@type": "Offer", "name": "Vocal Fitness (4 sessions)", "price": "360", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "Voicebuilding Pack (4 sessions)", "price": "360", "priceCurrency": "USD" },
           { "@type": "Offer", "name": "1-Month Transformation (8 sessions)", "price": "590", "priceCurrency": "USD" }
         ]
       }
@@ -166,7 +166,7 @@
             margin-bottom: 0.5rem;
         }
         .hero-intro p { font-size: 1.2rem; color: #ccc; font-weight: 500; }
-        .hero-video-wrap { width: 100%; max-width: 960px; padding: 0 1.5rem 2.5rem; }
+        .hero-video-wrap { width: 100%; max-width: 640px; padding: 0 1.5rem 1.5rem; }
         .hero-video-wrap video { width: 100%; border-radius: 8px; display: block; background: #000; }
 
         /* Social proof strip */
@@ -436,6 +436,39 @@
         .booking-plan-guarantee { font-size: 0.72rem; opacity: 0.55; margin-bottom: 0.8rem; }
         @media (max-width: 600px) { .booking-plan { min-width: 100%; max-width: 100%; } }
 
+        /* Homepage sections */
+        .hero-cta { width: 100%; max-width: 480px; padding: 0 1.5rem 1.5rem; margin: 0 auto; }
+        .home-btn { display: block; width: 100%; padding: 14px 16px; border-radius: 10px; background: #FF5500; color: #fff; font-weight: 700; font-size: 1rem; text-align: center; cursor: pointer; }
+        .home-btn:hover { background: #e64500; }
+        .home-btn-wa { margin-top: 10px; background: transparent; color: #25D366; border: 2px solid #25D366; font-size: 0.95rem; padding: 11px 16px; }
+        .home-btn-wa:hover { background: transparent; }
+        .hero-fine { margin-top: 10px; font-size: 0.82rem; color: #aaa; }
+        .hero-fine .stars { color: #ffb400; letter-spacing: 1px; }
+        html[lang="es"] #doors { display: none; }
+        #doors h2, #first-session h2 { margin-bottom: 1.5rem; }
+        .doors-grid { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .door { flex: 1; min-width: 240px; max-width: 400px; background: #1a1a1a; border: 2px solid rgba(128,128,128,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; transition: border-color 0.2s; }
+        .door:hover { border-color: #FF5500; }
+        .door b { display: block; font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 1.6rem; letter-spacing: 0.04em; color: #FF5500; }
+        .door span { display: block; font-size: 0.95rem; color: #ccc; }
+        #first-session { max-width: 760px; }
+        .session-steps { counter-reset: s; list-style: none; margin-bottom: 1.25rem; }
+        .session-steps li { counter-increment: s; position: relative; padding: 0 0 14px 46px; }
+        .session-steps li::before { content: counter(s); position: absolute; left: 0; top: -2px; width: 32px; height: 32px; border-radius: 50%; background: #FF5500; color: #fff; font: 22px/32px "Bebas Neue", sans-serif; text-align: center; }
+        .prep-box { background: #1a1a1a; border-radius: 12px; padding: 14px 16px; font-size: 0.95rem; margin-bottom: 1rem; }
+        .prep-box strong { color: #FF5500; }
+        .practical { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .practical div { background: #1a1a1a; border-radius: 12px; padding: 14px; font-size: 0.88rem; line-height: 1.4; }
+        .practical b { display: block; font: 400 1.25rem/1.1 "Bebas Neue", sans-serif; letter-spacing: 0.03em; color: #FF5500; margin-bottom: 4px; }
+        .clips { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+        .clip { flex: 1; min-width: 240px; max-width: 320px; }
+        .clip video { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; background: #000; display: block; }
+        .clip p { margin-top: 8px; font-size: 0.8rem; line-height: 1.45; color: #a8a8a8; }
+        .clip p b { color: #fff; }
+        .clip p span { display: block; }
+        .not-ready { margin-top: 1.5rem; font-size: 0.95rem; }
+        .not-ready a { color: #FF5500; font-weight: 700; }
+
         /* Footer */
         footer { background: var(--footer-bg); color: var(--footer-text); text-align: center; padding: 1rem 0; margin-top: 50px; }
         footer .social a { margin: 0 15px; color: var(--footer-link); font-size: 1.5rem; transition: color 0.3s; }
@@ -481,6 +514,7 @@
             #about .profile-image img { width: 150px; }
         }
     </style>
+    <script src="clarity.js" defer></script>
 </head>
 <body>
     <header>
@@ -502,6 +536,11 @@
                 <source src="gig.mp4" type="video/mp4">
             </video>
         </div>
+        <div class="hero-cta">
+            <a class="home-btn js-book" href="#booking" data-phrase-key="heroBook">Book my first session · $40</a>
+            <a class="home-btn home-btn-wa js-contact" href="https://wa.me/573008630815?text=Hi%20Nando!%20I%20have%20a%20question." target="_blank" rel="noopener" data-phrase-key="heroWa">Not sure yet? Ask me on WhatsApp</a>
+            <p class="hero-fine" data-phrase-key="heroFine">55 min on Zoom · full refund · <span class="stars">★★★★★</span> 283 reviews</p>
+        </div>
     </section>
 
     <div id="proof-strip">
@@ -521,77 +560,44 @@
     <button id="sticky-cta" data-phrase-key="ctaButton">Book Your First Session · $40</button>
     <a id="ls-trial-trigger" class="lemonsqueezy-button" href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/6bbac3c0-abf6-45f1-84e6-bad969f38425?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D40" style="display:none;"></a>
 
-    <section id="pricing">
-        <h2 data-phrase-key="pricingTitle">The Programs</h2>
-        <div class="pricing-cards">
-            <div class="pricing-card">
-                <div class="plan-name" data-phrase-key="pricingPlan2Name">Voicebuilding Pack</div>
-                <div class="plan-price">$360</div>
-                <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions · 55 min each</div>
-                <div class="plan-desc" data-phrase-key="pricingPlan2Desc"><ul class='plan-bullets'><li>Use them within 90 days of your first pack session, at your own pace</li><li>Custom audio exercises between sessions</li><li>Feedback on your practice — within 48h</li></ul></div>
-                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/4f0bb419-e996-4b70-a37f-13da87501a58?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D340" class="plan-cta lemonsqueezy-button">Get Started →</a>
-                <div id="paypal-buttons-360" class="paypal-btn-container"></div>
-            </div>
-            <div class="pricing-card">
-                <div class="plan-name" data-phrase-key="pricingPlan3Name">1-Month Transformation</div>
-                <div class="plan-price">$590</div>
-                <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions · 55 min each</div>
-                <div class="plan-desc" data-phrase-key="pricingPlan3Desc"><ul class='plan-bullets'><li>8 sessions — 2x per week for 4 weeks</li><li>Maximum gains in 30 days</li><li>Custom audio exercises between sessions</li><li>Priority feedback between sessions — within 24h</li></ul></div>
-                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/2ed6680d-d2f5-410c-b2d7-afd89a4195b5?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D590" class="plan-cta lemonsqueezy-button">Get Started →</a>
-                <div id="paypal-buttons-590" class="paypal-btn-container"></div>
-            </div>
-        </div>
-        <div class="trust-strip">
-            <span data-phrase-key="trustSecure"><i class="fas fa-lock trust-lock"></i>Secure checkout</span>
-            <span data-phrase-key="trustStudents">280+ students</span>
-            <span data-phrase-key="trustLanguages">Sessions in English &amp; Spanish</span>
+    <section id="doors">
+        <h2>Where are you starting from?</h2>
+        <div class="doors-grid">
+            <a class="door" href="/beginners"><b>I think I can't sing</b><span>You can learn to sing. Your first session shows you how.</span></a>
+            <a class="door" href="/tension"><b>My voice feels stuck</b><span>Your voice isn't weak. It's blocked by tension.</span></a>
         </div>
     </section>
 
-    <section id="faq">
-        <h2 data-phrase-key="faqTitle">Questions</h2>
-        <div class="faq-item">
-            <div class="faq-q" data-phrase-key="faqQ1">I've tried vocal coaches before and nothing helped. Why would this be different?</div>
-            <div class="faq-a" data-phrase-key="faqA1">Been there. Most coaches teach what worked for them. That never worked for me. My voice was physically limited and wouldn't respond to general technique, so I had to go deeper: learn the science, test everything, find what actually moves the needle. That's what I bring to every session.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" data-phrase-key="faqQ2">I'm a complete beginner. Is this for me?</div>
-            <div class="faq-a" data-phrase-key="faqA2">Singing is a skill like any other. Anyone can learn it from scratch. Being a complete beginner is actually a plus: no bad habits to unlearn, just foundations built the right way from day one. If your voice is good enough to speak, it's good enough to sing.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" data-phrase-key="faqQ3">How does the first session actually work?</div>
-            <div class="faq-a" data-phrase-key="faqA3">We start with a quick intro to the mechanics of how your voice works. Then I assess your technique, find what's holding you back, and we work on it directly. We finish on a song of your choice. You'll hear your voice improve within the session, and leave knowing exactly what to work on next.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" data-phrase-key="faqQ4">Do I need any special equipment for online sessions?</div>
-            <div class="faq-a" data-phrase-key="faqA4">No special equipment. A laptop works best, phone if that's all you have. Earphones are a must.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" data-phrase-key="faqQ5">How quickly will I notice a difference?</div>
-            <div class="faq-a" data-phrase-key="faqA5">You'll notice something in your first session. That's what the guarantee is based on. Real, consistent progress after that comes week by week — and it moves faster the more you practice between sessions.</div>
-        </div>
-    </section>
-
-    <section id="about">
-        <div class="about-container">
-            <div class="profile-image">
-                <img src="profile.JPG" alt="Nando Portrait">
-            </div>
-            <div class="about-details">
-                <h2 data-phrase-key="aboutTitle">About Me</h2>
-                <div class="about-text">
-                    <p data-phrase-key="aboutIntro">I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.</p>
-                    <p data-phrase-key="aboutAdditional">Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.</p>
-                    <p data-phrase-key="aboutPart3">So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong></p>
-                    <p data-phrase-key="aboutPart4">Twelve years later, I specialize in exactly the student conventional teachers give up on. My voice still isn't fully recovered. But every exercise I give you, <strong>I've tested from the inside</strong>. If you've been told you don't have the talent, I know that feeling. And I know it's wrong.</p>
-                </div>
-            </div>
+    <section id="first-session">
+        <h2 data-phrase-key="sessionTitle">How your first session works</h2>
+        <ol class="session-steps">
+            <li data-phrase-key="sessionS1">We talk about your goals.</li>
+            <li data-phrase-key="sessionS2">I explain how your voice works.</li>
+            <li data-phrase-key="sessionS3">Warm-up and technique assessment, to find exactly what's limiting you.</li>
+            <li data-phrase-key="sessionS4">We work on a song of your choice, so you leave with real improvements and a clear plan.</li>
+        </ol>
+        <div class="prep-box" data-phrase-key="sessionPrep"><strong>To prepare:</strong> karaoke versions of 2 songs you like, one you find tough and one easier.</div>
+        <div class="practical">
+            <div data-phrase-key="practical1"><b>Zoom, 55 min</b>From anywhere, on your laptop or phone.</div>
+            <div data-phrase-key="practical2"><b>Recorded</b>Every session is recorded and sent to you.</div>
+            <div data-phrase-key="practical3"><b>Your time zone</b>Sessions fit US time zones. You pick your time after booking.</div>
+            <div data-phrase-key="practical4"><b>Songs in any language</b>Lessons in English or Spanish. Your songs can be in any language, any style.</div>
         </div>
     </section>
 
     <section id="testimonials">
         <span id="testimonials-anchor"></span>
         <h2 data-phrase-key="testimonialsTitle">What students say</h2>
+        <div class="clips">
+            <div class="clip">
+                <video controls preload="none" playsinline src="Media/landing/jorge-tension.mp4" poster="Media/landing/jorge-tension-poster.jpg"></video>
+                <p data-phrase-key="clipJorge"><b>Jorge</b> · Composer, producer and arranger<span>Master's in music · @jirmstyleofficial</span></p>
+            </div>
+            <div class="clip">
+                <video controls preload="none" playsinline src="Media/landing/jonathan-beginners.mp4" poster="Media/landing/jonathan-beginners-poster.jpg"></video>
+                <p data-phrase-key="clipJonathan"><b>Jonathan</b> · "I was told I was tone deaf"</p>
+            </div>
+        </div>
         <img src="fiverr_edited.png" alt="Nando on Fiverr — 5.0 · 283 reviews · Top Rated" style="max-width:310px; width:75%; border-radius:12px; margin:1rem auto 1.5rem; display:block; opacity:0.9;">
         <div style="position:relative;">
             <div class="testimonial-carousel">
@@ -629,6 +635,74 @@
         </div>
     </section>
 
+    <section id="about">
+        <div class="about-container">
+            <div class="profile-image">
+                <img src="profile.JPG" alt="Nando Portrait">
+            </div>
+            <div class="about-details">
+                <h2 data-phrase-key="aboutTitle">About Me</h2>
+                <div class="about-text">
+                    <p data-phrase-key="aboutIntro">I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.</p>
+                    <p data-phrase-key="aboutAdditional">Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.</p>
+                    <p data-phrase-key="aboutPart3">So I got obsessed. Speech therapists, vocology research, every exercise tested on myself before I gave it to a student. What I kept finding, case after case: vocal hyperfunction. Two opposing muscle groups pulling against each other at the same time, every single phonation. The voice isn't weak. It's fighting itself. <strong>And the harder you push, the tighter the lock.</strong></p>
+                    <p data-phrase-key="aboutPart4">Twelve years later, I specialize in exactly the student conventional teachers give up on. My voice still isn't fully recovered. But every exercise I give you, <strong>I've tested from the inside</strong>. If you've been told you don't have the talent, I know that feeling. And I know it's wrong.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing">
+        <h2 data-phrase-key="pricingTitle">The Programs</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="plan-name" data-phrase-key="pricingPlan2Name">Voicebuilding Pack</div>
+                <div class="plan-price">$360</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan2Sub">4 sessions · 55 min each</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan2Desc"><ul class='plan-bullets'><li>Use them within 90 days of your first pack session, at your own pace</li><li>Custom audio exercises between sessions</li><li>Feedback on your practice — within 48h</li></ul></div>
+                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/4f0bb419-e996-4b70-a37f-13da87501a58?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D360" class="plan-cta lemonsqueezy-button">Get Started →</a>
+                <div id="paypal-buttons-360" class="paypal-btn-container"></div>
+            </div>
+            <div class="pricing-card">
+                <div class="plan-name" data-phrase-key="pricingPlan3Name">1-Month Transformation</div>
+                <div class="plan-price">$590</div>
+                <div class="plan-sub" data-phrase-key="pricingPlan3Sub">8 sessions · 55 min each</div>
+                <div class="plan-desc" data-phrase-key="pricingPlan3Desc"><ul class='plan-bullets'><li>8 sessions — 2x per week for 4 weeks</li><li>Maximum gains in 30 days</li><li>Custom audio exercises between sessions</li><li>Priority feedback between sessions — within 24h</li></ul></div>
+                <a href="https://nandovocalcoach.lemonsqueezy.com/checkout/buy/2ed6680d-d2f5-410c-b2d7-afd89a4195b5?embed=1&checkout[redirect_url]=https%3A%2F%2Fnandovocalcoach.com%2Fthank-you-payment.html%3Fplan%3D590" class="plan-cta lemonsqueezy-button">Get Started →</a>
+                <div id="paypal-buttons-590" class="paypal-btn-container"></div>
+            </div>
+        </div>
+        <div class="trust-strip">
+            <span data-phrase-key="trustSecure"><i class="fas fa-lock trust-lock"></i>Secure checkout</span>
+            <span data-phrase-key="trustStudents">280+ students</span>
+            <span data-phrase-key="trustLanguages">Sessions in English &amp; Spanish</span>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2 data-phrase-key="faqTitle">Questions</h2>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ1">I've tried vocal coaches before and nothing helped. Why would this be different?</div>
+            <div class="faq-a" data-phrase-key="faqA1">Been there. My own voice was physically limited and wouldn't respond to general technique, so I had to go deeper: learn the science, test everything, find what actually moves the needle. That's what I bring to every session.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ2">I'm a complete beginner. Is this for me?</div>
+            <div class="faq-a" data-phrase-key="faqA2">Singing is a skill like any other. Anyone can learn it from scratch. Being a complete beginner is actually a plus: no bad habits to unlearn, just foundations built the right way from day one. If your voice is good enough to speak, it's good enough to sing.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ3">What happens after the first session?</div>
+            <div class="faq-a" data-phrase-key="faqA3">If you want to keep going, we pick what fits at the end of the session: a 4-session pack, the 1-Month Transformation, or single sessions at $100. No pressure either way.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ4">Do I need any special equipment for online sessions?</div>
+            <div class="faq-a" data-phrase-key="faqA4">No special equipment. A laptop works best, phone if that's all you have. Earphones are a must.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" data-phrase-key="faqQ5">How quickly will I notice a difference?</div>
+            <div class="faq-a" data-phrase-key="faqA5">You'll notice something in your first session. That's what the guarantee is based on. Real, consistent progress after that comes week by week, and it moves faster the more you practice between sessions.</div>
+        </div>
+    </section>
+
     <section id="checkout">
         <span id="booking"></span>
         <h2 data-phrase-key="bookingTitle">Start Here</h2>
@@ -641,6 +715,7 @@
             <div id="paypal-buttons-40" class="paypal-btn-container"></div>
         </div>
         <p data-phrase-key="bookingGuarantee" style="font-size:0.82rem; opacity:0.55; margin-top:0.9rem;"><i class="fas fa-lock" style="color:var(--section-heading);margin-right:5px;opacity:1;"></i>Secure checkout &nbsp;·&nbsp; Not satisfied? Full refund, no awkwardness.</p>
+        <p class="not-ready" data-phrase-key="notReady">Not ready yet? <a href="/vocal-analysis">Try the free Vocal Analysis &rarr;</a></p>
     </section>
 
     <footer id="contact">
@@ -662,6 +737,22 @@
                 heroH1: "You can learn to sing.",
                 heroSub: "Your first session ($40) will show you how.",
                 ctaButton: "Book Your First Session · $40",
+                heroBook: "Book my first session · $40",
+                heroWa: "Not sure yet? Ask me on WhatsApp",
+                heroFine: '55 min on Zoom · full refund · <span class="stars">★★★★★</span> 283 reviews',
+                sessionTitle: "How your first session works",
+                sessionS1: "We talk about your goals.",
+                sessionS2: "I explain how your voice works.",
+                sessionS3: "Warm-up and technique assessment, to find exactly what's limiting you.",
+                sessionS4: "We work on a song of your choice, so you leave with real improvements and a clear plan.",
+                sessionPrep: "<strong>To prepare:</strong> karaoke versions of 2 songs you like, one you find tough and one easier.",
+                practical1: "<b>Zoom, 55 min</b>From anywhere, on your laptop or phone.",
+                practical2: "<b>Recorded</b>Every session is recorded and sent to you.",
+                practical3: "<b>Your time zone</b>Sessions fit US time zones. You pick your time after booking.",
+                practical4: "<b>Songs in any language</b>Lessons in English or Spanish. Your songs can be in any language, any style.",
+                clipJorge: "<b>Jorge</b> · Composer, producer and arranger<span>Master's in music · @jirmstyleofficial</span>",
+                clipJonathan: '<b>Jonathan</b> · "I was told I was tone deaf"',
+                notReady: 'Not ready yet? <a href="/vocal-analysis">Try the free Vocal Analysis &rarr;</a>',
                 aboutTitle: "About Me",
                 aboutIntro: "I was five semesters into music school when a doctor told me to <strong>stop singing</strong>.",
                 aboutAdditional: "Three years of training had left me with vocal fatigue: swollen cords, a body gripping where it should have been free. I moved cities to study choral conducting instead. The teacher I found there, a Cuban opera singer who had been performing since his twenties, watched me struggle and told me I didn't have the talent, that I'd damage other voices if I kept going. He wasn't being cruel. Singing had never been hard for him. He simply didn't know what to do with <strong>a voice that fought itself</strong>.",
@@ -695,20 +786,36 @@
                 footerConnect: "Connect with me:",
                 faqTitle: "Questions",
                 faqQ1: "I've tried vocal coaches before and nothing helped. Why would this be different?",
-                faqA1: "Been there. Most coaches teach what worked for them. That never worked for me. My voice was physically limited and wouldn't respond to general technique, so I had to go deeper: learn the science, test everything, find what actually moves the needle. That's what I bring to every session.",
+                faqA1: "Been there. My own voice was physically limited and wouldn't respond to general technique, so I had to go deeper: learn the science, test everything, find what actually moves the needle. That's what I bring to every session.",
                 faqQ2: "I'm a complete beginner. Is this for me?",
                 faqA2: "Singing is a skill like any other. Anyone can learn it from scratch. Being a complete beginner is actually a plus: no bad habits to unlearn, just foundations built the right way from day one. If your voice is good enough to speak, it's good enough to sing.",
-                faqQ3: "How does the first session actually work?",
-                faqA3: "We start with a quick intro to the mechanics of how your voice works. Then I assess your technique, find what's holding you back, and we work on it directly. We finish on a song of your choice. You'll hear your voice improve within the session, and leave knowing exactly what to work on next.",
+                faqQ3: "What happens after the first session?",
+                faqA3: "If you want to keep going, we pick what fits at the end of the session: a 4-session pack, the 1-Month Transformation, or single sessions at $100. No pressure either way.",
                 faqQ4: "Do I need any special equipment for online sessions?",
                 faqA4: "No special equipment. A laptop works best, phone if that's all you have. Earphones are a must.",
                 faqQ5: "How quickly will I notice a difference?",
-                faqA5: "You'll notice something in your first session. That's what the guarantee is based on. Real, consistent progress after that comes week by week — and it moves faster the more you practice between sessions."
+                faqA5: "You'll notice something in your first session. That's what the guarantee is based on. Real, consistent progress after that comes week by week, and it moves faster the more you practice between sessions."
             },
             es: {
                 heroH1: "Puedes aprender a cantar.",
                 heroSub: "Tu primera sesión ($40) te mostrará cómo.",
                 ctaButton: "Reserva tu primera sesión · $40",
+                heroBook: "Reserva tu primera sesión · $40",
+                heroWa: "¿Tienes dudas? Escríbeme por WhatsApp",
+                heroFine: '55 min por Zoom · reembolso completo · <span class="stars">★★★★★</span> 283 reseñas',
+                sessionTitle: "Cómo funciona tu primera sesión",
+                sessionS1: "Hablamos de tus metas.",
+                sessionS2: "Te explico cómo funciona tu voz.",
+                sessionS3: "Calentamiento y evaluación de técnica, para encontrar exactamente qué te está limitando.",
+                sessionS4: "Trabajamos en una canción de tu elección, para que salgas con mejoras reales y un plan claro.",
+                sessionPrep: "<strong>Para prepararte:</strong> versiones karaoke de 2 canciones que te gusten, una que te cueste y otra más fácil.",
+                practical1: "<b>Zoom, 55 min</b>Desde donde estés, en tu laptop o celular.",
+                practical2: "<b>Grabada</b>Cada sesión se graba y te la envío.",
+                practical3: "<b>Tu zona horaria</b>Las sesiones se ajustan a los horarios de EE. UU. Eliges tu hora después de reservar.",
+                practical4: "<b>Canciones en cualquier idioma</b>Clases en inglés o español. Tus canciones pueden ser en cualquier idioma y estilo.",
+                clipJorge: "<b>Jorge</b> · Compositor, productor y arreglista<span>Maestría en música · @jirmstyleofficial</span>",
+                clipJonathan: '<b>Jonathan</b> · "Me dijeron que no tenía oído musical"',
+                notReady: '¿Todavía no estás listo? <a href="/vocal-analysis">Prueba el Análisis Vocal gratis &rarr;</a>',
                 aboutTitle: "Sobre mí",
                 aboutIntro: "Estaba en quinto semestre del conservatorio cuando un médico me dijo que <strong>dejara de cantar</strong>.",
                 aboutAdditional: "Tres años de entrenamiento me habían dejado con fatiga vocal: cuerdas inflamadas, un cuerpo apretando donde debería estar libre. Me mudé de ciudad a estudiar dirección de coros. El maestro que encontré allí, un cantante de ópera cubano que llevaba décadas en los escenarios, me observó luchar y me dijo que yo no tenía el talento, que dañaría otras voces si seguía. No era maldad de su parte. Para él, el canto nunca había sido difícil. Simplemente no sabía qué hacer con <strong>una voz que se peleaba consigo misma</strong>.",
@@ -742,11 +849,11 @@
                 footerConnect: "Conéctate conmigo:",
                 faqTitle: "Preguntas frecuentes",
                 faqQ1: "Ya probé con profesores de canto y no funcionó. ¿Por qué sería diferente?",
-                faqA1: "Yo también estuve ahí. La mayoría de los profesores enseñan lo que funcionó para ellos. Para mí, eso nunca fue suficiente. Mi voz tenía limitaciones físicas reales y no respondía a la técnica general, así que tuve que ir más lejos: aprender la ciencia, probar todo, encontrar el camino más rápido. Eso es lo que traigo a cada sesión.",
+                faqA1: "Yo también estuve ahí. Mi propia voz tenía limitaciones físicas reales y no respondía a la técnica general, así que tuve que ir más lejos: aprender la ciencia, probar todo, encontrar lo que de verdad funciona. Eso es lo que traigo a cada sesión.",
                 faqQ2: "Soy principiante absoluto. ¿Esto es para mí?",
                 faqA2: "Cantar es una habilidad como cualquier otra. Cualquiera puede aprenderla desde cero. Ser principiante absoluto es en realidad una ventaja: no hay malos hábitos que corregir, solo se construyen las bases de la manera correcta desde el principio. Si tu voz es suficiente para hablar, es suficiente para cantar.",
-                faqQ3: "¿Cómo funciona la primera sesión?",
-                faqA3: "Empezamos con una introducción rápida a la mecánica de cómo funciona tu voz. Luego evalúo tu técnica, identifico lo que te está limitando y trabajamos en eso directamente. Terminamos con una canción de tu elección. Vas a escuchar tu voz mejorar dentro de la misma sesión, y saldrás sabiendo exactamente qué trabajar.",
+                faqQ3: "¿Qué pasa después de la primera sesión?",
+                faqA3: "Si quieres seguir, al final de la sesión elegimos lo que mejor te funcione: un paquete de 4 sesiones, la Transformación en 1 mes o sesiones individuales a $100. Sin presión.",
                 faqQ4: "¿Necesito algún equipo especial para las sesiones online?",
                 faqA4: "Sin equipo especial. Lo ideal es una laptop; si solo tienes celular, también funciona. Los audífonos son indispensables.",
                 faqQ5: "¿Qué tan rápido voy a notar una diferencia?",
@@ -765,6 +872,7 @@
         }
 
         function updateTranslations(lang) {
+            document.documentElement.lang = lang;
             document.querySelectorAll('[data-phrase-key]').forEach(el => {
                 const key = el.getAttribute('data-phrase-key');
                 if (translations[lang][key]) el.innerHTML = translations[lang][key];
@@ -799,17 +907,27 @@
         document.getElementById('carousel-right').addEventListener('click', () => showPage(currentPage + 1));
         showPage(0);
 
+        document.querySelectorAll('.js-book').forEach(b => b.addEventListener('click', e => {
+            e.preventDefault();
+            document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+        }));
+        document.querySelectorAll('.js-contact').forEach(a => a.addEventListener('click', () => {
+            if (window.fbq) fbq('track', 'Contact', { content_name: 'home' });
+        }));
+
         const stickyCta = document.getElementById('sticky-cta');
 
         stickyCta.addEventListener('click', () => {
             document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Hide sticky CTA when footer is visible so it doesn't cover the email
-        const footerObserver = new IntersectionObserver(([entry]) => {
-            stickyCta.style.display = entry.isIntersecting ? 'none' : '';
+        // Hide sticky CTA while another Book button or the footer email is on screen
+        const stickyHiders = new Set();
+        const stickyObserver = new IntersectionObserver(entries => {
+            entries.forEach(e => e.isIntersecting ? stickyHiders.add(e.target) : stickyHiders.delete(e.target));
+            stickyCta.style.display = stickyHiders.size ? 'none' : '';
         }, { threshold: 0.1 });
-        footerObserver.observe(document.getElementById('contact'));
+        ['.hero-cta', '#checkout', '#contact'].forEach(sel => stickyObserver.observe(document.querySelector(sel)));
 
         // Back button closes LemonSqueezy modal instead of leaving the page.
         // On popstate: remove LS overlay, clone-replace buttons (strips LS internal
@@ -883,6 +1001,7 @@
             paypal.Buttons({
                 style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
                 createOrder: function(data, actions) {
+                    if (window.fbq) fbq('track', 'InitiateCheckout', { value: parseFloat(amount), currency: 'USD', content_name: 'home' });
                     return actions.order.create({
                         purchase_units: [{ amount: { value: amount }, description: description }]
                     });
@@ -909,7 +1028,7 @@
                                 source_url: window.location.href
                             })
                         }).finally(function() {
-                            window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan + '&eid=' + encodeURIComponent(eventId);
+                            window.location.href = 'https://nandovocalcoach.com/thank-you-payment.html?plan=' + plan + '&eid=' + encodeURIComponent(eventId) + '&src=home';
                         });
                     });
                 },
@@ -921,7 +1040,7 @@
             }).render('#' + containerId);
         }
         renderPayPalButtons('paypal-buttons-40',  '40.00',  '1st Voicebuilding Session — Nando Vocal Coach', '40');
-        renderPayPalButtons('paypal-buttons-360', '360.00', 'Vocal Fitness — 4 Sessions with Nando Vocal Coach', '360');
+        renderPayPalButtons('paypal-buttons-360', '360.00', 'Voicebuilding Pack — 4 Sessions with Nando Vocal Coach', '360');
         renderPayPalButtons('paypal-buttons-590', '590.00', '1-Month Transformation — 8 Sessions with Nando Vocal Coach', '590');
     </script>
 
