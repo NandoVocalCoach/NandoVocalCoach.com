@@ -399,7 +399,7 @@
         <div class="step-num">3</div>
         <div class="step-body">
           <h3>Pitch Matching</h3>
-          <p>Headphones on. First, read one sentence aloud so we can find your range. Then you'll hear a short melody — sing it back when you see the green cue.</p>
+          <p>Headphones on. First, read one sentence aloud so we can find your starting note. Then you'll hear a short melody — sing it back when you see the green cue.</p>
 
           <div class="rec-widget-box">
             <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Start, not during.</p>
@@ -468,7 +468,7 @@
       <div class="get">
         <div class="get-icon">🔍</div>
         <h4>Your Pattern</h4>
-        <p>Named and explained — Vocal Tension, Chest Lock, Airy Voice, and more. What it means and why it happens.</p>
+        <p>Named and explained — Tense Voice, Chest Lock, Airy Voice, and more. What it means and why it happens.</p>
       </div>
       <div class="get">
         <div class="get-icon">🎯</div>
@@ -483,11 +483,11 @@
     <div class="section-title">The <span>Patterns</span> We Detect</div>
     <div class="patterns">
       <div class="pattern-card">
-        <h4>Vocal Tension</h4>
+        <h4>Tense Voice</h4>
         <p>The muscles around the larynx are working harder than they need to. Very common, and very fixable.</p>
       </div>
       <div class="pattern-card">
-        <h4>Chest Voice Ceiling</h4>
+        <h4>Chest Lock</h4>
         <p>Singing entirely in chest voice. The upper register is there, it just hasn't been trained yet.</p>
       </div>
       <div class="pattern-card">
@@ -1114,7 +1114,9 @@
   // Shared timing — MUST match LADDER_* constants in pitch_test.py
   const BEEP_HZ = 880;
   const BEEP_SEC = 0.07;             // GO_BEEP_SEC
-  const LEAD_IN_SEC = 0.3;           // LADDER_LEAD_IN_SEC — recording headroom before first tone
+  const LEAD_IN_SEC = 0.3;           // LADDER_LEAD_IN_SEC — headroom before first tone (reference audio only)
+  const REC_PRE_BEEP_SEC = 0.3;      // recording starts this long before the go-beep (piano is skipped)
+  const REC_TAIL_SEC = 1.5;          // LADDER_TAIL_SEC — keep recording this long after the sing window ends
   const PRE_SING_PAUSE_SEC = 0.8;    // LADDER_PRE_SING_PAUSE_SEC
 
   // RUNG_PATTERNS — mirrors LADDER_RUNGS in pitch_test.py exactly (7 rungs)
@@ -1313,13 +1315,16 @@
   // Returns the server's scoring JSON, or null if the check failed twice
   // (one automatic retry). Never invents a score: a failure pauses the ladder.
   async function checkRung(blob, rungNum, rootHz) {
+    const rungDef = RUNG_PATTERNS[rungNum - 1];
+    // Recording starts REC_PRE_BEEP_SEC before the go-beep, so the first tone sits at a negative offset.
+    const recOffset = REC_PRE_BEEP_SEC - PRE_SING_PAUSE_SEC - rungDef.semitones.length * rungDef.note_sec;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const formData = new FormData();
         formData.append('audio', blob, 'rung.webm');
         formData.append('rung_num', String(rungNum));
         formData.append('root_hz', String(rootHz));
-        formData.append('recording_offset', String(LEAD_IN_SEC));
+        formData.append('recording_offset', String(recOffset));
         const resp = await fetch(PITCH_RUNG_CHECK_URL, { method: 'POST', body: formData });
         if (!resp.ok) throw new Error(`rung-check responded ${resp.status}`);
         const data = await resp.json();
@@ -1361,10 +1366,10 @@
     const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
     const chunks = [];
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+    let resolveStopped;
+    const stopped = new Promise((resolve) => { resolveStopped = resolve; recorder.onstop = resolve; });
 
     if (run) run.recorder = recorder;
-    recorder.start();
 
     let t = ctx.currentTime + LEAD_IN_SEC;
     let statusCursorSec = LEAD_IN_SEC;
@@ -1385,6 +1390,12 @@
     t += PRE_SING_PAUSE_SEC;
     statusCursorSec += PRE_SING_PAUSE_SEC;
 
+    // Start recording just before the go-beep: the piano part is not needed for scoring
+    setTimeout(() => {
+      if (run && run.aborted) return;
+      if (recorder.state === 'inactive') recorder.start();
+    }, Math.max(0, (statusCursorSec - REC_PRE_BEEP_SEC) * 1000));
+
     // Go beep
     scheduleTone(ctx, BEEP_HZ, BEEP_SEC, t);
     t += BEEP_SEC;
@@ -1402,7 +1413,11 @@
     t += rung.sing_sec;
     statusCursorSec += rung.sing_sec;
 
-    setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, statusCursorSec * 1000 + 300);
+    // Keep listening after the sing window: people often finish their last note late
+    setTimeout(() => {
+      if (recorder.state === 'recording') recorder.stop();
+      else resolveStopped();   // never started (test cancelled): don't hang
+    }, statusCursorSec * 1000 + REC_TAIL_SEC * 1000);
     await stopped;
     return new Blob(chunks, { type: mimeType || 'audio/webm' });
   }
@@ -1467,7 +1482,7 @@
 
       let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
       if (run.aborted) throw LADDER_ABORT;
-      statusEl.textContent = 'Finding your range…';
+      statusEl.textContent = 'Finding your starting note…';
       let detection = await detectRootHz(speechBlob);
       if (run.aborted) throw LADDER_ABORT;
 
@@ -1493,13 +1508,13 @@
 
         speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
         if (run.aborted) throw LADDER_ABORT;
-        statusEl.textContent = 'Finding your range…';
+        statusEl.textContent = 'Finding your starting note…';
         detection = await detectRootHz(speechBlob);
         if (run.aborted) throw LADDER_ABORT;
 
         if (!detection.detected) {
           statusEl.innerHTML = `<div style="background:rgba(220,38,38,0.12); border:1px solid #dc2626; color:var(--text); font-size:0.95rem; padding:14px 16px; border-radius:8px;">
-            <strong>Voice range not detected.</strong> Make sure your microphone is working and you're in a quiet room, then try again.
+            <strong>Starting note not detected.</strong> Make sure your microphone is working and you're in a quiet room, then try again.
           </div>`;
           startBtn.textContent = '🎤 Try Again';
           startBtn.disabled = false;
@@ -1567,8 +1582,8 @@
         ascending_mean_cents:   result.ascending_mean_cents   || 0,
         descending_mean_cents:  result.descending_mean_cents  || 0,
         octave_errors:          result.octave_errors          || 0,
-        // Evidence for the on-screen per-round graph only (stripped before submit)
-        notes:                  result.notes                  || [],
+        // Evidence for the per-round graphs, on screen and in the PDF
+        notes:               result.notes                  || [],
         contour:                result.contour                || [],
         sing_sec:               result.sing_sec               || RUNG_PATTERNS[i].sing_sec,
       });
@@ -1592,9 +1607,7 @@
     }
 
     // Save ladder results for submit
-    recordings.pitch_ladder_results = JSON.stringify(
-      ladderState.rungResults.map(({ notes, contour, sing_sec, ...forServer }) => forServer)
-    );
+    recordings.pitch_ladder_results = JSON.stringify(ladderState.rungResults);
 
     // Concatenate all rung audio blobs → single file for coach email
     if (pitchBlobs.length > 0) {
@@ -1937,7 +1950,7 @@
 
   // Small graph for one round: target notes as horizontal bars, the singer's voice as a line.
   function roundGraphSvg(r) {
-    const W = 300, H = 96, padX = 6, padY = 8;
+    const W = 300, H = 150, padX = 6, padY = 8;
     const notes = r.notes || [];
     const contour = r.contour || [];
     if (!notes.length) return '';
@@ -2016,9 +2029,9 @@
           ${ladderSvg(reached)}
           <p style="flex:1; min-width:220px; margin:0; color:#E5E7EB; font-size:1rem; line-height:1.65;">${PITCH_MESSAGES[key]}</p>
         </div>
-        <button type="button" id="seeRoundsBtn" aria-expanded="false"
-                style="margin-top:14px; background:none; border:none; padding:0; color:#FF5500; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit;">See each round ▾</button>
-        <div id="roundsDetail" style="display:none; margin-top:14px;">
+        <button type="button" id="seeRoundsBtn" aria-expanded="true"
+                style="margin-top:14px; background:none; border:none; padding:0; color:#FF5500; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit;">Hide rounds ▴</button>
+        <div id="roundsDetail" style="margin-top:14px;">
           <p style="font-size:0.78rem; color:#9CA3AF; margin:0 0 12px;">Bars are the notes you heard (green = you landed it, amber = it slipped). The orange line is your voice.</p>
           ${rounds}
         </div>
