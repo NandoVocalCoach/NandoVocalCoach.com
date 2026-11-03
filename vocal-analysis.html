@@ -1545,6 +1545,7 @@
       // is simply repeated.
       let blob, result;
       let silentTries = 0;
+      let timingTries = 0;   // one timing retry per round, then we score what we heard
       while (true) {
         blob = await runRung(ctx, stream, rootHz, i);
         if (run.aborted) throw LADDER_ABORT;
@@ -1562,6 +1563,15 @@
           silentTries++;
           const hint = silentTries >= 2 ? ' Check that your mic is on and sing a little louder.' : '';
           await pauseWithRetry(`We didn't hear you that time.${hint}`, 'Retry this round');
+          if (run.aborted) throw LADDER_ABORT;
+          continue;
+        }
+        if (result.timing_issue && timingTries < 1) {
+          timingTries++;
+          const timingMsg = result.timing_issue === 'early'
+            ? 'You started a little before the beep. Wait for the beep, then sing.'
+            : 'We cut you off before you finished. Start right after the beep and sing it a little faster.';
+          await pauseWithRetry(timingMsg, 'Retry this round');
           if (run.aborted) throw LADDER_ABORT;
           continue;
         }
