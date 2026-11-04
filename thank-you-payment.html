@@ -103,6 +103,27 @@
             margin-bottom: 2rem;
         }
         .email-note strong { color: #ccc; }
+        .policy-box {
+            background: #1f1408;
+            border: 2px solid #FF5500;
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1.2rem 0 1.8rem;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: #eee;
+        }
+        .policy-box p { margin: 0 0 0.7rem; }
+        .policy-box p:last-child { margin-bottom: 0; }
+        .policy-box .policy-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            color: #FF5500;
+        }
+        .policy-box strong { color: #fff; }
+        .policy-box a { color: #FF5500; word-break: break-all; }
         a.back {
             display: inline-block;
             color: #FF5500;
@@ -124,7 +145,13 @@
 
         <p class="book-label">Book your first session</p>
         <p class="book-sub" id="book-sub">Pick the day and time that works best for you.</p>
-        <p class="book-sub">Cancel or reschedule at least 24 hours before your session. Missed sessions and late cancellations count as used.</p>
+        <div class="policy-box">
+            <p class="policy-title">📌 Before you book: how moving a session works</p>
+            <p>Need to move your session? Use the reschedule link in your confirmation email, at least 24 hours before.</p>
+            <p><strong>Less than 24 hours' notice, or a missed session, counts as used.</strong></p>
+            <p>Booking a new slot doesn't move your old one, so please reschedule instead.</p>
+            <p>Something came up and your case needs special attention? Text me on WhatsApp and we'll surely find a way to make it work for everyone: <a href="https://wa.me/573008630815" target="_blank">https://wa.me/573008630815</a></p>
+        </div>
 
         <div class="tidycal-wrap">
             <div class="tidycal-embed" id="tidycal-embed"></div>
