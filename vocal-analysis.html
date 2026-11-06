@@ -1742,7 +1742,7 @@
         const submittedEmail = document.getElementById('emailField').value.trim();
         const rungReached = ladderState.rungResults.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
         const tier = computeTierFromRung(rungReached);
-        const exerciseUrl = `https://api.nandovocalcoach.com/dev/exercise?tier=${tier}`;
+        const exerciseUrl = { tier, rootHz: ladderState.rootHz };
 
         // Waiting screen: pitch result first (already scored in the browser),
         // then a status line with a live timer, then rotating facts.
@@ -2139,6 +2139,11 @@
     }
 
     const isClientMode = (data.is_client || fieldSnapshot.__is_client) === 'yes';
+    // Gym link: pattern + level + the person's own starting note (MIDI from the speech root)
+    const GYM_PATTERN_CODES = { tense_voice: 'tv', chest_lock: 'cc', airy_voice: 'av', pitch_drift: 'pd', solid_foundation: 'sf', mixed_pattern: 'mx' };
+    const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier });
+    if (exerciseUrl.rootHz) gymParams.set('root', String(Math.round(69 + 12 * Math.log2(exerciseUrl.rootHz / 440))));
+    const gymUrl = `https://api.nandovocalcoach.com/exercise?${gymParams}`;
     const resultsEl = document.getElementById('analysisResults');
     resultsEl.style.display = 'block';
     resultsEl.innerHTML = `
@@ -2163,14 +2168,16 @@
           <p style="color:white;font-size:0.9rem;margin:10px 0 0;">Nando</p>
         </div>
 
-        ${isClientMode ? '' : `
         <div style="text-align:center;margin-bottom:24px;">
-          <p style="color:#D1D5DB;font-size:0.95rem;margin:0 0 12px;">Want to work on this live?</p>
-          <a href="https://nandovocalcoach.com/#booking"
-             style="background:#FF5500;color:white;padding:11px 24px;border-radius:6px;font-weight:700;font-size:0.95rem;text-decoration:none;display:inline-block;">
-            Book a Session · $40
+          <a href="${gymUrl}"
+             style="background:#FF5500;color:white;padding:13px 28px;border-radius:6px;font-weight:700;font-size:1rem;text-decoration:none;display:inline-block;">
+            Start your free workout
           </a>
-        </div>`}
+          ${isClientMode ? '' : `
+          <p style="font-size:0.88rem;margin:14px 0 0;">
+            <a href="https://nandovocalcoach.com/#booking" style="color:#9CA3AF;">Or book a 1-on-1 session · $40</a>
+          </p>`}
+        </div>
 
         <div style="margin-bottom:20px;">
           <button type="button" id="tryAgainBtn"
