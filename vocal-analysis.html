@@ -1286,6 +1286,49 @@
     source.stop(endTime);
   }
 
+  // ── Guide melody clips: the same human voice as the Gym, rendered once per rung and
+  // semitone key (render_va_guide.py in the VocalApp repo). Keys C3-C5 = the range the speech
+  // detector can return. The clip is sped up or slowed down by under half a semitone to hit the
+  // exact Hz. If a clip is missing the old browser synth plays, so the test never breaks.
+  const GUIDE_CLIP_DIR  = 'audio/va-guide/';
+  const GUIDE_CLIP_GAIN = 0.4;     // matches the loudness of the old synth (measured offline)
+  const GUIDE_KEY_MIN = 48, GUIDE_KEY_MAX = 72;
+  const guideClips = {};           // rung number -> { buffer, rate }
+
+  function guideKeyFor(rootHz) {
+    const midi = 69 + 12 * Math.log2(rootHz / 440);
+    const key = Math.min(GUIDE_KEY_MAX, Math.max(GUIDE_KEY_MIN, Math.round(midi)));
+    return { key, rate: rootHz / (440 * Math.pow(2, (key - 69) / 12)) };
+  }
+
+  async function preloadGuideClips(ctx, rootHz) {
+    const { key, rate } = guideKeyFor(rootHz);
+    if (rate < 0.95 || rate > 1.05) return;     // root outside the rendered range: use the synth
+    const load = async (rung) => {
+      try {
+        const resp = await fetch(`${GUIDE_CLIP_DIR}r${rung.num}_k${key}.mp3`);
+        if (!resp.ok) return;
+        const buffer = await ctx.decodeAudioData(await resp.arrayBuffer());
+        guideClips[rung.num] = { buffer, rate };
+      } catch (_) { /* fall back to the synth for this rung */ }
+    };
+    // Never hold up the test for more than a few seconds on a slow connection.
+    await Promise.race([Promise.all(RUNG_PATTERNS.map(load)), new Promise(r => setTimeout(r, 4000))]);
+  }
+
+  function playGuideMelody(ctx, rung, noteHz, startTime) {
+    const clip = guideClips[rung.num];
+    if (!clip) { scheduleConnectedMelody(ctx, noteHz, rung.note_sec, startTime, 'ah'); return; }
+    const source = ctx.createBufferSource();
+    source.buffer = clip.buffer;
+    source.playbackRate.value = clip.rate;
+    const gain = ctx.createGain();
+    gain.gain.value = GUIDE_CLIP_GAIN;
+    source.connect(gain);
+    gain.connect(ctx.destination);
+    source.start(startTime);
+  }
+
   function recordFixedClip(stream, durationSec) {
     return new Promise((resolve) => {
       const mimeType = pickMimeType();
@@ -1382,7 +1425,7 @@
         Listen…</div>`;
     }, statusCursorSec * 1000);
 
-    scheduleConnectedMelody(ctx, noteHz, rung.note_sec, t, 'ah');
+    playGuideMelody(ctx, rung, noteHz, t);
     t += noteHz.length * rung.note_sec;
     statusCursorSec += noteHz.length * rung.note_sec;
 
@@ -1529,6 +1572,7 @@
 
     ladderState.rootHz = rootHz;
     recordings.pitch_root_hz = rootHz;
+    await preloadGuideClips(ctx, rootHz);
 
     statusEl.innerHTML = `<div style="background:rgba(255,85,0,0.12); border:1px solid #FF5500; color:var(--text); font-size:0.95rem; font-weight:600; padding:12px 16px; border-radius:8px; text-align:center;">Range found. Starting pitch test…</div>`;
     await new Promise(r => setTimeout(r, 1000));
