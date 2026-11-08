@@ -186,7 +186,7 @@
     <script>
         (function() {
             var plan = new URLSearchParams(window.location.search).get('plan');
-            var path = 'nando-vocal-coach/voicebuildingsession';
+            var path = plan === '40' ? 'nando-vocal-coach/first-session' : 'nando-vocal-coach/voicebuildingsession';
             var embed = document.getElementById('tidycal-embed');
             if (embed) embed.setAttribute('data-path', path);
             var mobileLink = document.getElementById('tidycal-mobile-link');
