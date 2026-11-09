@@ -29,7 +29,7 @@
       --text: #1F2937;
       --muted: #6B7280;
       --heading: #FF5500;
-      --navy: #1B2A4A;
+      --navy: #1a1a1a;
       --card-bg: #F9FAFB;
       --border: #E5E7EB;
       --header-bg: rgba(224,224,224,0.5);
@@ -252,6 +252,7 @@
     /* ── Form section ── */
     .form-section {
       background: var(--navy);
+      border-top: 4px solid #FF5500;
       border-radius: 14px;
       padding: 40px 32px;
       margin-bottom: 48px;
@@ -346,10 +347,10 @@
 
     <!-- Progress indicator -->
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-      <div style="flex:1; background:rgba(255,255,255,0.08); border-radius:100px; height:6px; overflow:hidden;">
+      <div style="flex:1; background:var(--border); border-radius:100px; height:6px; overflow:hidden;">
         <div id="stepsProgressFill" style="width:0%; height:100%; background:#FF5500; border-radius:100px; transition:width 0.4s ease;"></div>
       </div>
-      <span id="stepsProgressText" style="font-size:0.82rem; color:var(--muted); white-space:nowrap; min-width:68px; text-align:right;">0 of 3 done</span>
+      <span id="stepsProgressText" style="font-size:0.82rem; color:var(--muted); white-space:nowrap; min-width:68px; text-align:right;">0 of 3 required steps done</span>
     </div>
 
     <div class="steps">
@@ -358,10 +359,10 @@
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Sustained "ah"</h3>
-          <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Normal singing volume — not a whisper, not louder than usual. Mic at arm's length, not up close.</p>
+          <p>Pick a comfortable note and hold a steady "ah" for 5 seconds. Normal singing volume: not a whisper, not louder than usual. Mic at arm's length, not up close.</p>
 
           <div class="rec-widget-box">
-            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
+            <p class="rec-hint" style="margin:0 0 10px;">Sip some water or swallow before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
             <button id="sustainedAhExampleBtnA" class="rec-btn rec-btn-outline" type="button">▶ Example A (lower voice)</button>
             <button id="sustainedAhExampleBtnB" class="rec-btn rec-btn-outline" type="button">▶ Example B (higher voice)</button>
             <button id="sustainedAhStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
@@ -382,7 +383,7 @@
           <p>Soft "ooh". From a comfortable low note, slide up past where your voice gets lighter, then back down. Easy, no pushing. This isn't a range test.</p>
 
           <div class="rec-widget-box">
-            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
+            <p class="rec-hint" style="margin:0 0 10px;">Sip some water or swallow before you press Record, not during.<br>Press Stop as soon as you finish. Extra sound at the end can blur your results.</p>
             <button id="glideExampleBtn" class="rec-btn rec-btn-outline" type="button">▶ Hear an example</button>
             <button id="glideStartBtn" class="rec-btn" type="button">🎤 Start Recording</button>
             <button id="glideStopBtn" class="rec-btn" type="button" style="display:none;">⏹ Stop</button>
@@ -399,10 +400,10 @@
         <div class="step-num">3</div>
         <div class="step-body">
           <h3>Pitch Matching</h3>
-          <p>Headphones on. First, read one sentence aloud so we can find your starting note. Then you'll hear a short melody — sing it back when you see the green cue.</p>
+          <p>Headphones on. First, read one sentence aloud so we can find your starting note. Then you'll hear a short melody. Sing it back when you see the green cue.</p>
 
           <div class="rec-widget-box">
-            <p class="rec-hint" style="margin:0 0 10px;">Clear your throat or sip water before you press Start, not during.</p>
+            <p class="rec-hint" style="margin:0 0 10px;">Sip some water or swallow before you press Start, not during.</p>
             <button id="pitchStartBtn" class="rec-btn" type="button">🎤 Start Pitch Test</button>
             <div id="pitchStatus" class="rec-status"></div>
             <div id="pitchResult" style="display:none;">
@@ -443,7 +444,7 @@
 
     <!-- Ready banner — shown when all three required steps are done -->
     <div id="readyBanner" style="display:none; background:rgba(255,85,0,0.1); border:1px solid rgba(255,85,0,0.35); border-radius:10px; padding:18px 20px; margin-top:12px; text-align:center;">
-      <p style="color:white; font-weight:700; font-size:1rem; margin:0 0 12px;">Your recordings are ready.</p>
+      <p style="color:var(--text); font-weight:700; font-size:1rem; margin:0 0 12px;">Your recordings are ready.</p>
       <button onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'}); setTimeout(()=>document.getElementById('nameField').focus(),400);"
               style="background:#FF5500; color:white; border:none; padding:11px 28px; border-radius:6px; font-weight:700; font-size:0.95rem; cursor:pointer;">
         Enter your details and get your results ↓
@@ -457,18 +458,18 @@
     <div class="gets">
       <div class="get">
         <div class="get-icon">📈</div>
-        <h4>Pitch Track Graph</h4>
-        <p>Your actual pitch over time, with your bridge zone marked. See exactly where you stabilize and where you don't.</p>
+        <h4>Your Glide</h4>
+        <p>Your glide drawn as a line, so you can see how your voice moved from low to high.</p>
       </div>
       <div class="get">
-        <div class="get-icon">🎙</div>
-        <h4>Spectrogram</h4>
-        <p>Your voice's frequency content, shows harmonic structure, tension signatures, and breathiness at a glance.</p>
+        <div class="get-icon">🎵</div>
+        <h4>Every Pitch Round</h4>
+        <p>Each melody you sang, drawn next to the notes you heard.</p>
       </div>
       <div class="get">
         <div class="get-icon">🔍</div>
         <h4>Your Pattern</h4>
-        <p>Named and explained — Tense Voice, Chest Lock, Airy Voice, and more. What it means and why it happens.</p>
+        <p>Named and explained: Tense Voice, Chest Lock, Airy Voice, and more. What it means and why it happens.</p>
       </div>
       <div class="get">
         <div class="get-icon">🎯</div>
@@ -541,7 +542,7 @@
       <div style="margin-bottom: 20px;">
         <label for="throatFeelSelect" style="display:block; font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;">How does your throat feel today? (optional)</label>
         <select id="throatFeelSelect" style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; background:white; color:#1F2937;">
-          <option value="0">Normal — nothing unusual</option>
+          <option value="0">Normal, nothing unusual</option>
           <option value="2">A little tight or dry</option>
           <option value="4">Noticeably uncomfortable</option>
           <option value="6">Sore or strained</option>
@@ -573,11 +574,11 @@
     </div>
     <div class="faq">
       <div class="faq-q">What happens after I get my Vocal Analysis?</div>
-      <div class="faq-a">Nothing, unless you want it to. The report stands on its own. If you want to go deeper, there's a link to book a first session, but there's no pressure and no follow-up emails.</div>
+      <div class="faq-a">Nothing you have to do. Your results come with a free Gym workout matched to your level, and a link to book a first session if you want to go deeper. Over the next week I'll send you 3 short emails with ideas to practice. One click unsubscribes.</div>
     </div>
     <div class="faq">
       <div class="faq-q">I've had lessons before and nothing worked. Will this be different?</div>
-      <div class="faq-a">That's exactly who this is for. Most lessons work on technique without identifying the underlying pattern. The Vocal Analysis names the specific mechanism, which changes everything about how you train.</div>
+      <div class="faq-a">It's built for exactly that. The Vocal Analysis listens to what your voice does today, holding a note, gliding, and matching pitch, so you know what to train first.</div>
     </div>
   </div>
 
@@ -686,7 +687,7 @@
   let micStream = null;
   async function getMicStream() {
     if (micStream) return micStream;
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     return micStream;
   }
 
@@ -710,7 +711,7 @@
         text.textContent = '✓ Ready';
         text.style.color = '#FF5500';
       } else {
-        text.textContent = `${doneRequired} of 3 done`;
+        text.textContent = `${doneRequired} of 3 required steps done`;
         text.style.color = '';
       }
     }
@@ -1521,7 +1522,7 @@
       const countdownBox = statusEl.querySelector('div');
       if (countdownBox) countdownBox.style.borderColor = '#22c55e';
       const countdownLabel = document.getElementById('speechCountdown');
-      if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
+      if (countdownLabel) countdownLabel.innerHTML = '<strong style="color:#22c55e;">Recording now: read the sentence above</strong>';
 
       let speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
       if (run.aborted) throw LADDER_ABORT;
@@ -1547,7 +1548,7 @@
         const retryBox = statusEl.querySelector('div');
         if (retryBox) retryBox.style.borderColor = '#22c55e';
         const retryLabel = document.getElementById('speechCountdown');
-        if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now — read the sentence above</strong>';
+        if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">Recording now: read the sentence above</strong>';
 
         speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
         if (run.aborted) throw LADDER_ABORT;
@@ -1670,7 +1671,7 @@
     }
 
     resultEl.style.display = 'block';
-    resultEl.innerHTML = `<div style="font-size:0.9rem; color:var(--muted); margin-top:6px;">Pitch test complete — ${ladderState.rungResults.length} round${ladderState.rungResults.length !== 1 ? 's' : ''} recorded.</div>`;
+    resultEl.innerHTML = `<div style="font-size:0.9rem; color:var(--muted); margin-top:6px;">Pitch test complete: ${ladderState.rungResults.length} round${ladderState.rungResults.length !== 1 ? 's' : ''} recorded.</div>`;
 
     statusEl.textContent = '';
     startBtn.textContent = 'Retake';
@@ -2134,12 +2135,14 @@
     location.reload();
   }
 
+  // Server colors are made for white paper (PDF); lighten them for the dark results panel.
+  const PROFILE_COLORS_ON_DARK = { '#166534': '#4ade80', '#92400E': '#fbbf24', '#991B1B': '#f87171', '#6B7280': '#9CA3AF' };
+
   function showAnalysisResults(data, submittedEmail, exerciseUrl, formSection) {
     const waiting = document.getElementById('analysisWaiting');
     if (waiting) waiting.style.display = 'none';
 
-    const tierLabels = { calibration: 'Foundation', training_range: 'Training', working_range: 'Working Range' };
-    const tierLabel = tierLabels[data.skill_tier] || '';
+    const tierLabel = data.ear_level ? `Ear Level: ${data.ear_level}` : '';
 
     // Voice profile grid
     let profileHtml = '';
@@ -2150,7 +2153,7 @@
           ${entries.map(([key, val]) => `
             <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;">
               <div style="font-size:0.78rem;color:#9CA3AF;margin-bottom:4px;">${key}</div>
-              <div style="font-weight:700;font-size:1rem;color:${val.color};">${val.value}</div>
+              <div style="font-weight:700;font-size:1rem;color:${PROFILE_COLORS_ON_DARK[(val.color || '').toUpperCase()] || val.color};">${val.value}</div>
             </div>
           `).join('')}
         </div>
@@ -2197,7 +2200,7 @@
           Your Voice Pattern
         </div>
         <h2 style="font-size:1.8rem;margin-bottom:8px;color:white;">${data.label || data.pattern}</h2>
-        ${tierLabel ? `<div style="display:inline-block;background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.3);border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#FF5500;font-weight:700;margin-bottom:20px;">Level: ${tierLabel}</div>` : ''}
+        ${tierLabel ? `<div style="display:inline-block;background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.3);border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#FF5500;font-weight:700;margin-bottom:20px;">${tierLabel}</div>` : ''}
         <p style="color:#D1D5DB;font-size:0.95rem;line-height:1.7;margin-bottom:24px;">${data.explanation || ''}</p>
 
         ${profileHtml}
@@ -2285,7 +2288,7 @@
   <span>Ask me anything</span>
 </a>
 
-<a id="va-book-fab" href="https://tidycal.com/nando-vocal-coach/voicebuildingsession" target="_blank" rel="noopener">
+<a id="va-book-fab" href="https://nandovocalcoach.com/#booking" target="_blank" rel="noopener">
   Book a Session · $40
 </a>
 </body>
