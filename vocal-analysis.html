@@ -96,6 +96,12 @@
     }
 
     /* ── Hero ── */
+    /* In-app browser notice (WhatsApp, Instagram, Facebook...): their browsers often block the mic */
+    .inapp-notice { display: none; border: 2px solid #FF5500; border-radius: 10px; background: var(--card-bg); padding: 16px; margin-bottom: 32px; text-align: center; }
+    .inapp-notice.visible { display: block; }
+    .inapp-notice p { color: var(--text); font-weight: 600; margin-bottom: 12px; line-height: 1.5; }
+    .inapp-notice .rec-btn { margin: 4px; }
+    .inapp-notice .inapp-msg { color: var(--muted); font-size: 0.9rem; font-weight: 500; margin: 8px 0 0; }
     .hero { text-align: center; margin-bottom: 56px; }
     .hero-label {
       display: inline-block;
@@ -326,6 +332,14 @@
 
 <!-- ── Page ── -->
 <div class="page">
+
+  <!-- Shown inside app browsers, and when the mic can't be reached -->
+  <div class="inapp-notice" id="inappNotice">
+    <p id="inappTitle">🎤 Mic not working?</p>
+    <a class="rec-btn" id="inappChromeBtn" style="display:none;">Open in Chrome</a>
+    <button class="rec-btn" id="inappCopyBtn" type="button">Copy link</button>
+    <p class="inapp-msg" id="inappMsg"></p>
+  </div>
 
   <!-- Hero -->
   <div class="hero">
@@ -691,6 +705,51 @@
     return micStream;
   }
 
+  // ── In-app browsers (WhatsApp, Instagram, Facebook, TikTok...) often block
+  // the mic. Show the notice on load when the browser looks like one, and
+  // again whenever the mic can't be reached.
+  // Few words, and Spanish when the phone is set to Spanish (the rest of the page is English only for now).
+  const INAPP_ES = /^es/i.test(navigator.language || '');
+  const INAPP_TEXT = INAPP_ES
+    ? { title: '🎤 ¿El micrófono no funciona?', chrome: 'Abrir en Chrome', copy: 'Copiar link',
+        copied: 'Copiado ✓ Pégalo en Chrome o Safari', copyThis: 'Copia este link en Chrome o Safari: ',
+        micFail: 'Micrófono bloqueado. Abre esta página en Chrome o Safari.' }
+    : { title: '🎤 Mic not working?', chrome: 'Open in Chrome', copy: 'Copy link',
+        copied: 'Copied ✓ Paste it in Chrome or Safari', copyThis: 'Copy this link into Chrome or Safari: ',
+        micFail: 'Mic blocked. Open this page in Chrome or Safari.' };
+  const MIC_FAIL_TEXT = INAPP_TEXT.micFail;
+  function isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+    if (/FBAN|FBAV|FB_IAB|FBIOS|Instagram|WhatsApp|Line\/|Snapchat|musical_ly|BytedanceWebview|TikTok|LinkedInApp|Twitter/i.test(ua)) return true;
+    if (/Android/i.test(ua) && /; wv\)/.test(ua)) return true;               // Android WebView
+    if (/iPhone|iPad|iPod/i.test(ua) && !/Safari\//.test(ua)) return true;    // iOS WebView
+    return false;
+  }
+  function showInAppNotice() {
+    document.getElementById('inappNotice').classList.add('visible');
+  }
+  (function setupInAppNotice() {
+    const chromeBtn = document.getElementById('inappChromeBtn');
+    document.getElementById('inappTitle').textContent = INAPP_TEXT.title;
+    chromeBtn.textContent = INAPP_TEXT.chrome;
+    document.getElementById('inappCopyBtn').textContent = INAPP_TEXT.copy;
+    if (/Android/i.test(navigator.userAgent || '')) {
+      chromeBtn.href = 'intent://' + location.host + location.pathname + location.search
+        + '#Intent;scheme=https;package=com.android.chrome;end';
+      chromeBtn.style.display = 'inline-block';
+    }
+    document.getElementById('inappCopyBtn').addEventListener('click', async () => {
+      const msg = document.getElementById('inappMsg');
+      try {
+        await navigator.clipboard.writeText(location.href);
+        msg.textContent = INAPP_TEXT.copied;
+      } catch (_) {
+        msg.textContent = INAPP_TEXT.copyThis + location.href;
+      }
+    });
+    if (isInAppBrowser() || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) showInAppNotice();
+  })();
+
   function pickMimeType() {
     return (window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
       ? 'audio/webm;codecs=opus' : '';
@@ -796,7 +855,8 @@
       try {
         stream = await getMicStream();
       } catch (err) {
-        statusEl.textContent = "Couldn't access your microphone, check browser permissions, or try a different browser.";
+        statusEl.textContent = MIC_FAIL_TEXT;
+        showInAppNotice();
         startBtn.disabled = false;
         return;
       }
@@ -1490,7 +1550,8 @@
       if (run.aborted) throw LADDER_ABORT;
     } catch (err) {
       if (err === LADDER_ABORT || run.aborted) throw LADDER_ABORT;
-      statusEl.textContent = "Couldn't access your microphone. Check browser permissions, or try a different browser.";
+      statusEl.textContent = MIC_FAIL_TEXT;
+      showInAppNotice();
       startBtn.disabled = false;
       return;
     }
