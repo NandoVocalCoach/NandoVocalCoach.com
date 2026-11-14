@@ -1847,7 +1847,7 @@
         const submittedEmail = document.getElementById('emailField').value.trim();
         const rungReached = ladderState.rungResults.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
         const tier = computeTierFromRung(rungReached);
-        const exerciseUrl = { tier, rootHz: ladderState.rootHz };
+        const exerciseUrl = { tier, rungReached, rootHz: ladderState.rootHz };
 
         // Waiting screen: pitch result first (already scored in the browser),
         // then a status line with a live timer, then rotating facts.
@@ -2248,7 +2248,7 @@
     const isClientMode = (data.is_client || fieldSnapshot.__is_client) === 'yes';
     // Gym link: pattern + level + the person's own starting note (MIDI from the speech root)
     const GYM_PATTERN_CODES = { tense_voice: 'tv', chest_lock: 'cc', airy_voice: 'av', pitch_drift: 'pd', solid_foundation: 'sf', mixed_pattern: 'mx' };
-    const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier });
+    const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier, rung: String(exerciseUrl.rungReached) });   // the Gym starts by the rung (rung 6 -> Module 5), tier is its fallback
     if (exerciseUrl.rootHz) gymParams.set('root', String(Math.round(69 + 12 * Math.log2(exerciseUrl.rootHz / 440))));
     const gymUrl = `https://api.nandovocalcoach.com/exercise?${gymParams}`;
     const resultsEl = document.getElementById('analysisResults');
