@@ -649,10 +649,10 @@
 // The site's own mechanism: text in the HTML carries data-phrase-key (data-phrase-attr="attribute:key" for placeholders and aria-labels) and
 // `translations` holds both languages, keys the same in each. The English page is the HTML itself: nothing is rewritten for 'en'. The script
 // below reads the same table through vaT(key, {vars}) for every word it builds.
-// ES_PUBLIC = false is the gate: until Nando has approved every Spanish screen, Spanish shows only on a device that opened a link with
+// ES_PUBLIC is the gate, true since Nando approved the Spanish (2026-11-20). While false, Spanish showed only on a device that opened a link with
 // ?lang=es (it stays in localStorage 'nvc_lang' and sets the site language 'language' to match). Setting it to true turns on the browser
 // language and the site language alone, and the ES | EN switch in the header, for everyone.
-const ES_PUBLIC = false;
+const ES_PUBLIC = true;
 const translations = {
   en: {
       pageTitle: "Free Vocal Analysis | Nando Vocal Coach",
