@@ -1023,7 +1023,7 @@
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams({
-                                email: email, name: name, plan: plan,
+                                email: email, name: name, plan: plan, order_id: details.id || '',
                                 event_id: eventId, fbp: cookie('_fbp'), fbc: cookie('_fbc'),
                                 source_url: window.location.href
                             })
