@@ -33,7 +33,7 @@
                   '&plan=' + encodeURIComponent(_params.get('plan') || ''))
                 .then(function(r) { return r.json(); })
                 .then(function(d) {
-                    var value = d && d.ok ? parseFloat(d.plan) : 0;
+                    var value = d && d.ok && !d.old ? parseFloat(d.plan) : 0;
                     if (!value) return;
                     fbq('track', 'Purchase', {value: value, currency: 'USD'}, {eventID: _eid});
                     try { localStorage.setItem(_flag, '1'); } catch (e) {}
