@@ -542,6 +542,7 @@
       <div style="margin-bottom: 14px;">
         <input type="email" id="emailField" name="email" placeholder="Your email" required
           style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:emailPlaceholder">
+        <p style="font-size:0.78rem; margin:6px 0 0;"><a class="va-privacy-link" href="https://gym.nandovocalcoach.com/privacy" target="_blank" rel="noopener" style="color:var(--muted);" data-phrase-key="privacyLink">Privacy</a></p>
       </div>
       <div style="margin-bottom: 20px;">
         <div style="font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;" data-phrase-key="bookedQ">Have you already booked a session with me?</div>
@@ -610,7 +611,8 @@
 <footer>
   <p>
     <a href="/">nandovocalcoach.com</a> &nbsp;·&nbsp;
-    <a href="https://www.instagram.com/nandovocalcoach/" target="_blank">Instagram</a>
+    <a href="https://www.instagram.com/nandovocalcoach/" target="_blank">Instagram</a> &nbsp;·&nbsp;
+    <a class="va-privacy-link" href="https://gym.nandovocalcoach.com/privacy" target="_blank" rel="noopener" data-phrase-key="privacyLink">Privacy</a>
   </p>
   <p style="margin-top: 8px; opacity: 0.7;" data-phrase-key="footerRights">© 2026 Nando Vocal Coach. All rights reserved.</p>
 </footer>
@@ -736,6 +738,7 @@ const translations = {
       faq5q: "I've had lessons before and nothing worked. Will this be different?",
       faq5a: "It's built for exactly that. The Vocal Analysis listens to what your voice does today, holding a note, gliding, and matching pitch, so you know what to train first.",
       footerRights: "© 2026 Nando Vocal Coach. All rights reserved.",
+      privacyLink: "Privacy",
       waLabel: "Ask me anything",
       waAria: "Ask me anything on WhatsApp",
       bookFab: "Book a Session · $40",
@@ -929,6 +932,7 @@ const translations = {
       faq5q: "Ya he tenido profesores de canto y nada funcionó. ¿Esto será diferente?",
       faq5a: "Está hecho justo para eso. El análisis vocal escucha lo que hace tu voz hoy, al sostener una nota, hacer un glissando y cantar la nota que oye, para que sepas qué entrenar primero.",
       footerRights: "© 2026 Nando Vocal Coach. Todos los derechos reservados.",
+      privacyLink: "Privacidad",
       waLabel: "Pregúntame lo que quieras",
       waAria: "Pregúntame lo que quieras por WhatsApp",
       bookFab: "Reserva una sesión · $40",
@@ -1086,6 +1090,7 @@ if (VA_LANG === 'es') {
   const desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute('content', translations.es.pageDescription);
   vaApplyDom();
+  document.querySelectorAll('.va-privacy-link').forEach((a) => { a.href += '?lang=es'; });   // the Gym's privacy page in Spanish
   document.addEventListener('DOMContentLoaded', vaApplyDom);   // the floating buttons sit below this script
 }
 
