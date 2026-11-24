@@ -1179,9 +1179,16 @@ if (ES_PUBLIC || VA_LANG === 'es') {
   // ── Shared mic stream, requested once, reused by every step, so the
   // user only sees one permission prompt no matter which step they start
   // with. Tracks are only stopped after a successful final submit.
+  // The stream can die mid-test (another app takes the mic, headphones connect, a call comes in). A dead or muted
+  // stream records empty clips the server cannot read, on every retake, so it is checked before each use and reopened.
   let micStream = null;
+  function micStreamAlive() {
+    const tracks = micStream ? micStream.getAudioTracks() : [];
+    return tracks.length > 0 && tracks.every((t) => t.readyState === 'live' && !t.muted && t.enabled);
+  }
   async function getMicStream() {
-    if (micStream) return micStream;
+    if (micStreamAlive()) return micStream;
+    if (micStream) { try { micStream.getTracks().forEach((t) => t.stop()); } catch (_) {} micStream = null; }
     micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     return micStream;
   }
@@ -2096,6 +2103,7 @@ if (ES_PUBLIC || VA_LANG === 'es') {
         const retryLabel = document.getElementById('speechCountdown');
         if (retryLabel) retryLabel.innerHTML = '<strong style="color:#22c55e;">' + vaT('recNow') + '</strong>';
 
+        try { stream = await getMicStream(); } catch (_) {}   // the first try may have failed because the mic died
         speechBlob = await recordFixedClip(stream, SPEECH_CHECK_SEC);
         if (run.aborted) throw LADDER_ABORT;
         statusEl.textContent = vaT('findingNote');
