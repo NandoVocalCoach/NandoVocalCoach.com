@@ -2719,7 +2719,7 @@ if (ES_PUBLIC || VA_LANG === 'es') {
     const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier, rung: String(exerciseUrl.rungReached) });   // the Gym starts by the rung (rung 6 -> Module 5), tier is its fallback
     if (exerciseUrl.rootHz) gymParams.set('root', String(Math.round(69 + 12 * Math.log2(exerciseUrl.rootHz / 440))));
     if (VA_LANG === 'es') gymParams.set('lang', 'es');   // the Gym starts in Spanish on a fresh device
-    const gymUrl = `https://api.nandovocalcoach.com/exercise?${gymParams}`;
+    const gymUrl = `https://app.nandovocalcoach.com/exercise?${gymParams}`;
     const resultsEl = document.getElementById('analysisResults');
     resultsEl.style.display = 'block';
     resultsEl.innerHTML = `
