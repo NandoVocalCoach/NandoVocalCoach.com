@@ -301,7 +301,6 @@
   // ── Screen 1: the speaking voice ──
   function screenSpeech() {
     $screen.innerHTML = `
-      ${picBox()}
       <h1>${esc(t('s0Title'))}</h1>
       <p class="one">${esc(t('s0Line'))}</p>
       <p class="sentence" id="sentence">${esc(t('sentence'))}</p>
@@ -364,7 +363,6 @@
       : `<button type="button" class="btn ghost" id="exBtn" data-hz="${FALLBACK_LOW_HZ}" data-label="lower">${esc(t('lower'))}</button>
          <button type="button" class="btn ghost" id="exBtnB" data-hz="${FALLBACK_HIGH_HZ}" data-label="higher">${esc(t('higher'))}</button>`;
     $screen.innerHTML = `
-      ${picBox()}
       <h1>${esc(t('s1Title'))}</h1>
       <p class="one">${esc(t('s1Line'))}</p>
       <div class="graph"><canvas id="graph"></canvas>
