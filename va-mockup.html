@@ -35,12 +35,8 @@
   .mocktag { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-align: center; padding-bottom: 8px; }
 
   .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
-  .pic {
-    flex: 1 1 150px; min-height: 96px; max-height: 210px; border: 1.5px dashed #3a3a3a; border-radius: 14px; position: relative;
-    display: flex; align-items: center; justify-content: center; background: var(--card);
-  }
-  .pic svg { height: 78%; max-width: 88%; }
-  .pic span { position: absolute; right: 10px; bottom: 7px; font-size: 10px; color: #6B7280; letter-spacing: 0.05em; }
+  .coach { flex: 1 1 150px; min-height: 96px; max-height: 230px; display: flex; align-items: flex-end; justify-content: center; }
+  .coach img { height: 100%; max-width: 100%; object-fit: contain; display: block; }
   h1 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 34px; letter-spacing: 0.03em; line-height: 1; color: var(--orange); }
   .one { font-size: 19px; font-weight: 700; line-height: 1.3; }
   .sentence { font-size: 20px; font-weight: 600; line-height: 1.4; background: var(--card); border-radius: 14px; padding: 16px; }
@@ -87,7 +83,6 @@
   const T = {
     en: {
       mockTag: 'MOCKUP · NOTHING IS SENT OR SAVED',
-      picTag: 'picture goes here',
       s0Title: 'YOUR SPEAKING VOICE',
       s0Line: 'Read this out loud.',
       sentence: "I sing because it makes me feel alive, and I'm here to find out what's holding me back.",
@@ -107,7 +102,6 @@
     },
     es: {
       mockTag: 'PRUEBA DE DISEÑO · NADA SE ENVÍA NI SE GUARDA',
-      picTag: 'aquí va la imagen',
       s0Title: 'TU VOZ HABLADA',
       s0Line: 'Lee esto en voz alta.',
       sentence: 'Canto porque me llena de vida, y estoy aquí para descubrir qué me frena.',
@@ -256,13 +250,12 @@
   // ── Small pieces every screen uses ──
   const $screen = document.getElementById('screen');
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  // Placeholder for the Mat-style picture: phone at arm's length from the mouth. The real one comes from a photo of Nando.
-  const PIC = `<svg viewBox="0 0 300 120" fill="none" stroke="#8b8b8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="52" cy="46" r="26"/><path d="M68 56 q8 4 0 9"/><path d="M40 72 v18 M26 118 q4-28 26-28 q22 0 30 14 l84 -22"/>
-      <path d="M92 60 H206" stroke-dasharray="3 9" stroke="#FF5500"/>
-      <rect x="216" y="30" width="36" height="66" rx="7" stroke="#FF5500"/><circle cx="234" cy="86" r="3" fill="#FF5500" stroke="none"/>
-    </svg>`;
-  const picBox = () => `<div class="pic">${PIC}<span>${esc(t('picTag'))}</span></div>`;
+  // Coach, the Gym's own character (same frames the Gym serves), shows whose turn it is without words.
+  const COACH_URL = 'https://app.nandovocalcoach.com/coach/';
+  const COACH_FRAMES = ['start-clap', 'turn-listen', 'turn-sing', 'good-thumbs', 'star-thumbs', 'miss-point'];
+  COACH_FRAMES.forEach((n) => { new Image().src = COACH_URL + n + '.webp'; });
+  const coachBox = (name) => `<div class="coach"><img id="coach" src="${COACH_URL}${name}.webp" alt=""></div>`;
+  function setCoach(name) { const el = document.getElementById('coach'); if (el) el.src = COACH_URL + name + '.webp'; }
   const levelBox = () => {
     const pct = (db) => ((db - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB)) * 100;
     return `<div class="level" id="level"><div class="zone" style="left:${pct(LEVEL_OK_LO)}%;width:${pct(LEVEL_OK_HI) - pct(LEVEL_OK_LO)}%"></div><div class="fill" id="levelFill"></div></div>`;
@@ -301,6 +294,7 @@
   // ── Screen 1: the speaking voice ──
   function screenSpeech() {
     $screen.innerHTML = `
+      ${coachBox('start-clap')}
       <h1>${esc(t('s0Title'))}</h1>
       <p class="one">${esc(t('s0Line'))}</p>
       <p class="sentence" id="sentence">${esc(t('sentence'))}</p>
@@ -318,7 +312,7 @@
     try { await ensureMic(); } catch (_) { setStatus(t('micFail'), 'warn'); btn.disabled = false; return; }
     if (mine !== run) return;
     document.getElementById('sentence').classList.add('live');
-    setStatus(t('listening'));
+    setStatus(t('listening')); setCoach('turn-listen');
     const smoother = lgSmoother(), heard = [];
     const t0 = performance.now();
     let last = t0, voicedSec = 0, lastVoice = null;
@@ -344,7 +338,7 @@
     }
     const median = [...heard].sort((a, b) => a - b)[Math.floor(heard.length / 2)];
     state.rootHz = Math.min(ROOT_MAX_HZ, Math.max(ROOT_MIN_HZ, median));
-    setStatus(t('found'), 'ok');
+    setStatus(t('found'), 'ok'); setCoach('good-thumbs');
     document.getElementById('sentence').classList.remove('live');
     const mine = run;
     setTimeout(() => { if (mine === run) go(1); }, 900);
@@ -363,6 +357,7 @@
       : `<button type="button" class="btn ghost" id="exBtn" data-hz="${FALLBACK_LOW_HZ}" data-label="lower">${esc(t('lower'))}</button>
          <button type="button" class="btn ghost" id="exBtnB" data-hz="${FALLBACK_HIGH_HZ}" data-label="higher">${esc(t('higher'))}</button>`;
     $screen.innerHTML = `
+      ${coachBox('turn-sing')}
       <h1>${esc(t('s1Title'))}</h1>
       <p class="one">${esc(t('s1Line'))}</p>
       <div class="graph"><canvas id="graph"></canvas>
@@ -387,18 +382,18 @@
     if (exampleStop) { exampleStop(); exampleStop = null; }
     resetExampleBtns();
     ah.exProgress = 0; drawGraph();
-    if (wasPlaying) return;
+    if (wasPlaying) { setCoach('turn-sing'); return; }
     await ensureCtx();
     if (mine !== run) return;
     ah.exHz = parseFloat(btn.dataset.hz); ah.trace = [];
     const voice = playAh(ah.exHz, HOLD_SEC);
     exampleStop = voice.stop;
-    btn.textContent = t('stop'); btn.dataset.playing = '1';
+    btn.textContent = t('stop'); btn.dataset.playing = '1'; setCoach('turn-listen');
     (function frame() {
       if (mine !== run) return;
       ah.exProgress = Math.max(0, Math.min(1, (ctx.currentTime - voice.startAt) / HOLD_SEC));
       drawGraph();
-      if (ah.exProgress >= 1) { exampleStop = null; resetExampleBtns(); return; }
+      if (ah.exProgress >= 1) { exampleStop = null; resetExampleBtns(); setCoach('turn-sing'); return; }
       requestAnimationFrame(frame);
     })();
   }
@@ -414,7 +409,7 @@
     ah.trace = []; ah.exProgress = 1;
     btn.classList.add('rec'); btn.disabled = false; btn.textContent = t('stop');
     singStop = finish;
-    setStatus(t('go'));
+    setStatus(t('go')); setCoach('turn-sing');
 
     // The take is kept only so the person can hear it back on this screen.
     let rec = null; const chunks = [];
@@ -438,9 +433,9 @@
       showLevel(null);
       if (rec && rec.state === 'recording') rec.stop();
       btn.classList.remove('rec');
-      if (!onset) { btn.textContent = t('sing'); setStatus(t('noVoice'), 'warn'); return; }
-      if (voicedSec < MIN_HOLD_SEC) { btn.textContent = t('sing'); setStatus(t('tooShort'), 'warn'); return; }
-      setStatus(t('done'), 'ok');
+      if (!onset) { btn.textContent = t('sing'); setStatus(t('noVoice'), 'warn'); setCoach('miss-point'); return; }
+      if (voicedSec < MIN_HOLD_SEC) { btn.textContent = t('sing'); setStatus(t('tooShort'), 'warn'); setCoach('miss-point'); return; }
+      setStatus(t('done'), 'ok'); setCoach('star-thumbs');
       document.getElementById('takeBtn').hidden = !rec;
       document.getElementById('ahBtns').innerHTML =
         `<button type="button" class="btn ghost" id="againBtn">${esc(t('again'))}</button><button type="button" class="btn" id="nextBtn">${esc(t('next'))}</button>`;
@@ -511,7 +506,7 @@
   // ── End of the mockup ──
   function screenEnd() {
     $screen.innerHTML = `
-      <div style="flex:1"></div>
+      ${coachBox('star-thumbs')}
       <h1>${esc(t('endTitle'))}</h1>
       <p class="one">${esc(t('endLine'))}</p>
       <div style="flex:1"></div>
