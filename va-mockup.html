@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
 <!--
   MOCKUP of the Vocal Analysis redesign (2026-11-24), for Nando's eye on his phone. Not linked from anywhere.
-  Two screens only: the speaking voice (new first step) and the long "ah". Nothing is uploaded, checked by the
+  Three screens: the speaking voice (new first step), the long "ah" and the glide. Nothing is uploaded, checked by the
   server or saved: the speaking note is read in the browser here (the real page keeps /detect-pitch).
   Test switches: ?fail=1 = the speaking note is never found (shows the two-example fallback), ?lang=es / ?lang=en.
 -->
@@ -96,7 +96,11 @@
       noVoice: "I didn't hear you. Tap SING and try again.",
       done: 'Got it.', again: 'AGAIN', next: 'NEXT', myTake: '▶ Hear my take',
       legendEx: 'Example', legendYou: 'You',
-      endTitle: 'END OF THE MOCKUP', endLine: 'The glide, the pitch test and the song would follow the same way.',
+      s2Title: 'GLIDE',
+      s2Line: 'Slide up on an "ooh", then back down.',
+      glideShort: 'Too short. Slide all the way up, then back down.',
+      glideFlat: 'That stayed on one note. Slide up, then back down.',
+      endTitle: 'END OF THE MOCKUP', endLine: 'The pitch test and the song would follow the same way.',
       restart: 'START OVER',
       micFail: 'Mic blocked. Open this page in Chrome or Safari.',
     },
@@ -115,7 +119,11 @@
       noVoice: 'No te oí. Toca el botón CANTAR e inténtalo otra vez.',
       done: 'Listo.', again: 'REPETIR', next: 'SIGUIENTE', myTake: '▶ Oír mi grabación',
       legendEx: 'Ejemplo', legendYou: 'Tú',
-      endTitle: 'FIN DE LA PRUEBA', endLine: 'El glissando, la prueba de afinación y la canción seguirían igual.',
+      s2Title: 'GLISSANDO',
+      s2Line: 'Sube con una "U" suave y vuelve a bajar.',
+      glideShort: 'Muy corto. Sube hasta arriba y vuelve a bajar.',
+      glideFlat: 'Se quedó en una sola nota. Sube y vuelve a bajar.',
+      endTitle: 'FIN DE LA PRUEBA', endLine: 'La prueba de afinación y la canción seguirían igual.',
       restart: 'EMPEZAR DE NUEVO',
       micFail: 'Micrófono bloqueado. Abre esta página en Chrome o Safari.',
     },
@@ -225,8 +233,10 @@
     return { db, hz: smoother.push(lgDetectHz(micBuf, ctx.sampleRate, READ_MIN_RMS)) };
   }
 
-  // The example voice: the live page's "ah" (sawtooth through three resonances, light vibrato). Returns a stop function.
-  function playAh(hz, sec) {
+  // The example voice, as on the live page: a sawtooth through three resonances, light vibrato. Held on baseHz, or sliding
+  // in straight lines up to topHz at the middle and back. Returns its start time and a stop function.
+  const FORMANTS = { ah: [[730, 12, 1.0], [1090, 14, 0.5], [2440, 16, 0.3]], oo: [[310, 12, 1.0], [870, 14, 0.32], [2250, 16, 0.15]] };
+  function playVoice(vowel, baseHz, topHz, sec) {
     const now = ctx.currentTime + 0.05, fade = 0.05;
     const master = ctx.createGain();
     master.gain.setValueAtTime(0, now);
@@ -234,11 +244,15 @@
     master.gain.setValueAtTime(0.5, now + sec - fade);
     master.gain.linearRampToValueAtTime(0, now + sec);
     master.connect(ctx.destination);
-    const src = ctx.createOscillator(); src.type = 'sawtooth'; src.frequency.setValueAtTime(hz, now);
+    const src = ctx.createOscillator(); src.type = 'sawtooth'; src.frequency.setValueAtTime(baseHz, now);
+    if (topHz > baseHz) {
+      src.frequency.linearRampToValueAtTime(topHz, now + sec / 2);
+      src.frequency.linearRampToValueAtTime(baseHz, now + sec);
+    }
     const lfo = ctx.createOscillator(); lfo.frequency.value = 5.5;
-    const lfoGain = ctx.createGain(); lfoGain.gain.value = hz * 0.008;
+    const lfoGain = ctx.createGain(); lfoGain.gain.value = baseHz * 0.008;
     lfo.connect(lfoGain); lfoGain.connect(src.frequency);
-    [[730, 12, 1.0], [1090, 14, 0.5], [2440, 16, 0.3]].forEach(([f, qv, g]) => {
+    FORMANTS[vowel].forEach(([f, qv, g]) => {
       const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = qv;
       const gn = ctx.createGain(); gn.gain.value = g;
       src.connect(bp); bp.connect(gn); gn.connect(master);
@@ -288,7 +302,7 @@
     if (exampleStop) { exampleStop(); exampleStop = null; }
     state.screen = n;
     renderChrome();
-    [screenSpeech, screenAh, screenEnd][n]();
+    [screenSpeech, () => screenTake('ah'), () => screenTake('glide'), screenEnd][n]();
   }
 
   // ── Screen 1: the speaking voice ──
@@ -344,32 +358,47 @@
     setTimeout(() => { if (mine === run) go(1); }, 900);
   }
 
-  // ── Screen 2: the long "ah" ──
+  // ── Screens 2 and 3: one take on a graph (the long "ah", then the glide) ──
   let exampleStop = null;
   let singStop = null;   // set while a take is being recorded: the SING button then stops it
-  const ah = { exHz: 0, exProgress: 0, trace: [] };
-  function screenAh() {
-    const known = !!state.rootHz;
-    ah.exHz = known ? state.rootHz * Math.pow(2, EXAMPLE_ABOVE_SPEECH / 12) : FALLBACK_LOW_HZ;
-    ah.exProgress = 0; ah.trace = [];
+  // sec = how long the example lasts and how wide the graph starts. upSt = how far the example slides up (0 = held note).
+  // endAtSec = the take stops by itself there (the "ah": when the line reaches the end); the glide stops when the voice stops.
+  const TAKES = {
+    ah:    { title: 's1Title', line: 's1Line', vowel: 'ah', sec: HOLD_SEC, upSt: 0,  endAtSec: HOLD_SEC, maxSec: HOLD_SEC, minVoiced: MIN_HOLD_SEC, short: 'tooShort',
+             fallback: [FALLBACK_LOW_HZ, FALLBACK_HIGH_HZ] },
+    glide: { title: 's2Title', line: 's2Line', vowel: 'oo', sec: 6,        upSt: 17, endAtSec: null,     maxSec: 14,       minVoiced: 2.5,          short: 'glideShort', minSpanSt: 5,
+             fallback: [FALLBACK_LOW_HZ, 220.0] },   // 17 semitones = today's D3 to G4 example
+  };
+  const tk = { cfg: TAKES.ah, baseHz: 0, exProgress: 0, trace: [], xMax: HOLD_SEC };
+  const topHz = () => tk.baseHz * Math.pow(2, tk.cfg.upSt / 12);
+  function exampleHzAt(sec) {   // the same straight lines in Hz the example voice plays
+    if (!tk.cfg.upSt) return tk.baseHz;
+    const half = tk.cfg.sec / 2, top = topHz();
+    return sec <= half ? tk.baseHz + (top - tk.baseHz) * (sec / half) : top - (top - tk.baseHz) * ((sec - half) / half);
+  }
+  function screenTake(kind) {
+    const cfg = TAKES[kind], known = !!state.rootHz;
+    tk.cfg = cfg;
+    tk.baseHz = known ? state.rootHz * Math.pow(2, EXAMPLE_ABOVE_SPEECH / 12) : cfg.fallback[0];
+    tk.exProgress = 0; tk.trace = []; tk.xMax = cfg.sec;
     const listenBtns = known
-      ? `<button type="button" class="btn ghost" id="exBtn" data-hz="${ah.exHz}" data-label="listen">${esc(t('listen'))}</button>`
-      : `<button type="button" class="btn ghost" id="exBtn" data-hz="${FALLBACK_LOW_HZ}" data-label="lower">${esc(t('lower'))}</button>
-         <button type="button" class="btn ghost" id="exBtnB" data-hz="${FALLBACK_HIGH_HZ}" data-label="higher">${esc(t('higher'))}</button>`;
+      ? `<button type="button" class="btn ghost" id="exBtn" data-hz="${tk.baseHz}" data-label="listen">${esc(t('listen'))}</button>`
+      : `<button type="button" class="btn ghost" id="exBtn" data-hz="${cfg.fallback[0]}" data-label="lower">${esc(t('lower'))}</button>
+         <button type="button" class="btn ghost" id="exBtnB" data-hz="${cfg.fallback[1]}" data-label="higher">${esc(t('higher'))}</button>`;
     $screen.innerHTML = `
       ${coachBox('turn-sing')}
-      <h1>${esc(t('s1Title'))}</h1>
-      <p class="one">${esc(t('s1Line'))}</p>
+      <h1>${esc(t(cfg.title))}</h1>
+      <p class="one">${esc(t(cfg.line))}</p>
       <div class="graph"><canvas id="graph"></canvas>
         <div class="legend"><span><b style="background:#fff"></b>${esc(t('legendEx'))}</span><span><b style="background:var(--orange)"></b>${esc(t('legendYou'))}</span></div>
       </div>
       ${levelBox()}
       <div class="status" id="status"></div>
       <button type="button" class="link" id="takeBtn" hidden>${esc(t('myTake'))}</button>
-      <div class="btns" id="ahBtns">${listenBtns}<button type="button" class="btn" id="singBtn">${esc(t('sing'))}</button></div>`;
+      <div class="btns" id="takeBtns">${listenBtns}<button type="button" class="btn" id="singBtn">${esc(t('sing'))}</button></div>`;
     if (!known) setStatus(t('fallback'), 'warn');
     $screen.querySelectorAll('[data-hz]').forEach((b) => b.addEventListener('click', () => toggleExample(b)));
-    document.getElementById('singBtn').addEventListener('click', () => (singStop ? singStop() : singAh()));
+    document.getElementById('singBtn').addEventListener('click', () => (singStop ? singStop() : singTake()));
     document.getElementById('takeBtn').addEventListener('click', () => { if (state.takeUrl) new Audio(state.takeUrl).play().catch(() => {}); });
     drawGraph();
   }
@@ -381,24 +410,24 @@
     const mine = ++run;   // also ends a take in progress
     if (exampleStop) { exampleStop(); exampleStop = null; }
     resetExampleBtns();
-    ah.exProgress = 0; drawGraph();
+    tk.exProgress = 0; drawGraph();
     if (wasPlaying) { setCoach('turn-sing'); return; }
     await ensureCtx();
     if (mine !== run) return;
-    ah.exHz = parseFloat(btn.dataset.hz); ah.trace = [];
-    const voice = playAh(ah.exHz, HOLD_SEC);
+    tk.baseHz = parseFloat(btn.dataset.hz); tk.trace = []; tk.xMax = tk.cfg.sec;
+    const voice = playVoice(tk.cfg.vowel, tk.baseHz, topHz(), tk.cfg.sec);
     exampleStop = voice.stop;
     btn.textContent = t('stop'); btn.dataset.playing = '1'; setCoach('turn-listen');
     (function frame() {
       if (mine !== run) return;
-      ah.exProgress = Math.max(0, Math.min(1, (ctx.currentTime - voice.startAt) / HOLD_SEC));
+      tk.exProgress = Math.max(0, Math.min(1, (ctx.currentTime - voice.startAt) / tk.cfg.sec));
       drawGraph();
-      if (ah.exProgress >= 1) { exampleStop = null; resetExampleBtns(); setCoach('turn-sing'); return; }
+      if (tk.exProgress >= 1) { exampleStop = null; resetExampleBtns(); setCoach('turn-sing'); return; }
       requestAnimationFrame(frame);
     })();
   }
-  async function singAh() {
-    const mine = ++run;
+  async function singTake() {
+    const mine = ++run, cfg = tk.cfg;
     if (exampleStop) { exampleStop(); exampleStop = null; }
     resetExampleBtns();
     const btn = document.getElementById('singBtn');
@@ -406,7 +435,7 @@
     try { await ensureMic(); } catch (_) { setStatus(t('micFail'), 'warn'); btn.disabled = false; return; }
     if (mine !== run) { btn.disabled = false; return; }
     document.getElementById('takeBtn').hidden = true;
-    ah.trace = []; ah.exProgress = 1;
+    tk.trace = []; tk.exProgress = 1; tk.xMax = cfg.sec;
     btn.classList.add('rec'); btn.disabled = false; btn.textContent = t('stop');
     singStop = finish;
     setStatus(t('go')); setCoach('turn-sing');
@@ -433,14 +462,20 @@
       showLevel(null);
       if (rec && rec.state === 'recording') rec.stop();
       btn.classList.remove('rec');
-      if (!onset) { btn.textContent = t('sing'); setStatus(t('noVoice'), 'warn'); setCoach('miss-point'); return; }
-      if (voicedSec < MIN_HOLD_SEC) { btn.textContent = t('sing'); setStatus(t('tooShort'), 'warn'); setCoach('miss-point'); return; }
+      const fail = (key) => { btn.textContent = t('sing'); setStatus(t(key), 'warn'); setCoach('miss-point'); };
+      if (!onset) return fail('noVoice');
+      if (voicedSec < cfg.minVoiced) return fail(cfg.short);
+      if (cfg.minSpanSt) {
+        const hzs = tk.trace.filter(Boolean).map((p) => p.hz);
+        if (12 * Math.log2(Math.max(...hzs) / Math.min(...hzs)) < cfg.minSpanSt) return fail('glideFlat');
+      }
       setStatus(t('done'), 'ok'); setCoach('star-thumbs');
       document.getElementById('takeBtn').hidden = !rec;
-      document.getElementById('ahBtns').innerHTML =
+      document.getElementById('takeBtns').innerHTML =
         `<button type="button" class="btn ghost" id="againBtn">${esc(t('again'))}</button><button type="button" class="btn" id="nextBtn">${esc(t('next'))}</button>`;
-      document.getElementById('againBtn').addEventListener('click', () => go(1));
-      document.getElementById('nextBtn').addEventListener('click', () => go(2));
+      const here = state.screen;
+      document.getElementById('againBtn').addEventListener('click', () => go(here));
+      document.getElementById('nextBtn').addEventListener('click', () => go(here + 1));
     }
     (function frame(now) {
       if (mine !== run) { finish(); return; }
@@ -450,50 +485,55 @@
       if (!onset && streak >= 3) { onset = now; setStatus(''); }
       if (onset) {
         const tt = (now - onset) / 1000;
-        if (r.hz) { ah.trace.push({ t: tt, hz: r.hz }); voicedSec += (now - last) / 1000; lastVoice = now; }
-        else if (ah.trace.length && ah.trace[ah.trace.length - 1] !== null) ah.trace.push(null);
+        if (r.hz) { tk.trace.push({ t: tt, hz: r.hz }); voicedSec += (now - last) / 1000; lastVoice = now; }
+        else if (tk.trace.length && tk.trace[tk.trace.length - 1] !== null) tk.trace.push(null);
+        if (tt > tk.xMax) tk.xMax = tt;   // a slower glide than the example: the graph makes room, nothing is cut
         drawGraph();
-        // Stops on its own: the line reached the end, or the voice stopped.
-        if (tt >= HOLD_SEC || (lastVoice && now - lastVoice > 700)) return finish();
+        // Stops on its own: the line reached the end (the "ah"), the voice stopped, or the longest take allowed.
+        if ((cfg.endAtSec && tt >= cfg.endAtSec) || tt >= cfg.maxSec || (lastVoice && now - lastVoice > 800)) return finish();
       } else if (now - t0 > 7000) return finish();
       last = now;
       requestAnimationFrame(frame);
     })(t0);
   }
 
-  // Graph: 5 seconds wide, the example's note in the middle. The example is a wide pale bar that fills while it plays;
-  // the person's voice is the orange line on top of it.
+  // Graph: as wide as the example is long. The example is a wide pale shape that fills while it plays; the person's voice
+  // is the orange line on top of it.
   function drawGraph() {
     const cv = document.getElementById('graph');
     if (!cv) return;
     const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
-    if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
     const g = cv.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, W, H);
-    const padX = 14, padTop = 30, padBot = 14;
-    const x = (sec) => padX + Math.max(0, Math.min(1, sec / HOLD_SEC)) * (W - 2 * padX);
+    const cfg = tk.cfg, padX = 14, padTop = 30, padBot = 14;
+    const stLo = cfg.upSt ? -3 : -GRAPH_HALF_ST, stHi = cfg.upSt ? cfg.upSt + 3 : GRAPH_HALF_ST;
+    const x = (sec) => padX + Math.max(0, Math.min(1, sec / tk.xMax)) * (W - 2 * padX);
     const y = (hz) => {
-      const st = Math.max(-GRAPH_HALF_ST, Math.min(GRAPH_HALF_ST, 12 * Math.log2(hz / ah.exHz)));
-      return padTop + (1 - (st + GRAPH_HALF_ST) / (2 * GRAPH_HALF_ST)) * (H - padTop - padBot);
+      const st = Math.max(stLo, Math.min(stHi, 12 * Math.log2(hz / tk.baseHz)));
+      return padTop + (1 - (st - stLo) / (stHi - stLo)) * (H - padTop - padBot);
     };
     // one faint tick per second
     g.strokeStyle = 'rgba(255,255,255,0.07)'; g.lineWidth = 1;
-    for (let s = 1; s < HOLD_SEC; s++) { g.beginPath(); g.moveTo(x(s), padTop); g.lineTo(x(s), H - padBot); g.stroke(); }
-    // the example: where it will be (pale), and how far it has played (white)
-    const yEx = y(ah.exHz);
-    g.lineCap = 'round'; g.lineWidth = 12;
-    g.strokeStyle = 'rgba(255,255,255,0.13)';
-    g.beginPath(); g.moveTo(x(0), yEx); g.lineTo(x(HOLD_SEC), yEx); g.stroke();
-    if (ah.exProgress > 0) {
-      g.strokeStyle = ah.trace.length ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.85)';
-      g.beginPath(); g.moveTo(x(0), yEx); g.lineTo(x(ah.exProgress * HOLD_SEC), yEx); g.stroke();
+    for (let sec = 1; sec < tk.xMax; sec++) { g.beginPath(); g.moveTo(x(sec), padTop); g.lineTo(x(sec), H - padBot); g.stroke(); }
+    // the example: where it will go (pale), and how far it has played (white)
+    const exampleTo = (endSec) => {
+      g.beginPath(); g.moveTo(x(0), y(exampleHzAt(0)));
+      for (let sec = 0.05; sec < endSec; sec += 0.05) g.lineTo(x(sec), y(exampleHzAt(sec)));
+      g.lineTo(x(endSec), y(exampleHzAt(endSec))); g.stroke();
+    };
+    g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 12;
+    g.strokeStyle = 'rgba(255,255,255,0.13)'; exampleTo(cfg.sec);
+    if (tk.exProgress > 0) {
+      g.strokeStyle = tk.trace.length ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.85)';
+      exampleTo(tk.exProgress * cfg.sec);
     }
     // the person's voice
-    g.strokeStyle = '#FF5500'; g.lineWidth = 4; g.lineJoin = 'round';
+    g.strokeStyle = '#FF5500'; g.lineWidth = 4;
     g.beginPath();
     let pen = false, lastPt = null;
-    ah.trace.forEach((p) => {
+    tk.trace.forEach((p) => {
       if (!p) { pen = false; return; }
       if (pen) g.lineTo(x(p.t), y(p.hz)); else g.moveTo(x(p.t), y(p.hz));
       pen = true; lastPt = p;
