@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Vocal Analysis mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+<!--
+  MOCKUP of the Vocal Analysis redesign (2026-11-24), for Nando's eye on his phone. Not linked from anywhere.
+  Two screens only: the speaking voice (new first step) and the long "ah". Nothing is uploaded, checked by the
+  server or saved: the speaking note is read in the browser here (the real page keeps /detect-pitch).
+  Test switches: ?fail=1 = the speaking note is never found (shows the two-example fallback), ?lang=es / ?lang=en.
+-->
+<style>
+  :root {
+    --bg: #0d0d0d; --card: #171717; --line: #2a2a2a; --text: #fff; --muted: #9CA3AF;
+    --orange: #FF5500; --green: #22c55e; --red: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+  .app {
+    max-width: 440px; margin: 0 auto; height: 100%; height: 100dvh; display: flex; flex-direction: column;
+    padding: max(10px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 8px; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 22px; height: 5px; border-radius: 3px; background: var(--line); }
+  .dots i.on { background: var(--orange); }
+  .dots i.done { background: rgba(255,85,0,0.45); }
+  .lang { display: flex; gap: 2px; font-size: 12px; font-weight: 700; }
+  .lang button { background: none; border: none; color: var(--muted); font: inherit; padding: 6px 7px; cursor: pointer; }
+  .lang button[aria-pressed="true"] { color: var(--orange); }
+  .mocktag { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-align: center; padding-bottom: 8px; }
+
+  .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .pic {
+    flex: 1 1 150px; min-height: 96px; max-height: 210px; border: 1.5px dashed #3a3a3a; border-radius: 14px; position: relative;
+    display: flex; align-items: center; justify-content: center; background: var(--card);
+  }
+  .pic svg { height: 78%; max-width: 88%; }
+  .pic span { position: absolute; right: 10px; bottom: 7px; font-size: 10px; color: #6B7280; letter-spacing: 0.05em; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 34px; letter-spacing: 0.03em; line-height: 1; color: var(--orange); }
+  .one { font-size: 19px; font-weight: 700; line-height: 1.3; }
+  .sentence { font-size: 20px; font-weight: 600; line-height: 1.4; background: var(--card); border-radius: 14px; padding: 16px; }
+  .sentence.live { outline: 2px solid var(--green); }
+
+  .graph { position: relative; flex: 2 1 150px; min-height: 130px; background: var(--card); border-radius: 14px; overflow: hidden; }
+  .graph canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .legend { position: absolute; left: 12px; top: 8px; display: flex; gap: 12px; font-size: 11px; font-weight: 600; color: var(--muted); }
+  .legend b { display: inline-block; width: 14px; height: 4px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+  .level { height: 14px; border-radius: 7px; background: var(--line); position: relative; overflow: hidden; visibility: hidden; }
+  .level.on { visibility: visible; }
+  .level .zone { position: absolute; top: 0; bottom: 0; background: rgba(34,197,94,0.22); border-left: 2px solid var(--green); border-right: 2px solid var(--green); }
+  .level .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 7px; background: var(--muted); }
+
+  .status { min-height: 24px; font-size: 15px; font-weight: 600; text-align: center; color: var(--muted); }
+  .status.ok { color: var(--green); } .status.warn { color: var(--orange); }
+  .btns { display: flex; gap: 10px; }
+  .btn {
+    flex: 1; min-height: 58px; border-radius: 14px; border: 2px solid var(--orange); background: var(--orange); color: #fff;
+    font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.05em; cursor: pointer;
+  }
+  .btn.ghost { background: transparent; color: var(--orange); }
+  .btn.rec { background: var(--red); border-color: var(--red); }
+  .btn:disabled { opacity: 0.4; }
+  .btn:focus-visible, .lang button:focus-visible, .link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .link { background: none; border: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; padding: 6px; cursor: pointer; align-self: center; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="dots" id="dots"></div>
+    <div class="lang"><button type="button" id="langEs">ES</button><button type="button" id="langEn">EN</button></div>
+  </div>
+  <div class="mocktag" id="mockTag"></div>
+  <div class="screen" id="screen"></div>
+</div>
+
+<script>
+(function () {
+  // ── Words: English and Spanish, same keys ──
+  const T = {
+    en: {
+      mockTag: 'MOCKUP · NOTHING IS SENT OR SAVED',
+      picTag: 'picture goes here',
+      s0Title: 'YOUR SPEAKING VOICE',
+      s0Line: 'Read this out loud.',
+      sentence: "I sing because it makes me feel alive, and I'm here to find out what's holding me back.",
+      start: 'START', listening: 'Listening…', found: 'Got your voice.',
+      retry1: "I couldn't hear you. Read it once more.",
+      fallback: "Couldn't find your note. Pick the example closer to your voice.",
+      s1Title: 'LONG "AH"',
+      s1Line: 'Hold an "ah" for 5 seconds.',
+      listen: 'LISTEN', lower: 'LOWER', higher: 'HIGHER', stop: 'STOP', sing: 'SING',
+      go: 'Sing now.', tooShort: 'Too short. Hold it until the line reaches the end.',
+      noVoice: "I didn't hear you. Tap SING and try again.",
+      done: 'Got it.', again: 'AGAIN', next: 'NEXT', myTake: '▶ Hear my take',
+      legendEx: 'Example', legendYou: 'You',
+      endTitle: 'END OF THE MOCKUP', endLine: 'The glide, the pitch test and the song would follow the same way.',
+      restart: 'START OVER',
+      micFail: 'Mic blocked. Open this page in Chrome or Safari.',
+    },
+    es: {
+      mockTag: 'PRUEBA DE DISEÑO · NADA SE ENVÍA NI SE GUARDA',
+      picTag: 'aquí va la imagen',
+      s0Title: 'TU VOZ HABLADA',
+      s0Line: 'Lee esto en voz alta.',
+      sentence: 'Canto porque me llena de vida, y estoy aquí para descubrir qué me frena.',
+      start: 'EMPEZAR', listening: 'Escuchando…', found: 'Ya tengo tu voz.',
+      retry1: 'No te oí. Léelo una vez más.',
+      fallback: 'No encontré tu nota. Elige el ejemplo más parecido a tu voz.',
+      s1Title: '"A" LARGA',
+      s1Line: 'Sostén una "A" durante 5 segundos.',
+      listen: 'ESCUCHAR', lower: 'MÁS GRAVE', higher: 'MÁS AGUDA', stop: 'DETENER', sing: 'CANTAR',
+      go: 'Canta ahora.', tooShort: 'Muy corta. Sostenla hasta que la línea llegue al final.',
+      noVoice: 'No te oí. Toca el botón CANTAR e inténtalo otra vez.',
+      done: 'Listo.', again: 'REPETIR', next: 'SIGUIENTE', myTake: '▶ Oír mi grabación',
+      legendEx: 'Ejemplo', legendYou: 'Tú',
+      endTitle: 'FIN DE LA PRUEBA', endLine: 'El glissando, la prueba de afinación y la canción seguirían igual.',
+      restart: 'EMPEZAR DE NUEVO',
+      micFail: 'Micrófono bloqueado. Abre esta página en Chrome o Safari.',
+    },
+  };
+  const q = new URLSearchParams(location.search);
+  let lang = (function () {
+    const u = q.get('lang'); if (u === 'en' || u === 'es') return u;
+    try { const s = localStorage.getItem('language'); if (s === 'en' || s === 'es') return s; } catch (_) {}
+    return /^es/i.test(navigator.language || '') ? 'es' : 'en';
+  })();
+  const t = (k) => T[lang][k];
+  const FORCE_FAIL = q.get('fail') === '1';
+
+  // ── Numbers ──
+  const HOLD_SEC = 5;                 // what the step asks for; the graph is exactly this wide, so the line is the timer
+  const MIN_HOLD_SEC = 3;             // shorter than this is asked again
+  const ROOT_MIN_HZ = 130.81, ROOT_MAX_HZ = 523.25;   // C3 to C5, same clamp as detect_speech_root_hz() on the server
+  const EXAMPLE_ABOVE_SPEECH = 2;     // semitones: C3 -> D3, today's "lower voice" example
+  const FALLBACK_LOW_HZ = 146.8, FALLBACK_HIGH_HZ = 293.7;   // today's Example A / Example B
+  const GRAPH_HALF_ST = 6;            // the graph shows this many semitones above and below the example
+  const READ_MIN_RMS = 0.004;         // about -48 dB: no speaker plays while the mic is read here, so the gate can sit low
+  const LEVEL_MIN_DB = -60, LEVEL_MAX_DB = -3, LEVEL_OK_LO = -38, LEVEL_OK_HI = -12;
+
+  const state = { screen: 0, rootHz: null, speechTries: 0, takeUrl: null };
+  let run = 0;   // bumped on every screen change or cancel: older loops and timers see it and stop
+
+  // ── Pitch reader: lgDetectHz + lgSmoother from the Gym's live-graph.js, unchanged ──
+  function lgDetectHz(buf, sr, minRms) {
+    let rms = 0;
+    for (let i = 0; i < 512; i++) rms += buf[i] * buf[i];
+    if (Math.sqrt(rms / 512) < minRms) return null;
+    const minLag = Math.floor(sr / 1047.5);
+    const maxLag = Math.ceil(sr / 65.4);
+    const refLen = Math.min(1024, buf.length - maxLag - 1);
+    if (refLen < 64) return null;
+    const corrs = new Float32Array(maxLag + 1);
+    let bestLag = -1, bestVal = -Infinity;
+    for (let lag = minLag; lag <= maxLag; lag++) {
+      let num = 0, denA = 0, denB = 0;
+      for (let i = 0; i < refLen; i++) {
+        num  += buf[i] * buf[i + lag];
+        denA += buf[i] * buf[i];
+        denB += buf[i + lag] * buf[i + lag];
+      }
+      const r = (denA + denB) > 0 ? 2 * num / (denA + denB) : 0;
+      corrs[lag] = r;
+      if (r > bestVal) { bestVal = r; bestLag = lag; }
+    }
+    if (bestLag < 2 || bestVal < 0.6) return null;
+    for (let lag = minLag + 1; lag < bestLag; lag++) {
+      if (corrs[lag] >= bestVal * 0.95 && corrs[lag] >= corrs[lag - 1] && corrs[lag] >= corrs[lag + 1]) { bestLag = lag; break; }
+    }
+    const halfLag = Math.round(bestLag / 2);
+    if (halfLag >= minLag && corrs[halfLag] > 0.55) bestLag = halfLag;
+    if (bestLag < 2 || bestLag >= maxLag) return null;
+    const rp = corrs[bestLag - 1], rc = corrs[bestLag], rn = corrs[bestLag + 1];
+    const denom = rc * 2 - rp - rn;
+    const T0 = denom !== 0 ? bestLag + (rn - rp) / (2 * denom) : bestLag;
+    const hz = sr / T0;
+    if (hz < 65 || hz > 1200) return null;
+    return hz;
+  }
+  function lgSmoother() {
+    const hist = [];
+    return {
+      push(hz) {
+        if (!hz) { hist.length = 0; return null; }
+        if (hist.length >= 3) {
+          const med = [...hist].sort((a, b) => a - b)[Math.floor(hist.length / 2)];
+          const ratio = hz / med;
+          if (ratio > 1.75 && ratio < 2.25) hz = hz / 2;
+          else if (ratio > 0.4 && ratio < 0.6) hz = hz * 2;
+        }
+        hist.push(hz);
+        if (hist.length > 5) hist.shift();
+        return [...hist].sort((a, b) => a - b)[Math.floor(hist.length / 2)];
+      },
+    };
+  }
+
+  // ── Audio: one context, one mic stream (reopened when it died, like the live page) ──
+  let ctx = null, micStream = null, analyser = null, micBuf = null;
+  function micAlive() {
+    const tr = micStream ? micStream.getAudioTracks() : [];
+    return tr.length > 0 && tr.every((x) => x.readyState === 'live' && !x.muted && x.enabled);
+  }
+  async function ensureCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') await ctx.resume();
+  }
+  async function ensureMic() {
+    await ensureCtx();
+    if (micAlive() && analyser) return;
+    if (micStream) { try { micStream.getTracks().forEach((x) => x.stop()); } catch (_) {} }
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    ctx.createMediaStreamSource(micStream).connect(analyser);
+    micBuf = new Float32Array(analyser.fftSize);
+  }
+  // One reading of the mic: level in dB and pitch in Hz (null when silent or unclear).
+  function readMic(smoother) {
+    analyser.getFloatTimeDomainData(micBuf);
+    let sq = 0;
+    for (let i = 0; i < micBuf.length; i++) sq += micBuf[i] * micBuf[i];
+    const db = 20 * Math.log10(Math.sqrt(sq / micBuf.length) + 1e-9);
+    return { db, hz: smoother.push(lgDetectHz(micBuf, ctx.sampleRate, READ_MIN_RMS)) };
+  }
+
+  // The example voice: the live page's "ah" (sawtooth through three resonances, light vibrato). Returns a stop function.
+  function playAh(hz, sec) {
+    const now = ctx.currentTime + 0.05, fade = 0.05;
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(0.5, now + fade);
+    master.gain.setValueAtTime(0.5, now + sec - fade);
+    master.gain.linearRampToValueAtTime(0, now + sec);
+    master.connect(ctx.destination);
+    const src = ctx.createOscillator(); src.type = 'sawtooth'; src.frequency.setValueAtTime(hz, now);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 5.5;
+    const lfoGain = ctx.createGain(); lfoGain.gain.value = hz * 0.008;
+    lfo.connect(lfoGain); lfoGain.connect(src.frequency);
+    [[730, 12, 1.0], [1090, 14, 0.5], [2440, 16, 0.3]].forEach(([f, qv, g]) => {
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = qv;
+      const gn = ctx.createGain(); gn.gain.value = g;
+      src.connect(bp); bp.connect(gn); gn.connect(master);
+    });
+    src.start(now); lfo.start(now); src.stop(now + sec); lfo.stop(now + sec);
+    return { startAt: now, stop() { try { master.disconnect(); src.stop(); lfo.stop(); } catch (_) {} } };
+  }
+
+  // ── Small pieces every screen uses ──
+  const $screen = document.getElementById('screen');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  // Placeholder for the Mat-style picture: phone at arm's length from the mouth. The real one comes from a photo of Nando.
+  const PIC = `<svg viewBox="0 0 300 120" fill="none" stroke="#8b8b8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="52" cy="46" r="26"/><path d="M68 56 q8 4 0 9"/><path d="M40 72 v18 M26 118 q4-28 26-28 q22 0 30 14 l84 -22"/>
+      <path d="M92 60 H206" stroke-dasharray="3 9" stroke="#FF5500"/>
+      <rect x="216" y="30" width="36" height="66" rx="7" stroke="#FF5500"/><circle cx="234" cy="86" r="3" fill="#FF5500" stroke="none"/>
+    </svg>`;
+  const picBox = () => `<div class="pic">${PIC}<span>${esc(t('picTag'))}</span></div>`;
+  const levelBox = () => {
+    const pct = (db) => ((db - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB)) * 100;
+    return `<div class="level" id="level"><div class="zone" style="left:${pct(LEVEL_OK_LO)}%;width:${pct(LEVEL_OK_HI) - pct(LEVEL_OK_LO)}%"></div><div class="fill" id="levelFill"></div></div>`;
+  };
+  let levelSmooth = LEVEL_MIN_DB;
+  function showLevel(db) {
+    const el = document.getElementById('level'), fill = document.getElementById('levelFill');
+    if (!el || !fill) return;
+    if (db === null) { el.classList.remove('on'); levelSmooth = LEVEL_MIN_DB; return; }
+    el.classList.add('on');
+    levelSmooth = db > levelSmooth ? db : levelSmooth + (db - levelSmooth) * 0.15;   // jumps up at once, falls slowly
+    const pct = Math.max(0, Math.min(100, ((levelSmooth - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB)) * 100));
+    fill.style.width = pct + '%';
+    fill.style.background = levelSmooth > LEVEL_OK_HI ? 'var(--red)' : (levelSmooth >= LEVEL_OK_LO ? 'var(--green)' : 'var(--muted)');
+  }
+  function setStatus(text, cls) {
+    const el = document.getElementById('status');
+    if (el) { el.textContent = text || ''; el.className = 'status' + (cls ? ' ' + cls : ''); }
+  }
+  function renderChrome() {
+    document.documentElement.lang = lang;
+    document.getElementById('mockTag').textContent = t('mockTag');
+    document.getElementById('langEs').setAttribute('aria-pressed', String(lang === 'es'));
+    document.getElementById('langEn').setAttribute('aria-pressed', String(lang === 'en'));
+    document.getElementById('dots').innerHTML = [0, 1, 2, 3, 4].map((i) => `<i class="${i === state.screen ? 'on' : (i < state.screen ? 'done' : '')}"></i>`).join('');
+  }
+  function go(n) {
+    run++;
+    singStop = null;
+    if (exampleStop) { exampleStop(); exampleStop = null; }
+    state.screen = n;
+    renderChrome();
+    [screenSpeech, screenAh, screenEnd][n]();
+  }
+
+  // ── Screen 1: the speaking voice ──
+  function screenSpeech() {
+    $screen.innerHTML = `
+      ${picBox()}
+      <h1>${esc(t('s0Title'))}</h1>
+      <p class="one">${esc(t('s0Line'))}</p>
+      <p class="sentence" id="sentence">${esc(t('sentence'))}</p>
+      <div style="flex:1"></div>
+      ${levelBox()}
+      <div class="status" id="status"></div>
+      <div class="btns"><button type="button" class="btn" id="speechBtn">${esc(t('start'))}</button></div>`;
+    if (state.speechTries === 1) setStatus(t('retry1'), 'warn');
+    document.getElementById('speechBtn').addEventListener('click', listenSpeech);
+  }
+  async function listenSpeech() {
+    const mine = ++run;
+    const btn = document.getElementById('speechBtn');
+    btn.disabled = true;
+    try { await ensureMic(); } catch (_) { setStatus(t('micFail'), 'warn'); btn.disabled = false; return; }
+    if (mine !== run) return;
+    document.getElementById('sentence').classList.add('live');
+    setStatus(t('listening'));
+    const smoother = lgSmoother(), heard = [];
+    const t0 = performance.now();
+    let last = t0, voicedSec = 0, lastVoice = null;
+    (function frame(now) {
+      if (mine !== run) return;
+      const r = readMic(smoother);
+      showLevel(r.db);
+      if (r.hz) { heard.push(r.hz); voicedSec += (now - last) / 1000; lastVoice = now; }
+      last = now;
+      // Stops on its own: enough voice and then a second of quiet, or 9 seconds at most.
+      const quiet = lastVoice ? (now - lastVoice) / 1000 : 0;
+      if ((voicedSec >= 2.5 && quiet > 1.0) || now - t0 > 9000) return speechDone(heard, voicedSec);
+      requestAnimationFrame(frame);
+    })(t0);
+  }
+  function speechDone(heard, voicedSec) {
+    showLevel(null);
+    const ok = !FORCE_FAIL && voicedSec >= 1.2 && heard.length >= 20;
+    if (!ok) {
+      state.speechTries++;
+      if (state.speechTries >= 2) { state.rootHz = null; return go(1); }   // never blocks the test: go on with two examples
+      return go(0);
+    }
+    const median = [...heard].sort((a, b) => a - b)[Math.floor(heard.length / 2)];
+    state.rootHz = Math.min(ROOT_MAX_HZ, Math.max(ROOT_MIN_HZ, median));
+    setStatus(t('found'), 'ok');
+    document.getElementById('sentence').classList.remove('live');
+    const mine = run;
+    setTimeout(() => { if (mine === run) go(1); }, 900);
+  }
+
+  // ── Screen 2: the long "ah" ──
+  let exampleStop = null;
+  let singStop = null;   // set while a take is being recorded: the SING button then stops it
+  const ah = { exHz: 0, exProgress: 0, trace: [] };
+  function screenAh() {
+    const known = !!state.rootHz;
+    ah.exHz = known ? state.rootHz * Math.pow(2, EXAMPLE_ABOVE_SPEECH / 12) : FALLBACK_LOW_HZ;
+    ah.exProgress = 0; ah.trace = [];
+    const listenBtns = known
+      ? `<button type="button" class="btn ghost" id="exBtn" data-hz="${ah.exHz}" data-label="listen">${esc(t('listen'))}</button>`
+      : `<button type="button" class="btn ghost" id="exBtn" data-hz="${FALLBACK_LOW_HZ}" data-label="lower">${esc(t('lower'))}</button>
+         <button type="button" class="btn ghost" id="exBtnB" data-hz="${FALLBACK_HIGH_HZ}" data-label="higher">${esc(t('higher'))}</button>`;
+    $screen.innerHTML = `
+      ${picBox()}
+      <h1>${esc(t('s1Title'))}</h1>
+      <p class="one">${esc(t('s1Line'))}</p>
+      <div class="graph"><canvas id="graph"></canvas>
+        <div class="legend"><span><b style="background:#fff"></b>${esc(t('legendEx'))}</span><span><b style="background:var(--orange)"></b>${esc(t('legendYou'))}</span></div>
+      </div>
+      ${levelBox()}
+      <div class="status" id="status"></div>
+      <button type="button" class="link" id="takeBtn" hidden>${esc(t('myTake'))}</button>
+      <div class="btns" id="ahBtns">${listenBtns}<button type="button" class="btn" id="singBtn">${esc(t('sing'))}</button></div>`;
+    if (!known) setStatus(t('fallback'), 'warn');
+    $screen.querySelectorAll('[data-hz]').forEach((b) => b.addEventListener('click', () => toggleExample(b)));
+    document.getElementById('singBtn').addEventListener('click', () => (singStop ? singStop() : singAh()));
+    document.getElementById('takeBtn').addEventListener('click', () => { if (state.takeUrl) new Audio(state.takeUrl).play().catch(() => {}); });
+    drawGraph();
+  }
+  function resetExampleBtns() {
+    $screen.querySelectorAll('[data-hz]').forEach((b) => { b.textContent = t(b.dataset.label); b.dataset.playing = ''; });
+  }
+  async function toggleExample(btn) {
+    const wasPlaying = btn.dataset.playing === '1';
+    const mine = ++run;   // also ends a take in progress
+    if (exampleStop) { exampleStop(); exampleStop = null; }
+    resetExampleBtns();
+    ah.exProgress = 0; drawGraph();
+    if (wasPlaying) return;
+    await ensureCtx();
+    if (mine !== run) return;
+    ah.exHz = parseFloat(btn.dataset.hz); ah.trace = [];
+    const voice = playAh(ah.exHz, HOLD_SEC);
+    exampleStop = voice.stop;
+    btn.textContent = t('stop'); btn.dataset.playing = '1';
+    (function frame() {
+      if (mine !== run) return;
+      ah.exProgress = Math.max(0, Math.min(1, (ctx.currentTime - voice.startAt) / HOLD_SEC));
+      drawGraph();
+      if (ah.exProgress >= 1) { exampleStop = null; resetExampleBtns(); return; }
+      requestAnimationFrame(frame);
+    })();
+  }
+  async function singAh() {
+    const mine = ++run;
+    if (exampleStop) { exampleStop(); exampleStop = null; }
+    resetExampleBtns();
+    const btn = document.getElementById('singBtn');
+    btn.disabled = true;
+    try { await ensureMic(); } catch (_) { setStatus(t('micFail'), 'warn'); btn.disabled = false; return; }
+    if (mine !== run) { btn.disabled = false; return; }
+    document.getElementById('takeBtn').hidden = true;
+    ah.trace = []; ah.exProgress = 1;
+    btn.classList.add('rec'); btn.disabled = false; btn.textContent = t('stop');
+    singStop = finish;
+    setStatus(t('go'));
+
+    // The take is kept only so the person can hear it back on this screen.
+    let rec = null; const chunks = [];
+    try {
+      rec = new MediaRecorder(micStream);
+      rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      rec.onstop = () => {
+        if (state.takeUrl) URL.revokeObjectURL(state.takeUrl);
+        state.takeUrl = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || 'audio/webm' }));
+      };
+      rec.start();
+    } catch (_) { rec = null; }
+
+    const smoother = lgSmoother();
+    const t0 = performance.now();
+    let onset = null, last = t0, voicedSec = 0, lastVoice = null, streak = 0, ended = false;
+    function finish() {
+      if (ended) return; ended = true;
+      singStop = null;
+      run++;
+      showLevel(null);
+      if (rec && rec.state === 'recording') rec.stop();
+      btn.classList.remove('rec');
+      if (!onset) { btn.textContent = t('sing'); setStatus(t('noVoice'), 'warn'); return; }
+      if (voicedSec < MIN_HOLD_SEC) { btn.textContent = t('sing'); setStatus(t('tooShort'), 'warn'); return; }
+      setStatus(t('done'), 'ok');
+      document.getElementById('takeBtn').hidden = !rec;
+      document.getElementById('ahBtns').innerHTML =
+        `<button type="button" class="btn ghost" id="againBtn">${esc(t('again'))}</button><button type="button" class="btn" id="nextBtn">${esc(t('next'))}</button>`;
+      document.getElementById('againBtn').addEventListener('click', () => go(1));
+      document.getElementById('nextBtn').addEventListener('click', () => go(2));
+    }
+    (function frame(now) {
+      if (mine !== run) { finish(); return; }
+      const r = readMic(smoother);
+      showLevel(r.db);
+      streak = r.hz ? streak + 1 : 0;
+      if (!onset && streak >= 3) { onset = now; setStatus(''); }
+      if (onset) {
+        const tt = (now - onset) / 1000;
+        if (r.hz) { ah.trace.push({ t: tt, hz: r.hz }); voicedSec += (now - last) / 1000; lastVoice = now; }
+        else if (ah.trace.length && ah.trace[ah.trace.length - 1] !== null) ah.trace.push(null);
+        drawGraph();
+        // Stops on its own: the line reached the end, or the voice stopped.
+        if (tt >= HOLD_SEC || (lastVoice && now - lastVoice > 700)) return finish();
+      } else if (now - t0 > 7000) return finish();
+      last = now;
+      requestAnimationFrame(frame);
+    })(t0);
+  }
+
+  // Graph: 5 seconds wide, the example's note in the middle. The example is a wide pale bar that fills while it plays;
+  // the person's voice is the orange line on top of it.
+  function drawGraph() {
+    const cv = document.getElementById('graph');
+    if (!cv) return;
+    const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    const padX = 14, padTop = 30, padBot = 14;
+    const x = (sec) => padX + Math.max(0, Math.min(1, sec / HOLD_SEC)) * (W - 2 * padX);
+    const y = (hz) => {
+      const st = Math.max(-GRAPH_HALF_ST, Math.min(GRAPH_HALF_ST, 12 * Math.log2(hz / ah.exHz)));
+      return padTop + (1 - (st + GRAPH_HALF_ST) / (2 * GRAPH_HALF_ST)) * (H - padTop - padBot);
+    };
+    // one faint tick per second
+    g.strokeStyle = 'rgba(255,255,255,0.07)'; g.lineWidth = 1;
+    for (let s = 1; s < HOLD_SEC; s++) { g.beginPath(); g.moveTo(x(s), padTop); g.lineTo(x(s), H - padBot); g.stroke(); }
+    // the example: where it will be (pale), and how far it has played (white)
+    const yEx = y(ah.exHz);
+    g.lineCap = 'round'; g.lineWidth = 12;
+    g.strokeStyle = 'rgba(255,255,255,0.13)';
+    g.beginPath(); g.moveTo(x(0), yEx); g.lineTo(x(HOLD_SEC), yEx); g.stroke();
+    if (ah.exProgress > 0) {
+      g.strokeStyle = ah.trace.length ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.85)';
+      g.beginPath(); g.moveTo(x(0), yEx); g.lineTo(x(ah.exProgress * HOLD_SEC), yEx); g.stroke();
+    }
+    // the person's voice
+    g.strokeStyle = '#FF5500'; g.lineWidth = 4; g.lineJoin = 'round';
+    g.beginPath();
+    let pen = false, lastPt = null;
+    ah.trace.forEach((p) => {
+      if (!p) { pen = false; return; }
+      if (pen) g.lineTo(x(p.t), y(p.hz)); else g.moveTo(x(p.t), y(p.hz));
+      pen = true; lastPt = p;
+    });
+    g.stroke();
+    if (lastPt) { g.fillStyle = '#FF5500'; g.beginPath(); g.arc(x(lastPt.t), y(lastPt.hz), 6, 0, 6.2832); g.fill(); }
+  }
+  window.addEventListener('resize', drawGraph);
+
+  // ── End of the mockup ──
+  function screenEnd() {
+    $screen.innerHTML = `
+      <div style="flex:1"></div>
+      <h1>${esc(t('endTitle'))}</h1>
+      <p class="one">${esc(t('endLine'))}</p>
+      <div style="flex:1"></div>
+      <div class="btns"><button type="button" class="btn" id="restartBtn">${esc(t('restart'))}</button></div>`;
+    document.getElementById('restartBtn').addEventListener('click', () => { state.rootHz = null; state.speechTries = 0; go(0); });
+  }
+
+  function setLang(l) { if (l === lang) return; lang = l; go(state.screen); }
+  document.getElementById('langEs').addEventListener('click', () => setLang('es'));
+  document.getElementById('langEn').addEventListener('click', () => setLang('en'));
+  go(0);
+})();
+</script>
+</body>
+</html>
