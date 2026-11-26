@@ -436,7 +436,7 @@
         </div>
       </div>
 
-      <div class="step step-locked" id="stepSong">
+      <div class="step step-locked" id="stepSong" style="display:none;">
         <div class="step-num">4</div>
         <div class="step-body">
           <h3 data-phrase-key="step4Title">A bit of a song <span style="font-size:0.75rem; font-weight:500; color:var(--muted); font-family:'Montserrat',sans-serif;">(optional)</span></h3>
@@ -464,14 +464,66 @@
 
     </div>
 
-    <!-- Ready banner — shown when all three required steps are done -->
+    <!-- Ready banner — shown when all three required steps are done. The optional song step opens from its link. -->
     <div id="readyBanner" style="display:none; background:rgba(255,85,0,0.1); border:1px solid rgba(255,85,0,0.35); border-radius:10px; padding:18px 20px; margin-top:12px; text-align:center;">
-      <p style="color:var(--text); font-weight:700; font-size:1rem; margin:0 0 12px;" data-phrase-key="readyBanner">Your recordings are ready.</p>
+      <p style="color:var(--text); font-weight:700; font-size:1rem; margin:0 0 12px;" data-phrase-key="readyBanner">Test done! Your recordings are ready.</p>
       <button onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'}); setTimeout(()=>document.getElementById('nameField').focus(),400);"
               style="background:#FF5500; color:white; border:none; padding:11px 28px; border-radius:6px; font-weight:700; font-size:0.95rem; cursor:pointer;" data-phrase-key="readyBtn">
-        Enter your details and get your results ↓
+        Get my results →
       </button>
+      <p id="songLinkWrap" style="margin:14px 0 0; font-size:0.88rem;"><a href="#" id="songLink" style="color:var(--muted); text-decoration:underline;" data-phrase-key="songLink">Add a bit of a song first (optional)</a></p>
     </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-section" id="form">
+    <div style="font-size:1.8rem; margin-bottom:10px;">🎙</div>
+    <h2 data-phrase-key="formTitle">One last step</h2>
+    <p id="submitIntro" data-phrase-key="submitIntro">Enter your name and email to receive your results right here and in your inbox.</p>
+
+    <form id="vocalAnalysisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
+      <div style="margin-bottom: 14px;">
+        <input type="text" id="nameField" name="name" placeholder="Your name" required
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:namePlaceholder">
+      </div>
+      <div style="margin-bottom: 14px;">
+        <input type="email" id="emailField" name="email" placeholder="Your email" required
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:emailPlaceholder">
+        <p style="font-size:0.78rem; margin:6px 0 0;"><a class="va-privacy-link" href="https://gym.nandovocalcoach.com/privacy" target="_blank" rel="noopener" style="color:var(--muted);" data-phrase-key="privacyLink">Privacy</a></p>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <div style="font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;" data-phrase-key="bookedQ">Have you already booked a session with me?</div>
+        <div style="display:flex; gap:20px; color:white; font-size:0.95rem;">
+          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientYes" value="yes"> <span data-phrase-key="yes">Yes</span></label>
+          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientNo" value="no"> <span data-phrase-key="no">No</span></label>
+        </div>
+        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;" data-phrase-key="bookedNote">Optional. It just changes what I show you at the end.</p>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <textarea id="vocalDifficultyField" name="vocal_difficulty" placeholder="What happens in your voice when it goes wrong? Describe the feeling, not just 'I go off-key.' (optional)" rows="3"
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;" data-phrase-attr="placeholder:difficultyPlaceholder"></textarea>
+        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;" data-phrase-key="difficultyNote">You don't need to be a good singer. You need to be an honest one. The analysis works on what's actually happening, not on how polished you sound.</p>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <input type="text" id="selfReportField" name="self_report" placeholder="How's your voice today? Sick, tired, tense, normal... (optional)"
+          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:selfPlaceholder">
+        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;" data-phrase-key="selfNote">This helps the analysis account for an off day, so it doesn't read a bad night's sleep as a technique problem.</p>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <label for="throatFeelSelect" style="display:block; font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;" data-phrase-key="throatLabel">How does your throat feel today? (optional)</label>
+        <select id="throatFeelSelect" style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; background:white; color:#1F2937;">
+          <option value="0" data-phrase-key="throat0">Normal, nothing unusual</option>
+          <option value="2" data-phrase-key="throat2">A little tight or dry</option>
+          <option value="4" data-phrase-key="throat4">Noticeably uncomfortable</option>
+          <option value="6" data-phrase-key="throat6">Sore or strained</option>
+        </select>
+        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;" data-phrase-key="throatNote">Helps the analysis tell an off day apart from a technique pattern.</p>
+      </div>
+      <button type="submit" id="submitBtn" class="rec-btn" style="width:100%; padding: 14px; font-size: 1.1rem;" disabled data-phrase-key="submitWait">
+        Complete the 3 required steps above first
+      </button>
+      <div id="submitStatus" class="rec-status" style="color: white; text-align: center;"></div>
+    </form>
   </div>
 
   <!-- What you get -->
@@ -526,57 +578,6 @@
         <p data-phrase-key="pat5Text">Strong base. The next level is about refinement, consistency, and upper-range expansion.</p>
       </div>
     </div>
-  </div>
-
-  <!-- Form -->
-  <div class="form-section" id="form">
-    <div style="font-size:1.8rem; margin-bottom:10px;">🎙</div>
-    <h2 data-phrase-key="formTitle">One last step</h2>
-    <p id="submitIntro" data-phrase-key="submitIntro">Enter your name and email to receive your results right here and in your inbox.</p>
-
-    <form id="vocalAnalysisForm" style="text-align: left; max-width: 420px; margin: 0 auto;">
-      <div style="margin-bottom: 14px;">
-        <input type="text" id="nameField" name="name" placeholder="Your name" required
-          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:namePlaceholder">
-      </div>
-      <div style="margin-bottom: 14px;">
-        <input type="email" id="emailField" name="email" placeholder="Your email" required
-          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:emailPlaceholder">
-        <p style="font-size:0.78rem; margin:6px 0 0;"><a class="va-privacy-link" href="https://gym.nandovocalcoach.com/privacy" target="_blank" rel="noopener" style="color:var(--muted);" data-phrase-key="privacyLink">Privacy</a></p>
-      </div>
-      <div style="margin-bottom: 20px;">
-        <div style="font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;" data-phrase-key="bookedQ">Have you already booked a session with me?</div>
-        <div style="display:flex; gap:20px; color:white; font-size:0.95rem;">
-          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientYes" value="yes"> <span data-phrase-key="yes">Yes</span></label>
-          <label style="cursor:pointer;"><input type="radio" name="booked" id="isClientNo" value="no"> <span data-phrase-key="no">No</span></label>
-        </div>
-        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;" data-phrase-key="bookedNote">Optional. It just changes what I show you at the end.</p>
-      </div>
-      <div style="margin-bottom: 20px;">
-        <textarea id="vocalDifficultyField" name="vocal_difficulty" placeholder="What happens in your voice when it goes wrong? Describe the feeling, not just 'I go off-key.' (optional)" rows="3"
-          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; resize:vertical; line-height:1.5;" data-phrase-attr="placeholder:difficultyPlaceholder"></textarea>
-        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;" data-phrase-key="difficultyNote">You don't need to be a good singer. You need to be an honest one. The analysis works on what's actually happening, not on how polished you sound.</p>
-      </div>
-      <div style="margin-bottom: 20px;">
-        <input type="text" id="selfReportField" name="self_report" placeholder="How's your voice today? Sick, tired, tense, normal... (optional)"
-          style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem;" data-phrase-attr="placeholder:selfPlaceholder">
-        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;" data-phrase-key="selfNote">This helps the analysis account for an off day, so it doesn't read a bad night's sleep as a technique problem.</p>
-      </div>
-      <div style="margin-bottom: 20px;">
-        <label for="throatFeelSelect" style="display:block; font-size:0.85rem; color:white; font-weight:600; margin-bottom:8px;" data-phrase-key="throatLabel">How does your throat feel today? (optional)</label>
-        <select id="throatFeelSelect" style="width:100%; padding:12px 14px; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-size:0.95rem; background:white; color:#1F2937;">
-          <option value="0" data-phrase-key="throat0">Normal, nothing unusual</option>
-          <option value="2" data-phrase-key="throat2">A little tight or dry</option>
-          <option value="4" data-phrase-key="throat4">Noticeably uncomfortable</option>
-          <option value="6" data-phrase-key="throat6">Sore or strained</option>
-        </select>
-        <p style="font-size:0.78rem; color:var(--muted); margin:6px 0 0;" data-phrase-key="throatNote">Helps the analysis tell an off day apart from a technique pattern.</p>
-      </div>
-      <button type="submit" id="submitBtn" class="rec-btn" style="width:100%; padding: 14px; font-size: 1.1rem;" disabled data-phrase-key="submitWait">
-        Complete the 3 required steps above first
-      </button>
-      <div id="submitStatus" class="rec-status" style="color: white; text-align: center;"></div>
-    </form>
   </div>
 
   <!-- FAQ -->
@@ -685,8 +686,9 @@ const translations = {
       haveRec: "Have a recording already?",
       uploadFile: "Upload a file",
       songPlaceholder: "What song did you just sing? (optional)",
-      readyBanner: "Your recordings are ready.",
-      readyBtn: "Enter your details and get your results ↓",
+      readyBanner: "Test done! Your recordings are ready.",
+      readyBtn: "Get my results →",
+      songLink: "Add a bit of a song first (optional)",
       getsTitle: "What You <span>Get</span>",
       get1Title: "Your Glide",
       get1Text: "Your glide drawn as a line, so you can see how your voice moved from low to high.",
@@ -879,8 +881,9 @@ const translations = {
       haveRec: "¿Ya tienes una grabación?",
       uploadFile: "Sube un archivo",
       songPlaceholder: "¿Qué canción acabas de cantar? (opcional)",
-      readyBanner: "Tus grabaciones están listas.",
-      readyBtn: "Escribe tus datos y recibe tus resultados ↓",
+      readyBanner: "¡Prueba terminada! Tus grabaciones están listas.",
+      readyBtn: "Ver mis resultados →",
+      songLink: "Agregar antes un fragmento de canción (opcional)",
       getsTitle: "Lo que <span>recibes</span>",
       get1Title: "Tu glissando",
       get1Text: "Tu glissando dibujado como una línea, para que veas cómo se movió tu voz de grave a agudo.",
@@ -1282,7 +1285,7 @@ if (ES_PUBLIC || VA_LANG === 'es') {
       const banner = document.getElementById('readyBanner');
       if (banner && banner.style.display === 'none') {
         banner.style.display = 'block';
-        setTimeout(() => banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+        setTimeout(() => banner.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
       }
     } else {
       submitBtn.disabled = true;
@@ -1434,6 +1437,15 @@ if (ES_PUBLIC || VA_LANG === 'es') {
     startBtn.addEventListener('click', start);
     stopBtn.addEventListener('click', stop);
   }
+
+  document.getElementById('songLink')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const song = document.getElementById('stepSong');
+    if (!song) return;
+    song.style.display = '';
+    document.getElementById('songLinkWrap').style.display = 'none';
+    setTimeout(() => song.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+  });
 
   function unlockStep(id) {
     const el = document.getElementById(id);
