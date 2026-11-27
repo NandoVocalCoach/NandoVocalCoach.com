@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
 <!--
   MOCKUP of the Vocal Analysis redesign (2026-11-24), for Nando's eye on his phone. Not linked from anywhere.
-  Three screens: the speaking voice (new first step), the long "ah" and the glide. Nothing is uploaded, checked by the
+  Four screens: the speaking voice (new first step), the long "ah", the glide and the pitch test (goal graph with glowing notes). Nothing is uploaded, checked by the
   server or saved: the speaking note is read in the browser here (the real page keeps /detect-pitch).
-  Test switches: ?fail=1 = the speaking note is never found (shows the two-example fallback), ?lang=es / ?lang=en.
+  Test switches: ?fail=1 = the speaking note is never found (shows the two-example fallback), ?lang=es / ?lang=en, ?screen=1|2|3 opens that screen with a C3 speaking note (&root=none: no note found).
 -->
 <style>
   :root {
@@ -64,6 +64,12 @@
   .btn:disabled { opacity: 0.4; }
   .btn:focus-visible, .lang button:focus-visible, .link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   .link { background: none; border: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; padding: 6px; cursor: pointer; align-self: center; }
+  .turn { min-height: 34px; font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.08em; text-align: center; color: var(--muted); line-height: 1.1; }
+  .turn.listen { color: #fff; } .turn.sing { color: var(--orange); } .turn.ok { color: var(--green); } .turn.warn { color: var(--red); }
+  .melprog { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .melprog span.d { display: flex; gap: 5px; }
+  .melprog i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .melprog i.on { background: var(--orange); } .melprog i.done { background: var(--green); }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -100,9 +106,11 @@
       s2Line: 'Slide up on an "ooh", then back down.',
       glideShort: 'Too short. Slide all the way up, then back down.',
       glideFlat: 'That stayed on one note. Slide up, then back down.',
-      endTitle: 'END OF THE MOCKUP', endLine: 'The pitch test and the song would follow the same way.',
+      endTitle: 'END OF THE MOCKUP', endLine: 'The song would follow the same way.',
       restart: 'START OVER',
       micFail: 'Mic blocked. Open this page in Chrome or Safari.',
+      s3Title: 'PITCH TEST', s3Line: 'Listen, then sing it back.',
+      turnListen: 'LISTEN', turnSing: 'SING', melody: 'Melody', of: 'of', gotIt: 'Got it.', miss: 'Not quite. Again.', missEnd: 'Not quite.',
     },
     es: {
       mockTag: 'PRUEBA DE DISEÑO · NADA SE ENVÍA NI SE GUARDA',
@@ -123,9 +131,11 @@
       s2Line: 'Sube con una "U" suave y vuelve a bajar.',
       glideShort: 'Muy corto. Sube hasta arriba y vuelve a bajar.',
       glideFlat: 'Se quedó en una sola nota. Sube y vuelve a bajar.',
-      endTitle: 'FIN DE LA PRUEBA', endLine: 'La prueba de afinación y la canción seguirían igual.',
+      endTitle: 'FIN DE LA PRUEBA', endLine: 'La canción seguiría igual.',
       restart: 'EMPEZAR DE NUEVO',
       micFail: 'Micrófono bloqueado. Abre esta página en Chrome o Safari.',
+      s3Title: 'PRUEBA DE AFINACIÓN', s3Line: 'Escucha y luego cántala.',
+      turnListen: 'ESCUCHA', turnSing: 'CANTA', melody: 'Melodía', of: 'de', gotIt: 'Listo.', miss: 'Casi. Otra vez.', missEnd: 'Casi.',
     },
   };
   const q = new URLSearchParams(location.search);
@@ -146,6 +156,28 @@
   const GRAPH_HALF_ST = 6;            // the graph shows this many semitones above and below the example
   const READ_MIN_RMS = 0.004;         // about -48 dB: no speaker plays while the mic is read here, so the gate can sit low
   const LEVEL_MIN_DB = -60, LEVEL_MAX_DB = -3, LEVEL_OK_LO = -38, LEVEL_OK_HI = -12;
+
+  // Pitch test (screen 3). Melodies = the first 4 of RUNG_PATTERNS in vocal-analysis.html (semitones from the start note, note length).
+  const PITCH_MELODIES = [
+    { semitones: [0, 2, 4],     note_sec: 1.00 },
+    { semitones: [0, 4, 7],     note_sec: 0.90 },
+    { semitones: [0, 2, 4, 5, 7], note_sec: 0.80 },
+    { semitones: [0, 4, 7, 12], note_sec: 0.75 },
+  ];
+  const PT_TOLERANCE_CENTS = 80;      // same as the real test
+  const PT_MIN_SHARE = 0.4;           // a note is green when the voice was in tolerance for this share of its time
+  const SING_REACTION_SEC = 0.25;     // mic-latency allowance: the person sees the bar light, then needs this long to sound; the voice is read this much earlier
+  const PT_PRE_SING_PAUSE_SEC = 0.8;  // visible beat between LISTEN and SING (the real test's PRE_SING_PAUSE_SEC)
+  const PT_LEAD_IN_SEC = 0.3;         // quiet before the first example note
+  const PT_RESULT_SEC = 1.5;          // result stays this long, then the next melody starts by itself
+  const PT_ON_SEC = 0.07, PT_FADE_SEC = 0.28;   // a bar lights in 70 ms and fades in 280 ms, as in the Gym
+  const PT_BAR_PX = 18;
+  // Gym colours per scale degree (live-graph.js LG_DEGREE_RGB) and the labels of a semitone above the start note
+  const LG_DEGREE_RGB = { 1: [40, 120, 255], 2: [30, 215, 110], 3: [255, 205, 30], 4: [255, 120, 20], 5: [255, 60, 160], 6: [175, 100, 255], 7: [110, 225, 240] };
+  const ST_LABEL = ['1', 'b2', '2', 'b3', '3', '4', '#4', '5', 'b6', '6', 'b7', '7', '1'];   // a flat/sharp takes the colour of its digit, as lgDegreeOf does
+  const stLabel = (st) => ST_LABEL[Math.max(0, Math.min(12, st))];
+  const degreeRgb = (st) => LG_DEGREE_RGB[parseInt(stLabel(st).replace(/\D/g, ''), 10)];
+  const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   const state = { screen: 0, rootHz: null, speechTries: 0, takeUrl: null };
   let run = 0;   // bumped on every screen change or cancel: older loops and timers see it and stop
@@ -241,8 +273,8 @@
   function glideHz(baseHz, topHz, part) {
     return baseHz * Math.pow(topHz / baseHz, 0.5 * (1 - Math.cos(6.2832 * Math.max(0, Math.min(1, part)))));
   }
-  function playVoice(vowel, baseHz, topHz, sec) {
-    const now = ctx.currentTime + 0.05, fade = 0.05;
+  function playVoice(vowel, baseHz, topHz, sec, startAt) {
+    const now = startAt || ctx.currentTime + 0.05, fade = 0.05;
     const master = ctx.createGain();
     master.gain.setValueAtTime(0, now);
     master.gain.linearRampToValueAtTime(0.5, now + fade);
@@ -308,7 +340,7 @@
     if (exampleStop) { exampleStop(); exampleStop = null; }
     state.screen = n;
     renderChrome();
-    [screenSpeech, () => screenTake('ah'), () => screenTake('glide'), screenEnd][n]();
+    [screenSpeech, () => screenTake('ah'), () => screenTake('glide'), screenPitch, screenEnd][n]();
   }
 
   // ── Screen 1: the speaking voice ──
@@ -553,6 +585,171 @@
   }
   window.addEventListener('resize', drawGraph);
 
+
+  // ── Screen 4: the pitch test. Goal graph: each note is a bar in its scale-degree colour. LISTEN: the example sings the melody
+  // while each bar glows and an orange line follows its voice. SING: the bars glow again at the same tempo, silently, while the
+  // person's voice draws live. Then each bar turns green or red and the next melody starts by itself. ──
+  const pt = { mel: 0, tries: 0, baseHz: 0, phase: 'idle', t: 0, trace: [], result: null, voice: null, example: [] };
+  const ptNotes = () => PITCH_MELODIES[pt.mel].semitones;
+  const ptNs = () => PITCH_MELODIES[pt.mel].note_sec;
+  const ptTotal = () => ptNotes().length * ptNs();
+  const ptHz = (st) => pt.baseHz * Math.pow(2, st / 12);
+
+  function screenPitch() {
+    const known = !!state.rootHz;
+    pt.mel = 0; pt.tries = 0; pt.phase = 'idle'; pt.t = 0; pt.trace = []; pt.result = null;
+    pt.baseHz = known ? state.rootHz * Math.pow(2, EXAMPLE_ABOVE_SPEECH / 12) : FALLBACK_LOW_HZ;
+    $screen.innerHTML = `
+      ${coachBox('turn-listen')}
+      <h1>${esc(t('s3Title'))}</h1>
+      <p class="one">${esc(t('s3Line'))}</p>
+      <div class="graph"><canvas id="graph"></canvas></div>
+      <div class="melprog" id="melprog"></div>
+      <div class="turn" id="turn"></div>
+      <div class="btns" id="ptBtns" ${known ? 'hidden' : ''}>
+        <button type="button" class="btn ghost" id="ptLow" data-hz="${FALLBACK_LOW_HZ}">${esc(t('lower'))}</button>
+        <button type="button" class="btn ghost" id="ptHigh" data-hz="${FALLBACK_HIGH_HZ}">${esc(t('higher'))}</button>
+      </div>`;
+    ptProgress();
+    if (known) { drawPitch(); ptStart(); return; }
+    setTurn(t('fallback'), 'warn');
+    drawPitch();
+    $screen.querySelectorAll('#ptBtns [data-hz]').forEach((b) => b.addEventListener('click', () => {
+      pt.baseHz = parseFloat(b.dataset.hz); document.getElementById('ptBtns').hidden = true; setTurn(''); ptStart();
+    }));
+  }
+  function setTurn(text, cls) { const el = document.getElementById('turn'); if (el) { el.textContent = text || ''; el.className = 'turn' + (cls ? ' ' + cls : ''); } }
+  function ptProgress() {
+    const el = document.getElementById('melprog'); if (!el) return;
+    el.innerHTML = `<span>${esc(t('melody'))} ${pt.mel + 1} ${esc(t('of'))} ${PITCH_MELODIES.length}</span><span class="d">${
+      PITCH_MELODIES.map((_, i) => `<i class="${i < pt.mel ? 'done' : (i === pt.mel ? 'on' : '')}"></i>`).join('')}</span>`;
+  }
+  // Plays the notes one after another with the example voice (playVoice), starting at audio time startAt.
+  function playNotes(hzList, noteSec, startAt) {
+    const voices = hzList.map((hz, i) => playVoice('ah', hz, hz, noteSec, startAt + i * noteSec));
+    return { stop() { voices.forEach((v) => v.stop()); } };
+  }
+  const frames = (mine, fn) => new Promise((res) => {   // calls fn every frame until it returns true; false when the run was cancelled
+    (function f() { if (mine !== run) return res(false); if (fn()) return res(true); requestAnimationFrame(f); })();
+  });
+  const wait = (mine, ms) => new Promise((res) => setTimeout(() => res(mine === run), ms));
+
+  async function ptStart() {
+    const mine = ++run;
+    try { await ensureMic(); } catch (_) { setTurn(t('micFail'), 'warn'); return; }
+    if (mine !== run) return;
+    while (true) {
+      const notes = ptNotes(), ns = ptNs(), total = ptTotal();
+      pt.result = null; pt.trace = []; pt.example = []; ptProgress();
+      // LISTEN
+      pt.phase = 'listen'; setCoach('turn-listen'); setTurn(t('turnListen'), 'listen');
+      const L0 = ctx.currentTime + PT_LEAD_IN_SEC;
+      const voice = playNotes(notes.map(ptHz), ns, L0);
+      exampleStop = voice.stop;
+      if (!await frames(mine, () => { pt.t = ctx.currentTime - L0; drawPitch(); return pt.t >= total + 0.1; })) return;
+      exampleStop = null;
+      // pause: a visible beat, nothing lit
+      pt.phase = 'pause'; pt.t = -1; drawPitch();
+      if (!await wait(mine, PT_PRE_SING_PAUSE_SEC * 1000)) return;
+      // SING: the cue glows silently; the voice is read SING_REACTION_SEC earlier than the clock, because the person reacts to the glow
+      pt.phase = 'sing'; setCoach('turn-sing'); setTurn(t('turnSing'), 'sing');
+      const S0 = ctx.currentTime, smoother = lgSmoother(), samples = [];
+      if (!await frames(mine, () => {
+        pt.t = ctx.currentTime - S0;
+        const r = readMic(smoother), tt = pt.t - SING_REACTION_SEC;
+        samples.push({ t: tt, hz: r.hz });
+        if (r.hz) pt.trace.push({ t: tt, hz: r.hz }); else if (pt.trace.length && pt.trace[pt.trace.length - 1] !== null) pt.trace.push(null);
+        drawPitch();
+        return pt.t >= total + SING_REACTION_SEC;
+      })) return;
+      // result
+      pt.phase = 'result';
+      pt.result = notes.map((st, i) => {
+        const win = samples.filter((s) => s.t >= i * ns && s.t < (i + 1) * ns);
+        const good = win.filter((s) => s.hz && Math.abs(1200 * Math.log2(s.hz / ptHz(st))) <= PT_TOLERANCE_CENTS).length;
+        return win.length > 0 && good / win.length >= PT_MIN_SHARE;
+      });
+      const pass = pt.result.every(Boolean);
+      drawPitch();
+      const last = pt.mel === PITCH_MELODIES.length - 1;
+      if (pass) { setCoach('good-thumbs'); setTurn(t('gotIt'), 'ok'); }
+      else { setCoach('miss-point'); setTurn(pt.tries >= 1 ? t('missEnd') : t('miss'), 'warn'); }
+      if (!await wait(mine, PT_RESULT_SEC * 1000)) return;
+      if (pass) { pt.tries = 0; if (last) { pt.mel++; ptProgress(); return go(4); } pt.mel++; }
+      else if (pt.tries >= 1) return go(4);   // second miss on the same melody ends the test
+      else pt.tries++;
+    }
+  }
+
+  function drawPitch() {
+    const cv = document.getElementById('graph');
+    if (!cv || state.screen !== 3) return;
+    const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    const notes = ptNotes(), ns = ptNs(), total = ptTotal(), padL = 36, padR = 12, padTop = 16, padBot = 16;
+    let stLo = Math.min(...notes) - 1.5, stHi = Math.max(...notes) + 1.5;
+    if (stHi - stLo < 8) { const m = (stHi + stLo) / 2; stLo = m - 4; stHi = m + 4; }
+    const x = (sec) => padL + Math.max(0, Math.min(1, sec / total)) * (W - padL - padR);
+    const yst = (st) => padTop + (1 - (st - stLo) / (stHi - stLo)) * (H - padTop - padBot);
+    const yhz = (hz) => yst(Math.max(stLo, Math.min(stHi, 12 * Math.log2(hz / pt.baseHz))));
+    const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    // faint lane lines and the scale numbers in the side column, in the degree colours
+    g.font = '700 15px Montserrat, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    [...new Set(notes)].forEach((st) => {
+      g.strokeStyle = 'rgba(255,255,255,0.08)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(padL - 4, yst(st)); g.lineTo(W - padR, yst(st)); g.stroke();
+      g.fillStyle = rgba(degreeRgb(st), 1); g.fillText(stLabel(st), 16, yst(st));
+    });
+    // the road: a thin cream line joining each bar to the next
+    const gap = Math.min(0.08, ns * 0.12);
+    g.strokeStyle = 'rgba(255,240,200,0.45)'; g.lineWidth = 1.5; g.beginPath();
+    notes.forEach((st, i) => { if (i) { g.moveTo(x(i * ns - gap), yst(notes[i - 1])); g.lineTo(x(i * ns + gap), yst(st)); } });
+    g.stroke();
+    // the bars
+    const cueT = (pt.phase === 'listen' || pt.phase === 'sing') ? pt.t : -99;
+    const rm = reducedMotion();
+    notes.forEach((st, i) => {
+      const x0 = x(i * ns + gap), x1 = x(i * ns + ns - gap), yc = yst(st), c = degreeRgb(st), bh = PT_BAR_PX;
+      const on = i * ns, off = (i + 1) * ns;
+      let lit = 0;
+      if (cueT >= on && cueT < off) lit = rm ? 1 : Math.min(1, (cueT - on) / PT_ON_SEC);
+      else if (cueT >= off && !rm) lit = Math.max(0, 1 - (cueT - off) / PT_FADE_SEC);
+      const rr = (a, b, w, h, r) => { g.beginPath(); g.roundRect ? g.roundRect(a, b, w, h, r) : g.rect(a, b, w, h); };
+      if (pt.result) {
+        const col = pt.result[i] ? [34, 197, 94] : [239, 68, 68];
+        g.fillStyle = rgba(col, 0.9); rr(x0, yc - bh / 2, x1 - x0, bh, 5); g.fill();
+        return;
+      }
+      if (lit > 0.01) {   // two wide halo strokes, the full colour bar, a white core
+        g.fillStyle = rgba(c, 0.12 * lit); rr(x0 - 9, yc - bh / 2 - 9, x1 - x0 + 18, bh + 18, 13); g.fill();
+        g.fillStyle = rgba(c, 0.24 * lit); rr(x0 - 4, yc - bh / 2 - 4, x1 - x0 + 8, bh + 8, 9); g.fill();
+      }
+      g.fillStyle = rgba(c, 0.5 + 0.5 * lit); rr(x0, yc - bh / 2, x1 - x0, bh, 5); g.fill();
+      if (lit > 0.01) { g.fillStyle = `rgba(255,255,255,${0.9 * lit})`; rr(x0 + 2, yc - 2, x1 - x0 - 4, 4, 2); g.fill(); }
+    });
+    // the example's voice (listen turn): orange line with a dot, one note after another, with its light vibrato
+    if (pt.phase === 'listen' && pt.t > 0) {
+      const endT = Math.min(pt.t, total), hzAt = (s) => ptHz(notes[Math.min(notes.length - 1, Math.floor(s / ns))]) * (1 + 0.008 * Math.sin(6.2832 * 5.5 * s));
+      g.strokeStyle = '#FF5500'; g.lineWidth = 4; g.lineCap = 'round'; g.lineJoin = 'round';
+      g.beginPath(); g.moveTo(x(0), yhz(hzAt(0)));
+      for (let s = 0.02; s < endT; s += 0.02) g.lineTo(x(s), yhz(hzAt(s)));
+      g.stroke();
+      g.fillStyle = '#FF5500'; g.beginPath(); g.arc(x(endT), yhz(hzAt(endT)), 6, 0, 6.2832); g.fill();
+    }
+    // the person's voice
+    if (pt.trace.length) {
+      g.strokeStyle = '#FF5500'; g.lineWidth = 4; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath();
+      let pen = false, lastPt = null;
+      pt.trace.forEach((p) => { if (!p) { pen = false; return; } if (pen) g.lineTo(x(p.t), yhz(p.hz)); else g.moveTo(x(p.t), yhz(p.hz)); pen = true; lastPt = p; });
+      g.stroke();
+      if (lastPt && pt.phase === 'sing') { g.fillStyle = '#FF5500'; g.beginPath(); g.arc(x(lastPt.t), yhz(lastPt.hz), 6, 0, 6.2832); g.fill(); }
+    }
+  }
+  window.addEventListener('resize', drawPitch);
+
   // ── End of the mockup ──
   function screenEnd() {
     $screen.innerHTML = `
@@ -567,9 +764,9 @@
   function setLang(l) { if (l === lang) return; lang = l; go(state.screen); }
   document.getElementById('langEs').addEventListener('click', () => setLang('es'));
   document.getElementById('langEn').addEventListener('click', () => setLang('en'));
-  // Test switch ?screen=1 (the ah) / ?screen=2 (the glide): open straight on that screen with a C3 speaking note, to judge its look.
+  // Test switch ?screen=1 (the ah) / ?screen=2 (the glide) / ?screen=3 (the pitch test): open straight on that screen with a C3 speaking note, to judge its look.
   const jump = parseInt(new URLSearchParams(location.search).get('screen'), 10);
-  if (jump === 1 || jump === 2) { state.rootHz = 130.81; go(jump); } else go(0);
+  if (jump >= 1 && jump <= 3) { state.rootHz = q.get('root') === 'none' ? null : 130.81; go(jump); } else go(0);
 })();
 </script>
 </body>
