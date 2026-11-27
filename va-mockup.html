@@ -236,6 +236,11 @@
   // The example voice, as on the live page: a sawtooth through three resonances, light vibrato. Held on baseHz, or sliding
   // in straight lines up to topHz at the middle and back. Returns its start time and a stop function.
   const FORMANTS = { ah: [[730, 12, 1.0], [1090, 14, 0.5], [2440, 16, 0.3]], oo: [[310, 12, 1.0], [870, 14, 0.32], [2250, 16, 0.15]] };
+  // The glide's pitch at `part` (0..1) of its length: a smooth rise and fall in semitones (half a cosine wave up, half down), so it
+  // leaves the low note gently, turns round at the top and lands gently. The sound and the drawn line both read this.
+  function glideHz(baseHz, topHz, part) {
+    return baseHz * Math.pow(topHz / baseHz, 0.5 * (1 - Math.cos(6.2832 * Math.max(0, Math.min(1, part)))));
+  }
   function playVoice(vowel, baseHz, topHz, sec) {
     const now = ctx.currentTime + 0.05, fade = 0.05;
     const master = ctx.createGain();
@@ -245,12 +250,13 @@
     master.gain.linearRampToValueAtTime(0, now + sec);
     master.connect(ctx.destination);
     const src = ctx.createOscillator(); src.type = 'sawtooth'; src.frequency.setValueAtTime(baseHz, now);
-    if (topHz > baseHz) {
-      src.frequency.linearRampToValueAtTime(topHz, now + sec / 2);
-      src.frequency.linearRampToValueAtTime(baseHz, now + sec);
+    if (topHz > baseHz) {   // the glide: one smooth hill (see glideHz), not two straight lines with a corner on top
+      const n = 256, curve = new Float32Array(n);
+      for (let i = 0; i < n; i++) curve[i] = glideHz(baseHz, topHz, i / (n - 1));
+      src.frequency.setValueCurveAtTime(curve, now, sec);
     }
     const lfo = ctx.createOscillator(); lfo.frequency.value = 5.5;
-    const lfoGain = ctx.createGain(); lfoGain.gain.value = baseHz * 0.008;
+    const lfoGain = ctx.createGain(); lfoGain.gain.value = topHz > baseHz ? 0 : baseHz * 0.008;   // a slide carries no vibrato
     lfo.connect(lfoGain); lfoGain.connect(src.frequency);
     FORMANTS[vowel].forEach(([f, qv, g]) => {
       const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = qv;
@@ -371,10 +377,8 @@
   };
   const tk = { cfg: TAKES.ah, baseHz: 0, exProgress: 0, trace: [], xMax: HOLD_SEC };
   const topHz = () => tk.baseHz * Math.pow(2, tk.cfg.upSt / 12);
-  function exampleHzAt(sec) {   // the same straight lines in Hz the example voice plays
-    if (!tk.cfg.upSt) return tk.baseHz;
-    const half = tk.cfg.sec / 2, top = topHz();
-    return sec <= half ? tk.baseHz + (top - tk.baseHz) * (sec / half) : top - (top - tk.baseHz) * ((sec - half) / half);
+  function exampleHzAt(sec) {   // the same path the example voice plays
+    return tk.cfg.upSt ? glideHz(tk.baseHz, topHz(), sec / tk.cfg.sec) : tk.baseHz;
   }
   function screenTake(kind) {
     const cfg = TAKES[kind], known = !!state.rootHz;
@@ -528,7 +532,7 @@
     // the example's own voice, drawn exactly like the person's will be: an orange line with a dot at its tip, on top of the pale shape
     // (its light vibrato shows too). It leaves when the person's take starts, so only one voice is ever on the graph.
     if (tk.exProgress > 0 && !tk.trace.length) {
-      const endSec = tk.exProgress * cfg.sec, voiceHz = (sec) => exampleHzAt(sec) * (1 + 0.008 * Math.sin(6.2832 * 5.5 * sec));
+      const endSec = tk.exProgress * cfg.sec, voiceHz = (sec) => exampleHzAt(sec) * (cfg.upSt ? 1 : 1 + 0.008 * Math.sin(6.2832 * 5.5 * sec));   // the held note shows its vibrato, the slide has none
       g.strokeStyle = '#FF5500'; g.lineWidth = 4;
       g.beginPath(); g.moveTo(x(0), y(voiceHz(0)));
       for (let sec = 0.02; sec < endSec; sec += 0.02) g.lineTo(x(sec), y(voiceHz(sec)));
@@ -563,7 +567,9 @@
   function setLang(l) { if (l === lang) return; lang = l; go(state.screen); }
   document.getElementById('langEs').addEventListener('click', () => setLang('es'));
   document.getElementById('langEn').addEventListener('click', () => setLang('en'));
-  go(0);
+  // Test switch ?screen=1 (the ah) / ?screen=2 (the glide): open straight on that screen with a C3 speaking note, to judge its look.
+  const jump = parseInt(new URLSearchParams(location.search).get('screen'), 10);
+  if (jump === 1 || jump === 2) { state.rootHz = 130.81; go(jump); } else go(0);
 })();
 </script>
 </body>
