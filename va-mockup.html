@@ -525,9 +525,15 @@
     };
     g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 12;
     g.strokeStyle = 'rgba(255,255,255,0.13)'; exampleTo(cfg.sec);
-    if (tk.exProgress > 0) {
-      g.strokeStyle = tk.trace.length ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.85)';
-      exampleTo(tk.exProgress * cfg.sec);
+    // the example's own voice, drawn exactly like the person's will be: an orange line with a dot at its tip, on top of the pale shape
+    // (its light vibrato shows too). It leaves when the person's take starts, so only one voice is ever on the graph.
+    if (tk.exProgress > 0 && !tk.trace.length) {
+      const endSec = tk.exProgress * cfg.sec, voiceHz = (sec) => exampleHzAt(sec) * (1 + 0.008 * Math.sin(6.2832 * 5.5 * sec));
+      g.strokeStyle = '#FF5500'; g.lineWidth = 4;
+      g.beginPath(); g.moveTo(x(0), y(voiceHz(0)));
+      for (let sec = 0.02; sec < endSec; sec += 0.02) g.lineTo(x(sec), y(voiceHz(sec)));
+      g.stroke();
+      g.fillStyle = '#FF5500'; g.beginPath(); g.arc(x(endSec), y(voiceHz(endSec)), 6, 0, 6.2832); g.fill();
     }
     // the person's voice
     g.strokeStyle = '#FF5500'; g.lineWidth = 4;
