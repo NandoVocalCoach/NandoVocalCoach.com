@@ -2356,7 +2356,9 @@ if (ES_PUBLIC || VA_LANG === 'es') {
         const submittedEmail = document.getElementById('emailField').value.trim();
         const rungReached = ladderState.rungResults.reduce((max, r) => r.stars >= 2 ? Math.max(max, r.rung) : max, 0);
         const tier = computeTierFromRung(rungReached);
-        const exerciseUrl = { tier, rungReached, rootHz: ladderState.rootHz };
+        // Placement rung = the highest rung landed with 3 stars: the Gym starts a first-time singer by it (Nando 2026-11-27). rungReached keeps its meaning.
+        const placementRung = ladderState.rungResults.reduce((max, r) => r.stars >= 3 ? Math.max(max, r.rung) : max, 0);
+        const exerciseUrl = { tier, rungReached, placementRung, rootHz: ladderState.rootHz };
 
         // Waiting screen: pitch result first (already scored in the browser),
         // then a status line with a live timer, then rotating facts.
@@ -2740,7 +2742,7 @@ if (ES_PUBLIC || VA_LANG === 'es') {
     const isClientMode = (data.is_client || fieldSnapshot.__is_client) === 'yes';
     // Gym link: pattern + level + the person's own starting note (MIDI from the speech root)
     const GYM_PATTERN_CODES = { tense_voice: 'tv', chest_lock: 'cc', airy_voice: 'av', pitch_drift: 'pd', solid_foundation: 'sf', mixed_pattern: 'mx' };
-    const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier, rung: String(exerciseUrl.rungReached) });   // the Gym starts by the rung (rung 6 -> Module 5), tier is its fallback
+    const gymParams = new URLSearchParams({ p: GYM_PATTERN_CODES[data.pattern] || 'sf', tier: exerciseUrl.tier, rung: String(exerciseUrl.rungReached), place: String(exerciseUrl.placementRung) });   // the Gym starts by `place` (the 3-star rung); rung and tier are its fallbacks
     if (exerciseUrl.rootHz) gymParams.set('root', String(Math.round(69 + 12 * Math.log2(exerciseUrl.rootHz / 440))));
     if (VA_LANG === 'es') gymParams.set('lang', 'es');   // the Gym starts in Spanish on a fresh device
     const gymUrl = `https://app.nandovocalcoach.com/exercise?${gymParams}`;
