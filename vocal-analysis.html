@@ -838,6 +838,8 @@ const translations = {
       seeRounds: "See each round ▾",
       earLevel: "Ear Level: {name}",
       yourVoicePattern: "Your Voice Pattern",
+      resultKicker: "Your result",
+      longNote: "Your long note",
       meansForYou: "What this means for you:",
       yourRange: "Your pitch range:",
       rangeAlt: "Pitch range graph",
@@ -1033,6 +1035,8 @@ const translations = {
       seeRounds: "Ver cada ronda ▾",
       earLevel: "Nivel de oído: {name}",
       yourVoicePattern: "Tu patrón de voz",
+      resultKicker: "Tu resultado",
+      longNote: "Tu \"A\" sostenida",
       meansForYou: "Lo que esto significa para ti:",
       yourRange: "Tu rango vocal:",
       rangeAlt: "Gráfica de tu rango vocal",
@@ -2742,15 +2746,49 @@ if (ES_PUBLIC || VA_LANG === 'es') {
     const gymUrl = `https://app.nandovocalcoach.com/exercise?${gymParams}`;
     const resultsEl = document.getElementById('analysisResults');
     resultsEl.style.display = 'block';
-    resultsEl.innerHTML = `
-      <div style="padding:10px 0;">
-        <div style="font-size:2.2rem;margin-bottom:12px;">🎙</div>
+
+    // The workout button and the booking link: at the top when the server sent a headline, and always at the bottom
+    const ctaHtml = (margin) => `
+        <div style="text-align:center;margin-bottom:${margin}px;">
+          <a href="${gymUrl}"
+             style="background:#FF5500;color:white;padding:13px 28px;border-radius:6px;font-weight:700;font-size:1rem;text-decoration:none;display:inline-block;">
+            ${vaT('startWorkout')}
+          </a>
+          ${isClientMode ? '' : `
+          <p style="font-size:0.88rem;margin:14px 0 0;">
+            <a href="https://nandovocalcoach.com/#booking" style="color:#9CA3AF;">${vaT('orBook')}</a>
+          </p>`}
+        </div>`;
+
+    // Headline from the pitch rounds (data.title). Old cached results have none: the page then renders as it always did.
+    const escText = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const hasHeadline = !!data.title;
+    const voiceText = data.voice_line ? `${data.voice_line} ${data.voice_note || ''}`.trim() : '';
+    const headerHtml = hasHeadline ? `
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:#FF5500;text-transform:uppercase;margin-bottom:6px;">
+          ${vaT('resultKicker')}
+        </div>
+        <h2 style="font-size:1.8rem;margin-bottom:8px;color:white;">${escText(data.title)}</h2>
+        ${data.moment ? `<p style="color:#D1D5DB;font-size:1.05rem;line-height:1.6;margin:0 0 14px;">${escText(data.moment)}</p>` : ''}
+        ${tierLabel ? `<div style="display:inline-block;background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.3);border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#FF5500;font-weight:700;margin-bottom:20px;">${tierLabel}</div>` : ''}
+        ${ctaHtml(20)}
+        ${data.told_us ? `<div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px 14px;margin-bottom:20px;color:#9CA3AF;font-size:0.88rem;line-height:1.6;">${escText(data.told_us)}</div>` : ''}
+        <p style="font-weight:700;color:white;margin:0 0 6px;font-size:0.95rem;">${data.voice_line ? vaT('longNote') : (data.label || data.pattern)}</p>
+        ${data.voice_line ? `<p style="color:#D1D5DB;font-size:0.95rem;line-height:1.7;margin-bottom:24px;">${escText(voiceText)}</p>` : ''}
+    ` : `
         <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:#FF5500;text-transform:uppercase;margin-bottom:6px;">
           ${vaT('yourVoicePattern')}
         </div>
         <h2 style="font-size:1.8rem;margin-bottom:8px;color:white;">${data.label || data.pattern}</h2>
         ${tierLabel ? `<div style="display:inline-block;background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.3);border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#FF5500;font-weight:700;margin-bottom:20px;">${tierLabel}</div>` : ''}
-        <p style="color:#D1D5DB;font-size:0.95rem;line-height:1.7;margin-bottom:24px;">${data.explanation || ''}</p>
+    `;
+    // With the headline, the explanation is not shown twice when it is only the long-note text (no model text came back)
+    const showExplanation = !(hasHeadline && voiceText && (data.explanation || '').trim() === voiceText);
+    resultsEl.innerHTML = `
+      <div style="padding:10px 0;">
+        <div style="font-size:2.2rem;margin-bottom:12px;">🎙</div>
+        ${headerHtml}
+        ${showExplanation ? `<p style="color:#D1D5DB;font-size:0.95rem;line-height:1.7;margin-bottom:24px;">${data.explanation || ''}</p>` : ''}
 
         ${profileHtml}
         ${graphHtml}
@@ -2764,16 +2802,7 @@ if (ES_PUBLIC || VA_LANG === 'es') {
           <p style="color:white;font-size:0.9rem;margin:10px 0 0;">Nando</p>
         </div>
 
-        <div style="text-align:center;margin-bottom:24px;">
-          <a href="${gymUrl}"
-             style="background:#FF5500;color:white;padding:13px 28px;border-radius:6px;font-weight:700;font-size:1rem;text-decoration:none;display:inline-block;">
-            ${vaT('startWorkout')}
-          </a>
-          ${isClientMode ? '' : `
-          <p style="font-size:0.88rem;margin:14px 0 0;">
-            <a href="https://nandovocalcoach.com/#booking" style="color:#9CA3AF;">${vaT('orBook')}</a>
-          </p>`}
-        </div>
+        ${ctaHtml(24)}
 
         <div style="margin-bottom:20px;">
           <button type="button" id="tryAgainBtn"
